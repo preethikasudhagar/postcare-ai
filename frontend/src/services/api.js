@@ -12,23 +12,33 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-// Response interceptor — refresh on 401
+// Response interceptor — refresh on 401 (excluding auth endpoints)
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const original = error.config
-    if (error.response?.status === 401 && !original._retry) {
+    const isAuthEndpoint = original?.url?.includes('/auth/login') || 
+                           original?.url?.includes('/auth/register') || 
+                           original?.url?.includes('/auth/google') || 
+                           original?.url?.includes('/auth/refresh')
+
+    if (error.response?.status === 401 && !original?._retry && !isAuthEndpoint) {
       original._retry = true
       try {
         const refresh = localStorage.getItem('postcare_refresh')
+        if (!refresh) throw new Error('No refresh token')
         const res = await axios.post('/api/auth/refresh/', { refresh })
         const newAccess = res.data.access
         localStorage.setItem('postcare_access', newAccess)
         original.headers.Authorization = `Bearer ${newAccess}`
         return api(original)
       } catch {
-        localStorage.clear()
-        window.location.href = '/login'
+        localStorage.removeItem('postcare_access')
+        localStorage.removeItem('postcare_refresh')
+        localStorage.removeItem('postcare_user')
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login'
+        }
       }
     }
     return Promise.reject(error)

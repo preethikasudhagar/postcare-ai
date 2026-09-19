@@ -24,6 +24,21 @@ export function AuthProvider({ children }) {
     } finally { setLoading(false) }
   }, [])
 
+  const googleLogin = useCallback(async (googleData = {}) => {
+    setLoading(true)
+    try {
+      const res = await api.post('/auth/google/', googleData)
+      const { user: u, access, refresh } = res.data
+      setUser(u)
+      localStorage.setItem('postcare_user', JSON.stringify(u))
+      localStorage.setItem('postcare_access', access)
+      localStorage.setItem('postcare_refresh', refresh)
+      return { success: true, user: u }
+    } catch (err) {
+      return { success: false, error: err.response?.data?.message || 'Google sign-in failed' }
+    } finally { setLoading(false) }
+  }, [])
+
   const logout = useCallback(async () => {
     try {
       const refresh = localStorage.getItem('postcare_refresh')
@@ -46,7 +61,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, register, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, loading, login, googleLogin, logout, register, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   )

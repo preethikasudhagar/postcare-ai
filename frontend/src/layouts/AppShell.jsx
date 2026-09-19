@@ -157,7 +157,7 @@ export default function AppShell() {
       {/* Footer */}
       {(!collapsed || mobile) && (
         <div className="p-3 border-t border-border">
-          <p className="text-2xs text-text-muted text-center">PostCare AI • Academic Healthcare Prototype</p>
+          <p className="text-2xs text-text-muted text-center">PostCare AI Platform</p>
         </div>
       )}
     </aside>

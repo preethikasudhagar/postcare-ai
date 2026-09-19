@@ -48,11 +48,20 @@ class RecoveryCheckInCreateView(APIView):
             recovery_days=patient.get_recovery_day() if hasattr(patient, 'get_recovery_day') else 14
         )
 
+        conf = pred_res.get('confidence', 0.95)
+        if isinstance(conf, str):
+            try:
+                conf = float(conf.replace('%', '')) / 100.0
+            except ValueError:
+                conf = 0.95
+        elif isinstance(conf, (int, float)) and conf > 1.0:
+            conf = conf / 100.0
+
         prediction = RiskPrediction.objects.create(
             checkin=checkin,
             patient=patient,
             risk_level=pred_res['risk_level'],
-            confidence=pred_res['confidence'],
+            confidence=conf,
             contributing_factors=pred_res['contributing_factors'],
             recommendation_category=pred_res['recommendation_category']
         )

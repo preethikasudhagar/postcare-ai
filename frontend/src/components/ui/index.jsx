@@ -174,27 +174,41 @@ export function DisclaimerNote({ compact = false, className }) {
   )
 }
 
-export function Stepper({ steps, currentStep }) {
+export function Stepper({ steps, currentStep, onStepClick }) {
   return (
     <div className="flex items-center gap-0 overflow-x-auto pb-2">
       {steps.map((step, i) => {
         const isCompleted = i < currentStep
         const isCurrent = i === currentStep
+        const isClickable = typeof onStepClick === 'function'
         return (
           <React.Fragment key={step.id}>
-            <div className="flex flex-col items-center flex-shrink-0">
+            <button
+              type="button"
+              disabled={!isClickable}
+              onClick={() => isClickable && onStepClick(i)}
+              className={cn(
+                'flex flex-col items-center flex-shrink-0 focus:outline-none transition-all',
+                isClickable ? 'cursor-pointer group' : 'cursor-default'
+              )}
+            >
               <div className={cn(
-                'w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold border-2 transition-colors',
-                isCompleted ? 'bg-primary border-primary text-white' :
-                isCurrent ? 'border-primary text-primary bg-white' :
-                'border-border text-text-muted bg-white'
+                'w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold border-2 transition-all',
+                isCompleted ? 'bg-primary border-primary text-white group-hover:bg-primary-hover group-hover:scale-105' :
+                isCurrent ? 'border-primary text-primary bg-white ring-2 ring-primary/20 shadow-xs' :
+                'border-border text-text-muted bg-white group-hover:border-border-strong'
               )}>
                 {isCompleted ? '✓' : i + 1}
               </div>
-              <span className={cn('text-2xs mt-1 font-medium whitespace-nowrap', isCurrent ? 'text-primary' : 'text-text-muted')}>{step.label}</span>
-            </div>
+              <span className={cn(
+                'text-2xs mt-1.5 font-medium whitespace-nowrap transition-colors',
+                isCurrent ? 'text-primary font-semibold' : 'text-text-muted group-hover:text-text'
+              )}>
+                {step.label}
+              </span>
+            </button>
             {i < steps.length - 1 && (
-              <div className={cn('flex-1 min-w-[20px] h-0.5 mb-4 mx-1', isCompleted ? 'bg-primary' : 'bg-border')} />
+              <div className={cn('flex-1 min-w-[20px] h-0.5 mb-5 mx-1 transition-colors', isCompleted ? 'bg-primary' : 'bg-border')} />
             )}
           </React.Fragment>
         )

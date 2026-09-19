@@ -61,9 +61,12 @@ def predict_risk(pain_level, temperature, wound_condition, symptoms, medication_
         'high': 'Critical risk threshold exceeded. Immediate clinical examination and attending review required.'
     }
 
+    raw_confidence = float(confidence)
+
     return {
         'risk_level': risk_level,
-        'confidence': f"{round(confidence * 100, 1)}%",
+        'confidence': raw_confidence,
+        'confidence_display': f"{round(raw_confidence * 100, 1)}%",
         'contributing_factors': contributing_factors,
         'recommendation_category': recommendations[risk_level]
     }

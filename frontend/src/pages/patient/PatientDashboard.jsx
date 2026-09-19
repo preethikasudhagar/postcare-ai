@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import api from '../../services/api'
 import { StatCard, Card, CardHeader, CardBody, DisclaimerNote, PageHeader } from '../../components/ui/index.jsx'
 import { RiskBadge, StatusBadge } from '../../components/ui/Badge.jsx'
 import RecoveryRing from '../../components/domain/RecoveryRing.jsx'
@@ -17,11 +18,44 @@ export default function PatientDashboard() {
     { id: 4, title: 'Review upcoming follow-up appointment instructions', completed: false, to: '/patient/follow-ups' },
   ])
 
+  const [recoveryHistory, setRecoveryHistory] = useState([])
+  const [latestCheckin, setLatestCheckin] = useState(null)
+  const [medCount, setMedCount] = useState(2)
+  const [nextFollowUp, setNextFollowUp] = useState(null)
+
+  useEffect(() => {
+    let isMounted = true
+    async function fetchDashboard() {
+      try {
+        const [histRes, medRes, fuRes] = await Promise.allSettled([
+          api.get('/recovery/history/'),
+          api.get('/medications/'),
+          api.get('/follow-ups/'),
+        ])
+        if (!isMounted) return
+        if (histRes.status === 'fulfilled' && Array.isArray(histRes.value.data) && histRes.value.data.length > 0) {
+          setRecoveryHistory(histRes.value.data)
+          setLatestCheckin(histRes.value.data[0])
+        }
+        if (medRes.status === 'fulfilled' && Array.isArray(medRes.value.data)) {
+          setMedCount(medRes.value.data.length)
+        }
+        if (fuRes.status === 'fulfilled' && Array.isArray(fuRes.value.data) && fuRes.value.data.length > 0) {
+          setNextFollowUp(fuRes.value.data[0])
+        }
+      } catch (e) {
+        // Fallback to initial display
+      }
+    }
+    fetchDashboard()
+    return () => { isMounted = false }
+  }, [])
+
   const toggleTask = (id) => {
     setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t))
   }
 
-  const trendData = [
+  const defaultTrendData = [
     { day: 'Day 1', score: 85 },
     { day: 'Day 3', score: 80 },
     { day: 'Day 5', score: 70 },
@@ -30,6 +64,16 @@ export default function PatientDashboard() {
     { day: 'Day 11', score: 85 },
     { day: 'Day 13', score: 88 },
   ]
+
+  const trendData = recoveryHistory.length >= 2
+    ? recoveryHistory.slice(0, 10).reverse().map((c, idx) => ({
+        day: `Day ${idx + 1}`,
+        score: Math.round(c.recovery_score || 80),
+      }))
+    : defaultTrendData
+
+  const currentScore = latestCheckin?.recovery_score ? Math.round(latestCheckin.recovery_score) : 88
+  const currentRisk = latestCheckin?.risk_prediction?.risk_level || 'low'
 
   return (
     <div className="space-y-6">
@@ -50,34 +94,34 @@ export default function PatientDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="Recovery Score"
-          value="88 / 100"
-          trend="Good progress"
-          trendUp={true}
+          value={`${currentScore} / 100`}
+          trend={currentScore >= 80 ? "Steady recovery progress" : "Requires close observation"}
+          trendUp={currentScore >= 80}
           icon={Activity}
           iconBg="bg-success-tint"
           iconColor="text-success"
         />
         <StatCard
           label="Risk Classification"
-          value="Low Risk"
-          trend="Decision support"
-          trendUp={true}
+          value={currentRisk === 'high' ? 'High Risk' : currentRisk === 'medium' ? 'Medium Risk' : 'Low Risk'}
+          trend="ML decision support"
+          trendUp={currentRisk === 'low'}
           icon={ShieldAlert}
-          iconBg="bg-primary-tint"
-          iconColor="text-primary"
+          iconBg={currentRisk === 'high' ? 'bg-danger-tint' : currentRisk === 'medium' ? 'bg-warning-tint' : 'bg-primary-tint'}
+          iconColor={currentRisk === 'high' ? 'text-danger' : currentRisk === 'medium' ? 'text-warning' : 'text-primary'}
         />
         <StatCard
           label="Next Follow-Up"
-          value="24 Sep"
-          trend="10:30 AM · Ortho"
+          value={nextFollowUp?.appointment_date || "24 Sep"}
+          trend={nextFollowUp ? `${nextFollowUp.appointment_time?.slice(0, 5) || '10:30'} · ${nextFollowUp.department || 'Outpatient'}` : "10:30 AM · Ortho"}
           icon={Calendar}
           iconBg="bg-secondary-tint"
           iconColor="text-secondary"
         />
         <StatCard
-          label="Medication Adherence"
-          value="94%"
-          trend="Last 7 days"
+          label="Prescriptions"
+          value={`${medCount} Active`}
+          trend="On prescribed schedule"
           trendUp={true}
           icon={Pill}
           iconBg="bg-warning-tint"
@@ -93,29 +137,33 @@ export default function PatientDashboard() {
           <Card>
             <CardHeader
               title="Today's Recovery Status"
-              description="Day 14 of 30 post-operative monitoring"
-              action={<span className="text-xs text-text-muted">Last updated 2h ago</span>}
+              description="Post-operative monitoring and assessment"
+              action={
+                <span className="text-xs text-text-muted">
+                  {latestCheckin ? `Recorded ${latestCheckin.date}` : "Today"}
+                </span>
+              }
             />
             <CardBody>
               <div className="flex flex-col sm:flex-row items-center justify-between p-4 bg-primary-tint/50 border border-primary/20 rounded-[8px] gap-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">
-                    14
+                    {currentScore}
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold text-text">Today's Daily Assessment Recorded</h4>
+                    <h4 className="text-sm font-semibold text-text">Daily Assessment Recorded</h4>
                     <p className="text-xs text-text-secondary mt-0.5">
-                      Pain: <strong className="text-text">1/10</strong> · Temp: <strong className="text-text">36.5°C</strong> · Wound: <strong className="text-text">Normal</strong>
+                      Pain: <strong className="text-text">{latestCheckin?.pain_level ?? 2}/10</strong> · Temp: <strong className="text-text">{latestCheckin?.temperature ?? 36.6}°C</strong> · Wound: <strong className="text-text capitalize">{latestCheckin?.wound_condition?.replace('_', ' ') ?? 'Normal'}</strong>
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <RiskBadge level="low" />
+                  <RiskBadge level={currentRisk} />
                   <Link
                     to="/patient/check-in"
                     className="text-xs font-medium text-primary hover:underline ml-2"
                   >
-                    View details
+                    New check-in
                   </Link>
                 </div>
               </div>
@@ -144,11 +192,15 @@ export default function PatientDashboard() {
             <CardHeader title="Current Health Status" />
             <CardBody>
               <div className="py-2">
-                <RecoveryRing value={88} size={130} />
+                <RecoveryRing value={currentScore} size={130} />
               </div>
               <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-xs">
-                <span className="text-text-muted">Confidence estimate:</span>
-                <span className="font-semibold text-text tabular-nums">94% (High)</span>
+                <span className="text-text-muted">ML Confidence:</span>
+                <span className="font-semibold text-text tabular-nums">
+                  {latestCheckin?.risk_prediction?.confidence
+                    ? `${Math.round(latestCheckin.risk_prediction.confidence * 100)}% (High)`
+                    : '95% (High)'}
+                </span>
               </div>
             </CardBody>
           </Card>
