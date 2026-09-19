@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Django
+*.sqlite3
+media/
+staticfiles/
+local_settings.py
+
+# Environment
+.env
+.env.local
+.env.production
+
+# ML models
+ml/model.joblib
+backend/ml_models/model.joblib
+
+# Node / React
+node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/coverage/
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Docker
+docker/postgres-data/
+docker/redis-data/
