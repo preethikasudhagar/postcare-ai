@@ -112,10 +112,10 @@ def _generate_data_inline(n_samples: int = 2000, noise_rate: float = 0.10,
 
 def _load_or_generate(csv_path: Path) -> pd.DataFrame:
     if csv_path.exists():
-        print(f"[train] Loading data from '{csv_path}' …")
+        print(f"[train] Loading data from '{csv_path}' ...")
         return pd.read_csv(csv_path)
 
-    print(f"[train] '{csv_path}' not found — generating data inline …")
+    print(f"[train] '{csv_path}' not found - generating data inline ...")
     try:
         # Try importing data_generator if it is on sys.path
         sys.path.insert(0, str(csv_path.parent))
@@ -125,7 +125,7 @@ def _load_or_generate(csv_path: Path) -> pd.DataFrame:
         df = _generate_data_inline()
 
     df.to_csv(csv_path, index=False)
-    print(f"[train] Saved generated data → '{csv_path}'")
+    print(f"[train] Saved generated data -> '{csv_path}'")
     return df
 
 
@@ -231,7 +231,7 @@ def train_and_save(
     # Model
     # ------------------------------------------------------------------
     print(f"\n[train] Training RandomForestClassifier "
-          f"(n_estimators={n_estimators}, class_weight='balanced') …")
+          f"(n_estimators={n_estimators}, class_weight='balanced') ...")
 
     model = RandomForestClassifier(
         n_estimators=n_estimators,
@@ -258,7 +258,7 @@ def train_and_save(
     importances = model.feature_importances_
     for name, imp in sorted(zip(FEATURE_NAMES, importances),
                              key=lambda x: -x[1]):
-        bar = '█' * int(imp * 50)
+        bar = '#' * int(imp * 50)
         print(f"  {name:25s}: {imp:.4f}  {bar}")
 
     # ------------------------------------------------------------------
@@ -273,8 +273,8 @@ def train_and_save(
         'random_state':   RANDOM_STATE,
     }
     joblib.dump(model_meta, model_path)
-    print(f"\n[train] Model saved → '{model_path}'")
-    print(f"[train] Done ✓")
+    print(f"\n[train] Model saved -> '{model_path}'")
+    print(f"[train] Done [OK]")
 
     return model
 
