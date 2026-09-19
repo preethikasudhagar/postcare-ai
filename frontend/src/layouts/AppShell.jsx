@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import api from '../services/api'
 import {
   LayoutDashboard, Users, FileText, Pill, Calendar, Activity, AlertTriangle,
   MessageSquare, BarChart2, User, Settings, ChevronLeft, ChevronRight,
-  Bell, Search, LogOut, Menu, X, Brain, Network, Shield, Home
+  Bell, Search, LogOut, Menu, X, Brain, Network, Shield, Home, CheckCheck, Info
 } from 'lucide-react'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
@@ -55,9 +56,10 @@ function getNavItems(role) {
         { to: '/doctor/discharge-plans', icon: FileText, label: 'Discharge Plans' },
         { to: '/doctor/follow-ups', icon: Calendar, label: 'Follow-ups' },
       ]},
-      { section: 'Monitoring', items: [
+      { section: 'Monitoring & Alerts', items: [
         { to: '/doctor/risk-predictions', icon: Brain, label: 'Risk Predictions' },
         { to: '/doctor/alerts', icon: AlertTriangle, label: 'Alerts' },
+        { to: '/doctor/notifications', icon: Bell, label: 'Notifications' },
       ]},
       { section: 'Communication', items: [
         { to: '/doctor/messages', icon: MessageSquare, label: 'Messages' },
@@ -105,9 +107,63 @@ export default function AppShell() {
   const navigate = useNavigate()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [notifications, setNotifications] = useState([])
+  const [notifOpen, setNotifOpen] = useState(false)
+  const notifRef = useRef(null)
   const navSections = getNavItems(user?.role)
 
-  const handleLogout = async () => { await logout(); navigate('/login') }
+  const fetchNotifications = useCallback(async () => {
+    if (!user) return
+    try {
+      const res = await api.get('/notifications/')
+      if (Array.isArray(res.data)) {
+        setNotifications(res.data)
+      }
+    } catch (err) {
+      // Silently catch
+    }
+  }, [user])
+
+  useEffect(() => {
+    fetchNotifications()
+    const interval = setInterval(fetchNotifications, 10000)
+    return () => clearInterval(interval)
+  }, [fetchNotifications])
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (notifRef.current && !notifRef.current.contains(e.target)) {
+        setNotifOpen(false)
+      }
+    }
+    if (notifOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [notifOpen])
+
+  const unreadCount = notifications.filter((n) => !n.is_read).length
+
+  const handleMarkRead = async (id) => {
+    try {
+      await api.put(`/notifications/${id}/read/`)
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
+      )
+    } catch (e) {}
+  }
+
+  const handleMarkAllRead = async () => {
+    try {
+      await api.put('/notifications/read-all/')
+      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })))
+    } catch (e) {}
+  }
+
+  const handleLogout = async () => {
+    await logout()
+    navigate('/login')
+  }
 
   const Sidebar = ({ mobile = false }) => (
     <aside className={cn(
@@ -193,11 +249,123 @@ export default function AppShell() {
               <input placeholder="Search… (/ to focus)" className="w-full h-9 pl-8 pr-3 text-sm bg-surface-muted border border-border rounded-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors" />
             </div>
           </div>
+
           <div className="flex items-center gap-2 ml-auto">
-            <button className="relative p-2 rounded-sm text-text-muted hover:text-text hover:bg-surface-muted transition-colors">
-              <Bell size={18} />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-danger rounded-full" aria-label="Unread notifications" />
-            </button>
+            {/* Notification Bell with interactive Popover */}
+            <div className="relative" ref={notifRef}>
+              <button
+                type="button"
+                onClick={() => setNotifOpen((prev) => !prev)}
+                aria-label={`Notifications (${unreadCount} unread)`}
+                className={cn(
+                  'relative p-2 rounded-lg text-text-muted hover:text-text hover:bg-surface-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary',
+                  notifOpen && 'bg-surface-muted text-text'
+                )}
+              >
+                <Bell size={18} />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 bg-danger text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none shadow-xs">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Notification Dropdown Popover */}
+              {notifOpen && (
+                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-border rounded-xl shadow-lg z-50 overflow-hidden animate-fadeIn">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface-muted/40">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-text">Clinical Notifications</span>
+                      {unreadCount > 0 && (
+                        <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-danger-tint text-danger rounded-full">
+                          {unreadCount} unread
+                        </span>
+                      )}
+                    </div>
+                    {unreadCount > 0 && (
+                      <button
+                        type="button"
+                        onClick={handleMarkAllRead}
+                        className="text-[11px] text-primary hover:text-primary-hover font-semibold transition-colors flex items-center gap-1"
+                      >
+                        <CheckCheck size={13} /> Mark all read
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="max-h-80 overflow-y-auto divide-y divide-border">
+                    {notifications.length === 0 ? (
+                      <div className="py-8 text-center text-xs text-text-muted">
+                        No notifications currently active
+                      </div>
+                    ) : (
+                      notifications.map((n) => {
+                        const isHighRisk = n.type === 'high_risk_alert'
+                        const isMed = n.type === 'medication_reminder'
+                        const isFollowup = n.type === 'followup_reminder'
+                        const isCheckin = n.type === 'checkin_reminder'
+
+                        return (
+                          <div
+                            key={n.id}
+                            onClick={() => !n.is_read && handleMarkRead(n.id)}
+                            className={cn(
+                              'p-3.5 flex items-start gap-3 hover:bg-surface-muted/50 transition-colors cursor-pointer text-left',
+                              !n.is_read && 'bg-primary-tint/20'
+                            )}
+                          >
+                            <div
+                              className={cn(
+                                'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5',
+                                isHighRisk ? 'bg-danger-tint text-danger' :
+                                isMed ? 'bg-primary-tint text-primary' :
+                                isFollowup ? 'bg-secondary-tint text-secondary' :
+                                isCheckin ? 'bg-success-tint text-success' :
+                                'bg-surface-muted text-text-muted'
+                              )}
+                            >
+                              {isHighRisk ? <AlertTriangle size={15} /> :
+                               isMed ? <Pill size={15} /> :
+                               isFollowup ? <Calendar size={15} /> :
+                               isCheckin ? <Activity size={15} /> :
+                               <Info size={15} />}
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-baseline justify-between gap-1">
+                                <p className={cn('text-xs line-clamp-1', !n.is_read ? 'font-bold text-text' : 'font-medium text-text-secondary')}>
+                                  {n.title}
+                                </p>
+                                {!n.is_read && (
+                                  <span className="w-2 h-2 rounded-full bg-primary flex-shrink-0" />
+                                )}
+                              </div>
+                              <p className="text-[11px] text-text-muted line-clamp-2 mt-0.5">
+                                {n.message}
+                              </p>
+                              <span className="text-[10px] text-text-muted/80 block mt-1">
+                                {new Date(n.created_at || Date.now()).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            </div>
+                          </div>
+                        )
+                      })
+                    )}
+                  </div>
+
+                  <div className="p-2.5 border-t border-border text-center bg-surface-muted/20">
+                    <Link
+                      to={user?.role === 'doctor' ? '/doctor/notifications' : user?.role === 'patient' ? '/patient/notifications' : '/doctor/alerts'}
+                      onClick={() => setNotifOpen(false)}
+                      className="text-xs font-semibold text-primary hover:text-primary-hover block py-0.5"
+                    >
+                      View All Notifications →
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="flex items-center gap-2 pl-2 border-l border-border">
               <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-semibold">
                 {user?.first_name?.[0]}{user?.last_name?.[0]}

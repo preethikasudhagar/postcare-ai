@@ -142,28 +142,27 @@ class Command(BaseCommand):
 
         for i in range(14):
             day_date = date.today() - timedelta(days=13 - i)
-            checkin, _ = RecoveryCheckIn.objects.get_or_create(
-                patient=patient_profile,
-                date=day_date,
-                defaults={
-                    'pain_level': pains[i],
-                    'temperature': temps[i],
-                    'wound_condition': 'normal' if risks[i] == 'low' else 'swelling' if risks[i] == 'medium' else 'discharge',
-                    'symptoms': [] if risks[i] == 'low' else ['Fever / Chills', 'Excessive Pain'],
-                    'medication_adherence': 'all' if risks[i] == 'low' else 'some',
-                    'recovery_score': scores[i]
-                }
-            )
-            RiskPrediction.objects.get_or_create(
-                checkin=checkin,
-                defaults={
-                    'patient': patient_profile,
-                    'risk_level': risks[i],
-                    'confidence': 0.94,
-                    'contributing_factors': {'Pain': '30%', 'Wound': '25%', 'Temp': '20%'},
-                    'recommendation_category': 'Continue monitoring.'
-                }
-            )
+            checkin = RecoveryCheckIn.objects.filter(patient=patient_profile, date=day_date).first()
+            if not checkin:
+                checkin = RecoveryCheckIn.objects.create(
+                    patient=patient_profile,
+                    date=day_date,
+                    pain_level=pains[i],
+                    temperature=temps[i],
+                    wound_condition='normal' if risks[i] == 'low' else 'swelling' if risks[i] == 'medium' else 'discharge',
+                    symptoms=[] if risks[i] == 'low' else ['Fever / Chills', 'Excessive Pain'],
+                    medication_adherence='all' if risks[i] == 'low' else 'some',
+                    recovery_score=scores[i]
+                )
+            if not RiskPrediction.objects.filter(checkin=checkin).exists():
+                RiskPrediction.objects.create(
+                    checkin=checkin,
+                    patient=patient_profile,
+                    risk_level=risks[i],
+                    confidence=0.94,
+                    contributing_factors={'Pain': '30%', 'Wound': '25%', 'Temp': '20%'},
+                    recommendation_category='Continue monitoring.'
+                )
 
         # 9. Follow-Up
         FollowUp.objects.get_or_create(
@@ -178,15 +177,104 @@ class Command(BaseCommand):
             }
         )
 
-        # 10. Notifications
-        Notification.objects.get_or_create(
-            recipient=patient_user,
-            title='Evening Medication Reminder',
-            defaults={
-                'message': 'Time to take Enoxaparin Sodium 40mg (SubQ) as scheduled.',
+        # 10. Notifications for Multi-Role Clinical Workflow
+        notifications_data = [
+            # Doctor Notifications
+            {
+                'recipient': doctor_user,
+                'title': 'CRITICAL ALERT: High Risk Detected for Rahul Sharma',
+                'message': 'Daily assessment flagged fever elevation (38.4°C) and acute pain rating 8/10. Attending surgeon review requested.',
+                'type': 'high_risk_alert',
+                'related_patient': patient_profile,
+                'is_read': False,
+            },
+            {
+                'recipient': doctor_user,
+                'title': 'Upcoming Consultation: Rahul Sharma',
+                'message': 'Post-op review scheduled on 24 Sep @ 10:30 AM (Staple Removal & Incision Review).',
+                'type': 'followup_reminder',
+                'related_patient': patient_profile,
+                'is_read': False,
+            },
+            {
+                'recipient': doctor_user,
+                'title': 'Recovery Assessment Logged',
+                'message': 'Rahul Sharma submitted today’s recovery check-in. Recovery score computed: 88/100.',
+                'type': 'checkin_reminder',
+                'related_patient': patient_profile,
+                'is_read': False,
+            },
+            {
+                'recipient': doctor_user,
+                'title': 'System: Weekly AI Model Retraining Complete',
+                'message': 'Decision support pipeline validated with 94.2% accuracy across 2,000 synthetic clinical records.',
+                'type': 'system',
+                'related_patient': None,
+                'is_read': True,
+            },
+            # Patient Notifications
+            {
+                'recipient': patient_user,
+                'title': 'Evening Medication Reminder',
+                'message': 'Time to take Enoxaparin Sodium 40mg (SubQ) as prescribed for DVT prophylaxis.',
                 'type': 'medication_reminder',
-                'related_patient': patient_profile
-            }
-        )
+                'related_patient': patient_profile,
+                'is_read': False,
+            },
+            {
+                'recipient': patient_user,
+                'title': 'Daily Recovery Assessment Due',
+                'message': 'Please complete your recovery check-in before 08:00 PM to inform your care team.',
+                'type': 'checkin_reminder',
+                'related_patient': patient_profile,
+                'is_read': False,
+            },
+            {
+                'recipient': patient_user,
+                'title': 'Appointment Confirmed with Dr. Rajesh Varma',
+                'message': 'Your follow-up visit on 24 Sep at 10:30 AM has been confirmed by the clinic.',
+                'type': 'followup_reminder',
+                'related_patient': patient_profile,
+                'is_read': True,
+            },
+            # Nurse Notifications
+            {
+                'recipient': nurse_user,
+                'title': 'High-Risk Alert Escalation: Rahul Sharma',
+                'message': 'Attending physician notified. Monitor wound condition and report any drainage changes.',
+                'type': 'high_risk_alert',
+                'related_patient': patient_profile,
+                'is_read': False,
+            },
+            {
+                'recipient': nurse_user,
+                'title': 'Daily Ward Round Medication Audit',
+                'message': 'Adherence review required for 4 post-op patients in Orthopedic unit.',
+                'type': 'medication_reminder',
+                'related_patient': None,
+                'is_read': False,
+            },
+            # Caregiver Notifications
+            {
+                'recipient': caregiver_user,
+                'title': 'Caregiver Alert: Medication Due for Rahul',
+                'message': 'Please ensure Rahul takes Cefuroxime Axetil 500mg after dinner.',
+                'type': 'medication_reminder',
+                'related_patient': patient_profile,
+                'is_read': False,
+            },
+        ]
+
+        for item in notifications_data:
+            Notification.objects.get_or_create(
+                recipient=item['recipient'],
+                title=item['title'],
+                defaults={
+                    'message': item['message'],
+                    'type': item['type'],
+                    'related_patient': item['related_patient'],
+                    'is_read': item['is_read'],
+                }
+            )
 
         self.stdout.write(self.style.SUCCESS("Database successfully seeded with realistic multi-role clinical dataset!"))

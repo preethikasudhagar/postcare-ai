@@ -36,6 +36,7 @@ const DischargePlanEdit  = lazy(() => import('./pages/doctor/DischargePlanEdit')
 const DoctorFollowUps    = lazy(() => import('./pages/doctor/FollowUps'))
 const RiskPredictions    = lazy(() => import('./pages/doctor/RiskPredictions'))
 const DoctorAlerts       = lazy(() => import('./pages/doctor/Alerts'))
+const DoctorNotifications = lazy(() => import('./pages/doctor/Notifications'))
 const DoctorMessages     = lazy(() => import('./pages/doctor/Messages'))
 const DoctorReports      = lazy(() => import('./pages/doctor/Reports'))
 
@@ -121,6 +122,7 @@ export default function App() {
           <Route path="/doctor/follow-ups"     element={<ProtectedRoute roles={['doctor']}><DoctorFollowUps /></ProtectedRoute>} />
           <Route path="/doctor/risk-predictions" element={<ProtectedRoute roles={['doctor']}><RiskPredictions /></ProtectedRoute>} />
           <Route path="/doctor/alerts"         element={<ProtectedRoute roles={['doctor']}><DoctorAlerts /></ProtectedRoute>} />
+          <Route path="/doctor/notifications"  element={<ProtectedRoute roles={['doctor']}><DoctorNotifications /></ProtectedRoute>} />
           <Route path="/doctor/messages"       element={<ProtectedRoute roles={['doctor']}><DoctorMessages /></ProtectedRoute>} />
           <Route path="/doctor/reports"        element={<ProtectedRoute roles={['doctor']}><DoctorReports /></ProtectedRoute>} />
 
