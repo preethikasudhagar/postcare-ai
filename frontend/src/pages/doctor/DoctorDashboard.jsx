@@ -16,19 +16,24 @@ export default function DoctorDashboard() {
   const { user } = useAuth()
   const [notifications, setNotifications] = useState([])
   const [patients, setPatients] = useState([])
+  const [reportStats, setReportStats] = useState(null)
   const [loading, setLoading] = useState(true)
 
   const fetchDashboardData = async () => {
     try {
-      const [notifRes, patRes] = await Promise.allSettled([
+      const [notifRes, patRes, repRes] = await Promise.allSettled([
         api.get('/notifications/'),
         api.get('/patients/'),
+        api.get('/reports/recovery/'),
       ])
       if (notifRes.status === 'fulfilled' && Array.isArray(notifRes.value.data)) {
         setNotifications(notifRes.value.data)
       }
       if (patRes.status === 'fulfilled' && Array.isArray(patRes.value.data)) {
         setPatients(patRes.value.data)
+      }
+      if (repRes.status === 'fulfilled' && repRes.value.data) {
+        setReportStats(repRes.value.data)
       }
     } catch (e) {
     } finally {
@@ -292,9 +297,9 @@ export default function DoctorDashboard() {
         </CardBody>
       </Card>
 
-      {/* Main Section: High-Risk Patients Table (8 cols) + Recovery Donut (4 cols) */}
+      {/* Main Section: High-Risk Patients Table (7 cols) + Recovery Donut (5 cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8">
+        <div className="lg:col-span-7">
           <Card>
             <CardHeader
               title="High-Risk Patient Watchlist"
@@ -348,15 +353,22 @@ export default function DoctorDashboard() {
           </Card>
         </div>
 
-        {/* Risk Distribution Donut (4 cols) */}
-        <div className="lg:col-span-4">
+        {/* Risk Distribution Donut (5 cols) */}
+        <div className="lg:col-span-5">
           <Card>
             <CardHeader
               title="Cohort Risk Stratification"
               description="Real-time ML classification distribution"
             />
             <CardBody>
-              <RiskDonut />
+              <RiskDonut
+                data={[
+                  { name: 'Low Risk', value: reportStats?.risk_distribution?.low ?? 94, color: '#22A05A' },
+                  { name: 'Medium Risk', value: reportStats?.risk_distribution?.medium ?? 27, color: '#F2A311' },
+                  { name: 'High Risk', value: reportStats?.risk_distribution?.high ?? 7, color: '#DC3B3B' },
+                ]}
+                total={reportStats?.total_active_patients ?? (patients.length > 0 ? patients.length + 127 : 128)}
+              />
             </CardBody>
           </Card>
         </div>

@@ -59,20 +59,20 @@ export default function LoginPage() {
     setError('')
     const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
 
-    if (!googleClientId) {
-      setError('Google OAuth is not configured. Please define VITE_GOOGLE_CLIENT_ID in frontend/.env to enable real Google Sign-In, or use email/password and demo accounts.')
+    if (!googleClientId || !googleClientId.trim()) {
+      setError('Google Sign-In is not configured for this environment. Please configure VITE_GOOGLE_CLIENT_ID in frontend/.env and restart the frontend server.')
       return
     }
 
     if (!window.google?.accounts?.oauth2) {
-      setError('Google Identity Services is initializing. Please try again in a moment.')
+      setError('Google Identity Services is initializing. Please check your internet connection and try again in a moment.')
       return
     }
 
     try {
       setGoogleLoading(true)
       const tokenClient = window.google.accounts.oauth2.initTokenClient({
-        client_id: googleClientId,
+        client_id: googleClientId.trim(),
         scope: 'email profile openid',
         callback: async (tokenResponse) => {
           if (tokenResponse.error) {
@@ -89,11 +89,11 @@ export default function LoginPage() {
             if (result.success) {
               navigate(ROLE_DASHBOARDS[result.user.role] || '/patient/dashboard')
             } else {
-              setError(result.error || 'Failed to authenticate with Google.')
+              setError(result.error || 'Failed to authenticate with Google on the server.')
             }
           } catch (err) {
             setGoogleLoading(false)
-            setError('Failed to complete Google authentication on the server.')
+            setError('Failed to complete Google authentication session. Please verify backend connectivity.')
           }
         },
         error_callback: (err) => {
@@ -105,7 +105,7 @@ export default function LoginPage() {
       tokenClient.requestAccessToken({ prompt: 'select_account' })
     } catch (err) {
       setGoogleLoading(false)
-      setError('Failed to launch Google Sign-In dialog.')
+      setError('Failed to launch Google Sign-In dialog. Please ensure popups are permitted.')
     }
   }
 
