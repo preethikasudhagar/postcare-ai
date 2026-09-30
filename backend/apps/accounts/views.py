@@ -44,18 +44,43 @@ class LoginView(APIView):
 class GoogleLoginView(APIView):
     permission_classes = [AllowAny]
     def post(self, request):
+        token = request.data.get('token') or request.data.get('credential') or request.data.get('id_token')
         email = (request.data.get('email') or '').strip().lower()
-        name = (request.data.get('name') or 'Demo Patient').strip()
-        role = request.data.get('role', 'patient')
+        first_name = (request.data.get('first_name') or request.data.get('given_name') or '').strip()
+        last_name = (request.data.get('last_name') or request.data.get('family_name') or '').strip()
+        name = (request.data.get('name') or '').strip()
+
+        # If Google token is passed, verify with Google tokeninfo endpoint
+        if token:
+            try:
+                import urllib.request
+                import json
+                req_url = f"https://oauth2.googleapis.com/tokeninfo?id_token={token}" if len(token) > 100 else f"https://www.googleapis.com/oauth2/v3/userinfo"
+                req = urllib.request.Request(req_url)
+                if 'userinfo' in req_url:
+                    req.add_header('Authorization', f'Bearer {token}')
+                with urllib.request.urlopen(req, timeout=5) as response:
+                    google_data = json.loads(response.read().decode())
+                    email = google_data.get('email', email).lower()
+                    first_name = google_data.get('given_name', first_name)
+                    last_name = google_data.get('family_name', last_name)
+                    if not name:
+                        name = google_data.get('name', '')
+            except Exception as e:
+                # If network verification fails but valid email was directly submitted, proceed with caution or return error
+                if not email:
+                    return Response({'message': 'Failed to verify Google authentication token'}, status=status.HTTP_400_BAD_REQUEST)
 
         if not email:
-            email = 'patient@postcare.demo'
+            return Response({'message': 'Email is required for Google authentication'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = User.objects.filter(email__iexact=email).first()
         if not user:
-            names = name.split(' ', 1)
-            first_name = names[0]
-            last_name = names[1] if len(names) > 1 else ''
+            if not first_name and name:
+                names = name.split(' ', 1)
+                first_name = names[0]
+                last_name = names[1] if len(names) > 1 else ''
+
             base_username = email.split('@')[0]
             username = base_username
             counter = 1
@@ -66,24 +91,23 @@ class GoogleLoginView(APIView):
             user = User.objects.create_user(
                 username=username,
                 email=email,
-                first_name=first_name,
-                last_name=last_name,
-                role=role
+                first_name=first_name or 'User',
+                last_name=last_name or '',
+                role='patient'
             )
-            if role == 'patient':
-                from apps.patients.models import Patient
-                from django.utils import timezone
-                Patient.objects.get_or_create(
-                    user=user,
-                    defaults={
-                        'patient_id': f"PAT-G{user.id:04d}",
-                        'gender': 'O',
-                        'blood_group': 'O+',
-                        'surgery_type': 'Laparoscopic Cholecystectomy',
-                        'surgery_date': timezone.now().date(),
-                        'discharge_date': timezone.now().date(),
-                    }
-                )
+            from apps.patients.models import Patient
+            from django.utils import timezone
+            Patient.objects.get_or_create(
+                user=user,
+                defaults={
+                    'patient_id': f"PAT-G{user.id:04d}",
+                    'gender': 'O',
+                    'blood_group': 'O+',
+                    'surgery_type': 'Laparoscopic Cholecystectomy',
+                    'surgery_date': timezone.now().date(),
+                    'discharge_date': timezone.now().date(),
+                }
+            )
 
         refresh = RefreshToken.for_user(user)
         return Response({

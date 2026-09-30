@@ -246,7 +246,11 @@ export default function AppShell() {
           <div className="flex-1 max-w-sm">
             <div className="relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-              <input placeholder="Search… (/ to focus)" className="w-full h-9 pl-8 pr-3 text-sm bg-surface-muted border border-border rounded-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors" />
+              <input
+                placeholder="Search here..."
+                aria-label="Search here"
+                className="w-full h-9 pl-8 pr-3 text-xs bg-surface-muted border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors text-text"
+              />
             </div>
           </div>
 

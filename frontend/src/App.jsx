@@ -39,6 +39,10 @@ const DoctorAlerts       = lazy(() => import('./pages/doctor/Alerts'))
 const DoctorNotifications = lazy(() => import('./pages/doctor/Notifications'))
 const DoctorMessages     = lazy(() => import('./pages/doctor/Messages'))
 const DoctorReports      = lazy(() => import('./pages/doctor/Reports'))
+const RecoveryIndexReport = lazy(() => import('./pages/doctor/reports/RecoveryIndexReport'))
+const RiskStratificationReport = lazy(() => import('./pages/doctor/reports/RiskStratificationReport'))
+const MedicationComplianceReport = lazy(() => import('./pages/doctor/reports/MedicationComplianceReport'))
+const FollowUpCompletionReport = lazy(() => import('./pages/doctor/reports/FollowUpCompletionReport'))
 
 // Nurse
 const NurseDashboard = lazy(() => import('./pages/nurse/NurseDashboard'))
@@ -125,6 +129,10 @@ export default function App() {
           <Route path="/doctor/notifications"  element={<ProtectedRoute roles={['doctor']}><DoctorNotifications /></ProtectedRoute>} />
           <Route path="/doctor/messages"       element={<ProtectedRoute roles={['doctor']}><DoctorMessages /></ProtectedRoute>} />
           <Route path="/doctor/reports"        element={<ProtectedRoute roles={['doctor']}><DoctorReports /></ProtectedRoute>} />
+          <Route path="/doctor/reports/recovery-index" element={<ProtectedRoute roles={['doctor']}><RecoveryIndexReport /></ProtectedRoute>} />
+          <Route path="/doctor/reports/risk-stratification" element={<ProtectedRoute roles={['doctor']}><RiskStratificationReport /></ProtectedRoute>} />
+          <Route path="/doctor/reports/medication-compliance" element={<ProtectedRoute roles={['doctor']}><MedicationComplianceReport /></ProtectedRoute>} />
+          <Route path="/doctor/reports/follow-up-completion" element={<ProtectedRoute roles={['doctor']}><FollowUpCompletionReport /></ProtectedRoute>} />
 
           {/* Nurse routes */}
           <Route path="/nurse/dashboard"  element={<ProtectedRoute roles={['nurse']}><NurseDashboard /></ProtectedRoute>} />

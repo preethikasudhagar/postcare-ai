@@ -8,19 +8,22 @@ export default function RiskDonut({
     { name: 'High Risk', value: 7, color: '#DC3B3B' },
   ],
   total = 128,
-  height = 220
+  height = 200
 }) {
+  const calculatedTotal = total || data.reduce((acc, curr) => acc + (curr.value || 0), 0) || 1
+
   return (
-    <div className="flex items-center justify-between gap-4">
-      <div className="relative flex-1" style={{ height }}>
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 w-full overflow-hidden">
+      {/* Chart container */}
+      <div className="relative w-full sm:w-1/2 flex items-center justify-center" style={{ height, minHeight: height, minWidth: 160 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
+          <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
             <Pie
               data={data}
               cx="50%"
               cy="50%"
-              innerRadius={55}
-              outerRadius={75}
+              innerRadius={48}
+              outerRadius={68}
               paddingAngle={4}
               dataKey="value"
             >
@@ -32,11 +35,12 @@ export default function RiskDonut({
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
                   const d = payload[0].payload
+                  const pct = Math.round(((d.value || 0) / calculatedTotal) * 100)
                   return (
-                    <div className="bg-white border border-border shadow-lg rounded-[8px] p-2 text-xs">
-                      <p className="font-semibold text-text">{d.name}</p>
-                      <p className="text-text-secondary">
-                        Patients: <strong className="text-text tabular-nums">{d.value}</strong> ({Math.round((d.value / total) * 100)}%)
+                    <div className="bg-white border border-border shadow-md rounded-lg p-2 text-xs z-50">
+                      <p className="font-bold text-text">{d.name}</p>
+                      <p className="text-text-secondary mt-0.5">
+                        Patients: <strong className="text-text tabular-nums">{d.value}</strong> ({pct}%)
                       </p>
                     </div>
                   )
@@ -47,21 +51,28 @@ export default function RiskDonut({
           </PieChart>
         </ResponsiveContainer>
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <span className="text-2xl font-bold text-text tabular-nums leading-none">{total}</span>
-          <span className="text-2xs text-text-muted mt-0.5">Total active</span>
+          <span className="text-xl font-bold text-text tabular-nums leading-none">{calculatedTotal}</span>
+          <span className="text-[10px] text-text-muted mt-0.5">Active Cases</span>
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 min-w-[120px]">
-        {data.map((item) => (
-          <div key={item.name} className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-              <span className="text-text-secondary">{item.name}</span>
+      {/* Legend */}
+      <div className="flex flex-col gap-2 w-full sm:w-1/2 pr-2">
+        {data.map((item) => {
+          const pct = Math.round(((item.value || 0) / calculatedTotal) * 100)
+          return (
+            <div key={item.name} className="flex items-center justify-between text-xs p-1.5 rounded bg-surface-muted/60 border border-border/50">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
+                <span className="text-text font-medium truncate">{item.name}</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-right pl-2">
+                <span className="font-bold text-text tabular-nums">{item.value}</span>
+                <span className="text-[10px] text-text-muted tabular-nums">({pct}%)</span>
+              </div>
             </div>
-            <span className="font-semibold text-text tabular-nums">{item.value}</span>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

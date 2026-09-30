@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import AuthLayout from '../../components/layout/AuthLayout'
@@ -43,19 +43,69 @@ export default function LoginPage() {
     }
   }
 
+  useEffect(() => {
+    // Load Google Identity Services script if not already present
+    if (!document.getElementById('google-gsi-script')) {
+      const script = document.createElement('script')
+      script.id = 'google-gsi-script'
+      script.src = 'https://accounts.google.com/gsi/client'
+      script.async = true
+      script.defer = true
+      document.body.appendChild(script)
+    }
+  }, [])
+
   const handleGoogleSignIn = async () => {
     setError('')
-    setGoogleLoading(true)
-    const result = await googleLogin({
-      email: 'google.user@postcare.demo',
-      name: 'Google Patient',
-      role: 'patient',
-    })
-    setGoogleLoading(false)
-    if (result.success) {
-      navigate(ROLE_DASHBOARDS[result.user.role] || '/patient/dashboard')
-    } else {
-      setError(result.error || 'Failed to sign in with Google.')
+    const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+
+    if (!googleClientId) {
+      setError('Google OAuth is not configured. Please define VITE_GOOGLE_CLIENT_ID in frontend/.env to enable real Google Sign-In, or use email/password and demo accounts.')
+      return
+    }
+
+    if (!window.google?.accounts?.oauth2) {
+      setError('Google Identity Services is initializing. Please try again in a moment.')
+      return
+    }
+
+    try {
+      setGoogleLoading(true)
+      const tokenClient = window.google.accounts.oauth2.initTokenClient({
+        client_id: googleClientId,
+        scope: 'email profile openid',
+        callback: async (tokenResponse) => {
+          if (tokenResponse.error) {
+            setGoogleLoading(false)
+            setError(`Google sign-in was cancelled or encountered an error: ${tokenResponse.error}`)
+            return
+          }
+
+          try {
+            const result = await googleLogin({
+              token: tokenResponse.access_token,
+            })
+            setGoogleLoading(false)
+            if (result.success) {
+              navigate(ROLE_DASHBOARDS[result.user.role] || '/patient/dashboard')
+            } else {
+              setError(result.error || 'Failed to authenticate with Google.')
+            }
+          } catch (err) {
+            setGoogleLoading(false)
+            setError('Failed to complete Google authentication on the server.')
+          }
+        },
+        error_callback: (err) => {
+          setGoogleLoading(false)
+          setError('Google authentication popup was closed or cancelled.')
+        }
+      })
+
+      tokenClient.requestAccessToken({ prompt: 'select_account' })
+    } catch (err) {
+      setGoogleLoading(false)
+      setError('Failed to launch Google Sign-In dialog.')
     }
   }
 

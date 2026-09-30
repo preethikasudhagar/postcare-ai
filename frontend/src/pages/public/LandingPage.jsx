@@ -8,6 +8,17 @@ import {
 
 function Navbar() {
   const [open, setOpen] = useState(false)
+
+  const scrollToSection = (e, id) => {
+    e.preventDefault()
+    setOpen(false)
+    const el = document.getElementById(id)
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      window.history.pushState(null, '', `#${id}`)
+    }
+  }
+
   return (
     <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border">
       <div className="max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between h-16">
@@ -21,27 +32,49 @@ function Navbar() {
           <span className="text-base font-bold text-text">PostCare AI</span>
         </div>
         <div className="hidden md:flex items-center gap-6">
-          {['Features','How It Works','About'].map(s => (
-            <a key={s} href={`#${s.toLowerCase().replace(' ','-')}`}
-              className="text-sm text-text-secondary hover:text-primary transition-colors">{s}</a>
+          {[
+            { label: 'Features', id: 'features' },
+            { label: 'How It Works', id: 'how-it-works' },
+            { label: 'About', id: 'about' }
+          ].map(s => (
+            <a
+              key={s.id}
+              href={`#${s.id}`}
+              onClick={(e) => scrollToSection(e, s.id)}
+              className="text-sm font-medium text-text-secondary hover:text-primary transition-colors cursor-pointer"
+            >
+              {s.label}
+            </a>
           ))}
         </div>
         <div className="hidden md:flex items-center gap-3">
-          <Link to="/login" className="h-9 px-4 text-sm font-medium text-text border border-border-strong rounded-sm hover:bg-surface-muted transition-colors">Log in</Link>
-          <Link to="/register" className="h-9 px-4 text-sm font-medium text-white bg-primary rounded-sm hover:bg-primary-hover transition-colors">Get started</Link>
+          <Link to="/login" className="h-9 px-4 text-sm font-medium text-text border border-border-strong rounded-sm hover:bg-surface-muted transition-colors flex items-center">Log in</Link>
+          <Link to="/register" className="h-9 px-4 text-sm font-medium text-white bg-primary rounded-sm hover:bg-primary-hover transition-colors flex items-center">Get started</Link>
         </div>
-        <button className="md:hidden p-2" onClick={() => setOpen(o => !o)}>
+        <button className="md:hidden p-2 text-text" onClick={() => setOpen(o => !o)} aria-label="Toggle navigation menu">
           {open ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
       {open && (
         <div className="md:hidden border-t border-border bg-white px-4 py-4 space-y-2">
-          {['Features','How It Works','About'].map(s => (
-            <a key={s} href={`#${s.toLowerCase().replace(' ','-')}`}
-              className="block py-2 text-sm text-text-secondary" onClick={() => setOpen(false)}>{s}</a>
+          {[
+            { label: 'Features', id: 'features' },
+            { label: 'How It Works', id: 'how-it-works' },
+            { label: 'About', id: 'about' }
+          ].map(s => (
+            <a
+              key={s.id}
+              href={`#${s.id}`}
+              onClick={(e) => scrollToSection(e, s.id)}
+              className="block py-2 text-sm font-medium text-text-secondary hover:text-primary cursor-pointer"
+            >
+              {s.label}
+            </a>
           ))}
-          <Link to="/login" className="block py-2 text-sm font-medium text-primary">Log in</Link>
-          <Link to="/register" className="block w-full h-10 bg-primary text-white text-sm font-medium rounded-sm text-center leading-10">Get started</Link>
+          <div className="pt-2 border-t border-border flex flex-col gap-2">
+            <Link to="/login" className="block py-2 text-sm font-medium text-primary">Log in</Link>
+            <Link to="/register" className="block w-full h-10 bg-primary text-white text-sm font-medium rounded-sm text-center leading-10">Get started</Link>
+          </div>
         </div>
       )}
     </nav>
@@ -288,6 +321,45 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* About Section */}
+      <section id="about" className="py-20 bg-white border-t border-border">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="max-w-3xl mx-auto text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary-tint text-primary text-xs font-semibold rounded-full mb-3">
+              About PostCare AI
+            </div>
+            <h2 className="text-3xl font-bold text-text mb-4">
+              Bridging the Critical Gap in Post-Operative Care
+            </h2>
+            <p className="text-base text-text-secondary leading-relaxed">
+              PostCare AI is an intelligent clinical decision-support and patient recovery management platform. 
+              Our mission is to reduce preventable surgical readmissions, enhance patient engagement, and empower multidisciplinary healthcare teams with real-time risk stratification.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="p-6 bg-surface-muted rounded-xl border border-border">
+              <h3 className="text-base font-bold text-text mb-2">Multidisciplinary Collaboration</h3>
+              <p className="text-xs text-text-secondary leading-relaxed">
+                Connects surgeons, triage nurses, patients, and family caregivers in one synchronized ecosystem with role-specific dashboards and secure communications.
+              </p>
+            </div>
+            <div className="p-6 bg-surface-muted rounded-xl border border-border">
+              <h3 className="text-base font-bold text-text mb-2">Intelligent Risk Classification</h3>
+              <p className="text-xs text-text-secondary leading-relaxed">
+                Leverages validated Random Forest machine learning models trained on post-surgical biomarker trajectories to provide clinical decision-support alerts.
+              </p>
+            </div>
+            <div className="p-6 bg-surface-muted rounded-xl border border-border">
+              <h3 className="text-base font-bold text-text mb-2">Academic Healthcare Focus</h3>
+              <p className="text-xs text-text-secondary leading-relaxed">
+                Engineered with clinical rigor, standardized surgical discharge taxonomies, strict privacy safeguards, and transparent model interpretability.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-20 bg-primary text-white">
         <div className="max-w-2xl mx-auto text-center px-4">
@@ -308,9 +380,30 @@ export default function LandingPage() {
               <span className="font-bold">PostCare AI</span>
             </div>
             <div className="flex gap-6">
-              {['Features','How It Works','Login'].map(l => (
-                <a key={l} href={l==='Login'?'/login':`#${l.toLowerCase().replace(' ','-')}`}
-                  className="text-sm text-white/60 hover:text-white transition-colors">{l}</a>
+              {[
+                { label: 'Features', href: '#features' },
+                { label: 'How It Works', href: '#how-it-works' },
+                { label: 'About', href: '#about' },
+                { label: 'Login', href: '/login' },
+              ].map(l => (
+                l.href.startsWith('#') ? (
+                  <a
+                    key={l.label}
+                    href={l.href}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      const el = document.getElementById(l.href.replace('#', ''))
+                      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    }}
+                    className="text-sm text-white/60 hover:text-white transition-colors"
+                  >
+                    {l.label}
+                  </a>
+                ) : (
+                  <Link key={l.label} to={l.href} className="text-sm text-white/60 hover:text-white transition-colors">
+                    {l.label}
+                  </Link>
+                )
               ))}
             </div>
             <p className="text-xs text-white/40">Academic Healthcare Prototype © 2026. Synthetic data only.</p>
