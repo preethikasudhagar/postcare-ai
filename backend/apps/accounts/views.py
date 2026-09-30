@@ -104,6 +104,65 @@ class MeView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class AdminUserListCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        users = User.objects.all().order_by('-date_joined')
+        role = request.query_params.get('role')
+        if role:
+            users = users.filter(role=role)
+        search = request.query_params.get('search')
+        if search:
+            from django.db.models import Q
+            users = users.filter(
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search) |
+                Q(email__icontains=search) |
+                Q(username__icontains=search)
+            )
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class AdminUserDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        user = self.get_object(pk)
+        if not user:
+            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(UserSerializer(user).data)
+
+    def patch(self, request, pk):
+        user = self.get_object(pk)
+        if not user:
+            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        user = self.get_object(pk)
+        if not user:
+            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        user.delete()
+        return Response({'message': 'User deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
 class LogoutView(APIView):
     permission_classes = [AllowAny]
     def post(self, request):

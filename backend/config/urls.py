@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.http import JsonResponse
+from apps.accounts import views as account_views
 
 def api_root(request):
     return JsonResponse({
@@ -27,6 +28,10 @@ urlpatterns = [
     path('', api_root, name='api_index'),
     path('api/', api_root, name='api_root'),
     path('admin/', admin.site.urls),
+    path('api/admin/users/', include([
+        path('', account_views.AdminUserListCreateView.as_view(), name='admin_user_list_create'),
+        path('<int:pk>/', account_views.AdminUserDetailView.as_view(), name='admin_user_detail'),
+    ])),
     path('api/auth/', include('apps.accounts.urls')),
     path('api/patients/', include('apps.patients.urls')),
     path('api/discharge-plans/', include('apps.discharge.urls')),
