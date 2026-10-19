@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from apps.patients.models import Patient, Doctor
 
 class RecoveryCheckIn(models.Model):
@@ -63,3 +64,32 @@ class RiskPrediction(models.Model):
     class Meta:
         db_table = 'risk_predictions'
         ordering = ['-predicted_at']
+
+class WoundAssessment(models.Model):
+    ASSESSMENT_RESULTS = [
+        ('good', 'Good'),
+        ('moderate', 'Moderate'),
+        ('poor', 'Poor'),
+        ('uncertain', 'Uncertain'),
+        ('pending', 'Pending'),
+        ('unavailable', 'Unavailable'),
+        ('failed', 'Failed'),
+    ]
+
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='wound_assessments')
+    image = models.ImageField(upload_to='wounds/%Y/%m/%d/')
+    upload_date = models.DateTimeField(auto_now_add=True)
+    uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='uploaded_wounds')
+    assessment_result = models.CharField(max_length=20, choices=ASSESSMENT_RESULTS, default='pending')
+    confidence = models.FloatField(null=True, blank=True)
+    raw_probabilities = models.JSONField(null=True, blank=True)
+    assessment_reason = models.TextField(blank=True, default='')
+    doctor_review = models.BooleanField(default=False)
+    remarks = models.TextField(blank=True)
+    
+    class Meta:
+        db_table = 'wound_assessments'
+        ordering = ['-upload_date']
+
+    def __str__(self):
+        return f"Wound Assessment for {self.patient} at {self.upload_date}"

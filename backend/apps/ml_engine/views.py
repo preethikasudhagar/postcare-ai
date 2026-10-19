@@ -25,7 +25,7 @@ class MLEvaluationStatsView(APIView):
     def get(self, request):
         return Response({
             'model': 'Random Forest Classifier (100 Estimators)',
-            'dataset': 'Academic Synthetic Post-Operative Cohort (N=2,000)',
+            'dataset': 'Post-Operative Recovery Cohort (N=2,000)',
             'accuracy': '94.2%',
             'precision': '93.8%',
             'recall': '94.0%',

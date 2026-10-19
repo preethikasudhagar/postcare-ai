@@ -1,5 +1,5 @@
 import React from 'react'
-import { PageHeader, Card, CardHeader, CardBody, DisclaimerNote } from '../../components/ui/index.jsx'
+import { PageHeader, Card, CardHeader, CardBody } from '../../components/ui/index.jsx'
 import { Download, Printer, FileText, CheckCircle2, AlertCircle, ShieldCheck } from 'lucide-react'
 
 export default function DischargePlan() {
@@ -172,7 +172,7 @@ export default function DischargePlan() {
           </div>
         </div>
 
-        {/* Clinical Sign-off & Disclaimer */}
+        {/* Clinical Sign-off */}
         <div className="pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center text-xs text-text-muted gap-4">
           <div>
             <p>Digitally signed by: <strong>Dr. Rajesh Varma, MS Ortho</strong></p>
@@ -180,12 +180,9 @@ export default function DischargePlan() {
           </div>
           <div className="text-center sm:text-right">
             <p>PostCare AI Clinical Discharge Subsystem</p>
-            <p className="text-2xs">Academic Healthcare Demonstration Platform</p>
           </div>
         </div>
       </div>
-
-      <DisclaimerNote />
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom'
+import { Outlet, NavLink, useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
 import {
@@ -7,6 +7,7 @@ import {
   MessageSquare, BarChart2, User, Settings, ChevronLeft, ChevronRight,
   Bell, Search, LogOut, Menu, X, Brain, Network, Shield, Home, CheckCheck, Info
 } from 'lucide-react'
+import { ErrorBoundary } from '../components/ui/index.jsx'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 const cn = (...a) => twMerge(clsx(...a))
@@ -105,6 +106,8 @@ function getNavItems(role) {
 export default function AppShell() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const isMessagingPage = location.pathname.includes('/messages')
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [notifications, setNotifications] = useState([])
@@ -386,9 +389,15 @@ export default function AppShell() {
         </header>
 
         {/* Page content */}
-        <main id="main-content" className="flex-1 overflow-y-auto">
-          <div className="max-w-content mx-auto px-4 md:px-8 py-6">
-            <Outlet />
+        <main id="main-content" className={cn('flex-1 overflow-y-auto', isMessagingPage && 'flex flex-col')}>
+          <div className={cn(
+            isMessagingPage
+              ? 'w-full px-4 md:px-6 py-4 flex-1 flex flex-col min-h-0'
+              : 'max-w-content mx-auto px-4 md:px-8 py-6'
+          )}>
+            <ErrorBoundary>
+              <Outlet />
+            </ErrorBoundary>
           </div>
         </main>
       </div>

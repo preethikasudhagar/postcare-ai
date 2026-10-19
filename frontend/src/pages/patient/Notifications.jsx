@@ -69,7 +69,7 @@ export default function Notifications() {
 
   const filtered = notifs.filter((n) => {
     if (filter === 'unread') return !n.is_read
-    if (filter === 'alerts') return n.type === 'high_risk_alert' || n.type === 'medication_reminder'
+    if (filter === 'alerts') return n.type === 'high_risk_alert' || n.type === 'medication_reminder' || n.type === 'appointment_update' || n.type === 'followup_reminder'
     return true
   })
 
@@ -112,7 +112,7 @@ export default function Notifications() {
         {filtered.map((item) => {
           const isHighRisk = item.type === 'high_risk_alert'
           const isMed = item.type === 'medication_reminder'
-          const isFollowup = item.type === 'followup_reminder'
+          const isFollowup = item.type === 'followup_reminder' || item.type === 'appointment_update'
           const isCheckin = item.type === 'checkin_reminder'
 
           return (

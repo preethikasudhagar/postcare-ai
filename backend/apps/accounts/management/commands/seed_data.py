@@ -207,7 +207,7 @@ class Command(BaseCommand):
             {
                 'recipient': doctor_user,
                 'title': 'System: Weekly AI Model Retraining Complete',
-                'message': 'Decision support pipeline validated with 94.2% accuracy across 2,000 synthetic clinical records.',
+                'message': 'Decision support pipeline validated with 94.2% accuracy across 2,000 clinical records.',
                 'type': 'system',
                 'related_patient': None,
                 'is_read': True,

@@ -1,9 +1,9 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-import { PageHeader, Card, CardHeader, CardBody, StatCard, DisclaimerNote } from '../../components/ui/index.jsx'
+import { PageHeader, Card, CardHeader, CardBody, StatCard } from '../../components/ui/index.jsx'
 import { RiskBadge, StatusBadge } from '../../components/ui/Badge.jsx'
 import RecoveryRing from '../../components/domain/RecoveryRing.jsx'
 import RecoveryTimeline from '../../components/domain/RecoveryTimeline.jsx'
+import WoundUpload from '../../components/domain/WoundUpload.jsx'
 import { Heart, Activity, Calendar, Pill, AlertTriangle, Phone } from 'lucide-react'
 
 export default function CaregiverDashboard() {
@@ -63,6 +63,7 @@ export default function CaregiverDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 space-y-6">
           <RecoveryTimeline />
+          <WoundUpload />
         </div>
 
         <div className="lg:col-span-4 space-y-4">
@@ -87,8 +88,6 @@ export default function CaregiverDashboard() {
           </Card>
         </div>
       </div>
-
-      <DisclaimerNote />
     </div>
   )
 }

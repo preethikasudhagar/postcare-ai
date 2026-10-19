@@ -1,0 +1,131 @@
+{
+  "model_name": "ExtraTreesClassifier (Balanced Subsample + Clinical Safety Policy)",
+  "dataset": "SurgWound (OSWUMC - The Ohio State University Wexner Medical Center)",
+  "dataset_license": "CC-BY-SA-4.0",
+  "splits": {
+    "train": 480,
+    "val": 69,
+    "test": 137,
+    "total": 686
+  },
+  "thresholds": {
+    "moderate": 0.2,
+    "poor": 0.08
+  },
+  "safety_policy": {
+    "th_moderate": 0.2,
+    "th_poor": 0.08,
+    "cert_th_good": 0.82,
+    "max_non_good_mass": 0.18,
+    "erythema_outlier_th": 0.6,
+    "rg_diff_outlier_th": 0.16,
+    "margin_edge_outlier_th": 0.03,
+    "max_z_outlier_th": 3.8
+  },
+  "test_metrics": {
+    "test_size": 137,
+    "test_distribution": {
+      "good": 121,
+      "moderate": 12,
+      "poor": 4
+    },
+    "baseline_metrics": {
+      "accuracy": 0.8832116788321168,
+      "balanced_accuracy": 0.3333333333333333,
+      "macro_f1": 0.31266149870801035,
+      "classification_report": {
+        "good": {
+          "precision": 0.8832116788321168,
+          "recall": 1.0,
+          "f1-score": 0.937984496124031,
+          "support": 121.0
+        },
+        "moderate": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 12.0
+        },
+        "poor": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 4.0
+        },
+        "accuracy": 0.8832116788321168,
+        "macro avg": {
+          "precision": 0.29440389294403896,
+          "recall": 0.3333333333333333,
+          "f1-score": 0.31266149870801035,
+          "support": 137.0
+        },
+        "weighted avg": {
+          "precision": 0.7800628696254462,
+          "recall": 0.8832116788321168,
+          "f1-score": 0.8284388615402025,
+          "support": 137.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          121,
+          0,
+          0
+        ],
+        [
+          12,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ]
+    },
+    "safety_policy_metrics": {
+      "poor_sensitivity": 1.0,
+      "poor_false_negatives": 0,
+      "moderate_false_negatives": 2,
+      "concerning_cases_safely_caught": 14,
+      "total_concerning_cases": 16,
+      "safety_confusion_matrix": [
+        [
+          20,
+          33,
+          13,
+          55
+        ],
+        [
+          2,
+          4,
+          1,
+          5
+        ],
+        [
+          0,
+          0,
+          4,
+          0
+        ]
+      ]
+    },
+    "thresholds": {
+      "moderate": 0.2,
+      "poor": 0.08
+    },
+    "safety_policy": {
+      "th_moderate": 0.2,
+      "th_poor": 0.08,
+      "cert_th_good": 0.82,
+      "max_non_good_mass": 0.18,
+      "erythema_outlier_th": 0.6,
+      "rg_diff_outlier_th": 0.16,
+      "margin_edge_outlier_th": 0.03,
+      "max_z_outlier_th": 3.8
+    }
+  },
+  "feature_count": 53,
+  "generated_at": "2026-10-16T22:22:28.259806"
+}

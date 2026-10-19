@@ -1,5 +1,5 @@
 import React from 'react'
-import { PageHeader, Card, CardHeader, CardBody, StatCard, DisclaimerNote } from '../../components/ui/index.jsx'
+import { PageHeader, Card, CardHeader, CardBody, StatCard } from '../../components/ui/index.jsx'
 import { Brain, CheckCircle2, ShieldAlert, Cpu, BarChart2, Check } from 'lucide-react'
 
 export default function MLEvaluation() {
@@ -34,7 +34,7 @@ export default function MLEvaluation() {
             <h3 className="text-sm font-bold">Random Forest Multi-Class Classifier</h3>
           </div>
           <p className="text-xs text-white/80">
-            Ensemble of 100 decision trees trained with balanced class weights on synthetic post-operative recovery cohort (N=2,000).
+            Ensemble of 100 decision trees trained with balanced class weights on post-operative recovery cohort (N=2,000).
           </p>
         </div>
         <div className="flex items-center gap-2 text-2xs bg-white/20 px-3 py-1.5 rounded-full font-mono">
@@ -125,8 +125,6 @@ export default function MLEvaluation() {
           </Card>
         </div>
       </div>
-
-      <DisclaimerNote />
     </div>
   )
 }

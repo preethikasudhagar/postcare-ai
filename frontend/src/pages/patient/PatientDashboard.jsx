@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import api from '../../services/api'
-import { StatCard, Card, CardHeader, CardBody, DisclaimerNote, PageHeader } from '../../components/ui/index.jsx'
+import { StatCard, Card, CardHeader, CardBody, PageHeader } from '../../components/ui/index.jsx'
 import { RiskBadge, StatusBadge } from '../../components/ui/Badge.jsx'
 import RecoveryRing from '../../components/domain/RecoveryRing.jsx'
 import RecoveryTimeline from '../../components/domain/RecoveryTimeline.jsx'
@@ -34,8 +34,9 @@ export default function PatientDashboard() {
         ])
         if (!isMounted) return
         if (histRes.status === 'fulfilled' && Array.isArray(histRes.value.data) && histRes.value.data.length > 0) {
-          setRecoveryHistory(histRes.value.data)
-          setLatestCheckin(histRes.value.data[0])
+          const list = histRes.value.data
+          setRecoveryHistory(list)
+          setLatestCheckin(list[list.length - 1])
         }
         if (medRes.status === 'fulfilled' && Array.isArray(medRes.value.data)) {
           setMedCount(medRes.value.data.length)
@@ -66,7 +67,7 @@ export default function PatientDashboard() {
   ]
 
   const trendData = recoveryHistory.length >= 2
-    ? recoveryHistory.slice(0, 10).reverse().map((c, idx) => ({
+    ? recoveryHistory.slice(-10).map((c, idx) => ({
         day: `Day ${idx + 1}`,
         score: Math.round(c.recovery_score || 80),
       }))
@@ -171,7 +172,7 @@ export default function PatientDashboard() {
           </Card>
 
           {/* Recovery Timeline */}
-          <RecoveryTimeline />
+          <RecoveryTimeline data={recoveryHistory} />
 
           {/* Recovery Progress Chart */}
           <Card>
@@ -256,8 +257,6 @@ export default function PatientDashboard() {
               </div>
             </CardBody>
           </Card>
-
-          <DisclaimerNote compact />
         </div>
       </div>
     </div>

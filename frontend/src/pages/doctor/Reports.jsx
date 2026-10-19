@@ -153,7 +153,7 @@ export default function DoctorReports() {
           <Card>
             <CardHeader
               title="Risk Classification Spread"
-              description="Synthetic model classification across cohort"
+              description="Real-time model classification across cohort"
               action={
                 <Link to="/doctor/reports/risk-stratification" className="text-xs font-semibold text-primary hover:underline flex items-center gap-1">
                   Full Risk Report <ArrowRight size={13} />

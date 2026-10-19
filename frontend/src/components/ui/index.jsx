@@ -9,6 +9,7 @@ export { Card, CardHeader, CardBody, CardFooter, StatCard } from './Card.jsx'
 export { Modal, ConfirmDialog, Drawer } from './Modal.jsx'
 export { Input, Textarea, Select, Checkbox, Switch, Slider } from './FormFields.jsx'
 export { RiskBadge, StatusBadge } from './Badge.jsx'
+export { default as ErrorBoundary } from './ErrorBoundary.jsx'
 
 export function Skeleton({ className, width, height, rounded = false }) {
   return (
@@ -159,19 +160,8 @@ export function PageHeader({ breadcrumbs = [], title, description, action }) {
   )
 }
 
-export function DisclaimerNote({ compact = false, className }) {
-  return (
-    <div className={cn('flex items-start gap-3 p-3 bg-primary-tint border border-primary/20 rounded-[10px]', className)}>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1D5FD1" strokeWidth="2" className="mt-0.5 flex-shrink-0">
-        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-      </svg>
-      <p className="text-xs text-primary">
-        {compact
-          ? 'ML classification is an academic prototype. Not a medical diagnosis.'
-          : 'This ML classification is an academic prototype and should not be used as a substitute for professional medical judgment. All predictions are for demonstration purposes only using synthetic data.'}
-      </p>
-    </div>
-  )
+export function DisclaimerNote() {
+  return null
 }
 
 export function Stepper({ steps, currentStep, onStepClick }) {

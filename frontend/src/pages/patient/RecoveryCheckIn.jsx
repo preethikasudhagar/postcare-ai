@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import api from '../../services/api'
-import { PageHeader, Card, CardHeader, CardBody, Stepper, DisclaimerNote } from '../../components/ui/index.jsx'
+import { PageHeader, Card, CardHeader, CardBody, Stepper } from '../../components/ui/index.jsx'
 import { Slider } from '../../components/ui/FormFields.jsx'
 import { RiskBadge } from '../../components/ui/Badge.jsx'
 import RecoveryRing from '../../components/domain/RecoveryRing.jsx'
@@ -350,7 +349,7 @@ export default function RecoveryCheckIn() {
                   </div>
 
                   <div className="p-3 bg-surface-muted rounded-[8px] text-xs space-y-1.5 border border-border">
-                    <p className="font-semibold text-text">Model Confidence – Academic Prototype: <span className="text-primary font-bold">{prediction?.confidence}</span></p>
+                    <p className="font-semibold text-text">Model Confidence: <span className="text-primary font-bold">{prediction?.confidence}</span></p>
                     <p className="text-text-secondary">
                       {prediction?.risk === 'low'
                         ? 'Recovery parameters indicate steady, expected progress. Continue with your scheduled medication and activity restrictions.'
@@ -378,8 +377,6 @@ export default function RecoveryCheckIn() {
               </div>
             </CardBody>
           </Card>
-
-          <DisclaimerNote />
         </div>
       )}
     </div>

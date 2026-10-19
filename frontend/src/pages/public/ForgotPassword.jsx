@@ -36,9 +36,6 @@ export default function ForgotPassword() {
           <p className="text-xs text-text-secondary leading-relaxed">
             If an account exists for <span className="font-semibold text-text">{email}</span>, a password reset link has been dispatched.
           </p>
-          <div className="p-3 bg-surface-muted border border-border rounded-lg text-[11px] text-text-muted">
-            Academic Prototype: Authentication tokens are pre-seeded in the database for instant testing.
-          </div>
           <Link
             to="/login"
             className="inline-flex items-center justify-center gap-2 w-full h-11 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary-hover transition-colors shadow-xs"

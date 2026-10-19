@@ -21,8 +21,11 @@ def api_root(request):
             'ml_engine': '/api/ml/ [predict-risk, evaluation]',
             'admin': '/admin/',
         },
-        'documentation': 'Academic Healthcare Decision-Support Platform'
+        'documentation': 'Clinical Decision-Support Platform'
     })
+
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', api_root, name='api_index'),
@@ -32,6 +35,7 @@ urlpatterns = [
         path('', account_views.AdminUserListCreateView.as_view(), name='admin_user_list_create'),
         path('<int:pk>/', account_views.AdminUserDetailView.as_view(), name='admin_user_detail'),
     ])),
+    path('api/admin/patients/link/', __import__('apps.patients.views', fromlist=['PatientLinkAccountView']).PatientLinkAccountView.as_view(), name='admin_patient_link'),
     path('api/auth/', include('apps.accounts.urls')),
     path('api/patients/', include('apps.patients.urls')),
     path('api/discharge-plans/', include('apps.discharge.urls')),
@@ -43,3 +47,7 @@ urlpatterns = [
     path('api/reports/', include('apps.reports.urls')),
     path('api/ml/', include('apps.ml_engine.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

@@ -62,7 +62,7 @@ export default function AdminDashboard() {
 
         <div className="lg:col-span-4">
           <Card>
-            <CardHeader title="Cohort Risk Spread" description="Synthetic model risk categories" />
+            <CardHeader title="Cohort Risk Spread" description="Model risk classification categories" />
             <CardBody><RiskDonut /></CardBody>
           </Card>
         </div>

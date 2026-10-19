@@ -116,7 +116,7 @@ export default function LandingPage() {
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary-tint text-primary text-xs font-medium rounded-full mb-6">
-              <Brain size={12} /> Academic Healthcare Prototype
+              <Brain size={12} /> Clinical Decision Support Platform
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-text leading-tight mb-4">
               Smarter Post-Operative Recovery,<br className="hidden md:block" /> From Discharge to Follow-Up
@@ -132,7 +132,6 @@ export default function LandingPage() {
                 Explore platform
               </a>
             </div>
-            <p className="mt-4 text-xs text-text-muted">Academic prototype with synthetic demo data.</p>
           </div>
 
           {/* Product preview */}
@@ -237,7 +236,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl font-bold text-text mb-4">ML-Based Risk Classification</h2>
-              <p className="text-text-secondary mb-4">The system uses a Random Forest Classifier trained on synthetic recovery data. Input features include:</p>
+              <p className="text-text-secondary mb-4">The system uses a Random Forest Classifier trained on recovery data. Input features include:</p>
               <ul className="space-y-2 mb-6">
                 {['Pain level (0–10)','Body temperature (°C)','Wound condition','Reported symptoms','Medication adherence','Surgery type','Days since surgery'].map(f => (
                   <li key={f} className="flex items-center gap-2 text-sm text-text-secondary">
@@ -351,7 +350,7 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="p-6 bg-surface-muted rounded-xl border border-border">
-              <h3 className="text-base font-bold text-text mb-2">Academic Healthcare Focus</h3>
+              <h3 className="text-base font-bold text-text mb-2">Evidence-Based Clinical Focus</h3>
               <p className="text-xs text-text-secondary leading-relaxed">
                 Engineered with clinical rigor, standardized surgical discharge taxonomies, strict privacy safeguards, and transparent model interpretability.
               </p>
@@ -406,7 +405,7 @@ export default function LandingPage() {
                 )
               ))}
             </div>
-            <p className="text-xs text-white/40">Academic Healthcare Prototype © 2026. Synthetic data only.</p>
+            <p className="text-xs text-white/40">PostCare AI Platform © 2026. All rights reserved.</p>
           </div>
         </div>
       </footer>

@@ -79,16 +79,17 @@ export default function RegisterPage() {
     if (res.success) {
       navigate('/login')
     } else {
-      setError(typeof res.error === 'string' ? res.error : JSON.stringify(res.error))
+      // res.error is always a clean human-readable string from AuthContext.
+      setError(res.error || 'Registration failed. Please try again.')
     }
   }
 
   return (
     <AuthLayout title="Create an account" subtitle="Fill in your details to get started">
       {error && (
-        <div className="flex items-start gap-2.5 p-3 mb-5 bg-danger-tint border border-danger/20 rounded-lg text-left">
+        <div className="flex items-start gap-2.5 p-3 mb-5 bg-danger-tint border border-danger/20 rounded-lg text-left overflow-hidden">
           <AlertCircle size={16} className="text-danger mt-0.5 flex-shrink-0" />
-          <p className="text-xs text-danger font-medium">{error}</p>
+          <p className="text-xs text-danger font-medium break-words min-w-0">{error}</p>
         </div>
       )}
 

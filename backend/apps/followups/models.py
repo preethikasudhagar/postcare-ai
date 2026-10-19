@@ -6,7 +6,9 @@ class FollowUp(models.Model):
         ('upcoming', 'Upcoming'),
         ('completed', 'Completed'),
         ('missed', 'Missed'),
-        ('rescheduled', 'Rescheduled')
+        ('rescheduled', 'Rescheduled'),
+        ('reschedule_requested', 'Reschedule Requested'),
+        ('cancelled', 'Cancelled'),
     ]
 
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='follow_ups')
@@ -15,8 +17,12 @@ class FollowUp(models.Model):
     appointment_date = models.DateField()
     appointment_time = models.TimeField()
     purpose = models.TextField()
-    status = models.CharField(max_length=20, choices=STATUS, default='upcoming')
+    status = models.CharField(max_length=25, choices=STATUS, default='upcoming')
     notes = models.TextField(blank=True)
+    reschedule_requested = models.BooleanField(default=False)
+    reschedule_date = models.DateField(null=True, blank=True)
+    reschedule_time = models.TimeField(null=True, blank=True)
+    reschedule_reason = models.TextField(blank=True, default='')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

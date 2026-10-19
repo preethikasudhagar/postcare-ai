@@ -1,5 +1,4 @@
-import React from 'react'
-import { PageHeader, Card, CardHeader, CardBody, DisclaimerNote } from '../../components/ui/index.jsx'
+import { PageHeader, Card, CardHeader, CardBody } from '../../components/ui/index.jsx'
 import { Server, Database, Brain, Bell, Shield, Network, ArrowDown, Cpu, Layers } from 'lucide-react'
 
 export default function Architecture() {
@@ -103,8 +102,6 @@ export default function Architecture() {
           </div>
         </CardBody>
       </Card>
-
-      <DisclaimerNote />
     </div>
   )
 }

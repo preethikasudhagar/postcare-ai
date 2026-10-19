@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { PageHeader, Card, CardHeader, CardBody, StatCard, DisclaimerNote } from '../../components/ui/index.jsx'
+import { PageHeader, Card, CardHeader, CardBody, StatCard } from '../../components/ui/index.jsx'
 import { RiskBadge, StatusBadge } from '../../components/ui/Badge.jsx'
 import { Users, AlertTriangle, CheckSquare, Clock, Send, ShieldAlert } from 'lucide-react'
 
@@ -132,8 +131,6 @@ export default function NurseDashboard() {
           </div>
         </CardBody>
       </Card>
-
-      <DisclaimerNote />
     </div>
   )
 }

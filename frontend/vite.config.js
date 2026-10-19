@@ -8,12 +8,20 @@ export default defineConfig({
     alias: { '@': path.resolve(__dirname, './src') },
   },
   server: {
-    host: true,
+    host: '0.0.0.0',
     port: 5173,
+    strictPort: false,
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:8000',
         changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path,
+      },
+      '/media': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+        secure: false,
       },
     },
   },

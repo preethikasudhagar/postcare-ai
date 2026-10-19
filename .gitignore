@@ -29,9 +29,11 @@ local_settings.py
 .env.local
 .env.production
 
-# ML models
-ml/model.joblib
-backend/ml_models/model.joblib
+# ML models & datasets
+*.joblib
+ml/dataset/
+backend/ml_models/
+
 
 # Node / React
 node_modules/

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import api from '../../services/api'
-import { PageHeader, Card, CardHeader, CardBody, StatCard, DisclaimerNote } from '../../components/ui/index.jsx'
+import { PageHeader, Card, CardHeader, CardBody, StatCard } from '../../components/ui/index.jsx'
 import { RiskBadge, StatusBadge } from '../../components/ui/Badge.jsx'
 import RiskDonut from '../../charts/RiskDonut.jsx'
 import LineTrend from '../../charts/LineTrend.jsx'
@@ -413,8 +412,6 @@ export default function DoctorDashboard() {
           </Card>
         </div>
       </div>
-
-      <DisclaimerNote />
     </div>
   )
 }
