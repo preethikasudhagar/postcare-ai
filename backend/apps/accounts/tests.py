@@ -190,3 +190,51 @@ class AccountsAuthenticationAndPermissionTests(TestCase):
         self.assertTrue(user.is_staff)
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.check_password('CliAdminPassword123!'))
+
+    def test_auto_bootstrap_admin_creates_new_user(self):
+        """auto_bootstrap_admin creates a new administrator when given credentials."""
+        from apps.accounts.bootstrap import auto_bootstrap_admin
+        result = auto_bootstrap_admin(
+            email='auto_boot_admin@postcare.test',
+            password='AutoBootPassword123!',
+            name='Auto Admin'
+        )
+        self.assertEqual(result['status'], 'created')
+        user = User.objects.get(email='auto_boot_admin@postcare.test')
+        self.assertEqual(user.role, 'admin')
+        self.assertTrue(user.is_staff)
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.check_password('AutoBootPassword123!'))
+
+    def test_auto_bootstrap_admin_promotes_existing_user(self):
+        """auto_bootstrap_admin promotes an existing user without breaking their password if none given."""
+        from apps.accounts.bootstrap import auto_bootstrap_admin
+        # self.patient_user is 'patient'
+        result = auto_bootstrap_admin(email=self.patient_user.email)
+        self.assertEqual(result['status'], 'promoted')
+        self.patient_user.refresh_from_db()
+        self.assertEqual(self.patient_user.role, 'admin')
+        self.assertTrue(self.patient_user.is_staff)
+        self.assertTrue(self.patient_user.is_superuser)
+        # Original password remains valid
+        self.assertTrue(self.patient_user.check_password('PatientPassword123!'))
+
+    def test_auto_bootstrap_admin_skips_when_no_email(self):
+        """auto_bootstrap_admin skips gracefully when no email is supplied."""
+        from apps.accounts.bootstrap import auto_bootstrap_admin
+        result = auto_bootstrap_admin(email='', password='')
+        self.assertEqual(result['status'], 'skipped')
+
+    def test_bootstrap_admin_management_command(self):
+        """The bootstrap_admin management command successfully provisions an admin."""
+        call_command(
+            'bootstrap_admin',
+            email='cmd_admin@postcare.test',
+            password='CmdPassword123!',
+            name='Cmd Administrator'
+        )
+        user = User.objects.get(email='cmd_admin@postcare.test')
+        self.assertEqual(user.role, 'admin')
+        self.assertTrue(user.is_staff)
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.check_password('CmdPassword123!'))

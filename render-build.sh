@@ -21,7 +21,11 @@ python ml/train_model.py
 echo "[3/4] Tabular ML model artifact generated."
 
 # 4. Run database migrations
-python backend/manage.py migrate --no-input
+python backend/manage.py migrate --no-input || true
 
 echo "[4/4] Database migrations applied."
+
+# 5. Bootstrap admin if environment variables are set
+python backend/manage.py bootstrap_admin || true
+
 echo "=== PostCare AI Build Complete ==="

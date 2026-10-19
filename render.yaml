@@ -4,7 +4,7 @@ services:
     runtime: python
     plan: free
     buildCommand: ./render-build.sh
-    startCommand: gunicorn --chdir backend config.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    startCommand: python backend/manage.py migrate --no-input && python backend/manage.py bootstrap_admin && gunicorn --chdir backend config.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
     healthCheckPath: /api/health/
     envVars:
       - key: PYTHON_VERSION
