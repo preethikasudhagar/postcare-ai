@@ -8,6 +8,7 @@ const AppShell = lazy(() => import('./layouts/AppShell'))
 // Public pages
 const LandingPage    = lazy(() => import('./pages/public/LandingPage'))
 const LoginPage      = lazy(() => import('./pages/public/LoginPage'))
+const AdminLoginPage = lazy(() => import('./pages/public/AdminLoginPage'))
 const RegisterPage   = lazy(() => import('./pages/public/RegisterPage'))
 const ForgotPassword = lazy(() => import('./pages/public/ForgotPassword'))
 const ResetPassword  = lazy(() => import('./pages/public/ResetPassword'))
@@ -93,6 +94,7 @@ export default function App() {
         {/* Public */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />

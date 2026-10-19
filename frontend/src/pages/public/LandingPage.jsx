@@ -384,7 +384,9 @@ export default function LandingPage() {
                 { label: 'How It Works', href: '#how-it-works' },
                 { label: 'About', href: '#about' },
                 { label: 'Login', href: '/login' },
+                { label: 'Admin Portal', href: '/admin/login' },
               ].map(l => (
+
                 l.href.startsWith('#') ? (
                   <a
                     key={l.label}

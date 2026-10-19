@@ -120,8 +120,29 @@ export default function LoginPage() {
         </button>
       </form>
 
+      {/* Dedicated Administrator Portal Entry */}
+      <div className="mt-4 p-3 bg-slate-50 border border-slate-200/80 rounded-lg flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-md bg-danger-tint border border-danger/20 flex items-center justify-center text-danger flex-shrink-0">
+            <ShieldCheck size={16} />
+          </div>
+          <div className="text-left">
+            <p className="text-xs font-semibold text-text leading-tight">System Administrator?</p>
+            <p className="text-[11px] text-text-muted leading-tight">Clinical IT & governance portal</p>
+          </div>
+        </div>
+        <Link
+          to="/admin/login"
+          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-white hover:bg-slate-100 text-text border border-border-strong rounded-md transition-all shadow-2xs hover:border-primary hover:text-primary"
+        >
+          <span>Admin Sign In</span>
+          <span aria-hidden="true">&rarr;</span>
+        </Link>
+      </div>
+
       {/* Demo Accounts Section */}
-      <div className="mt-6 pt-5 border-t border-border">
+      <div className="mt-5 pt-4 border-t border-border">
+
         <p className="text-xs font-semibold text-text-muted mb-2.5 text-center">
           Quick Demo Accounts
         </p>

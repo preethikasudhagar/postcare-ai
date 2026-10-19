@@ -6,7 +6,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from .models import User
-from .serializers import UserSerializer, RegisterSerializer
+from .serializers import UserSerializer, RegisterSerializer, AdminUserCreateSerializer
+from .permissions import IsAdmin
 
 
 class RegisterView(APIView):
@@ -199,7 +200,7 @@ class MeView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AdminUserListCreateView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def get(self, request):
         users = User.objects.all().order_by('-date_joined')
@@ -219,14 +220,15 @@ class AdminUserListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
+        serializer = AdminUserCreateSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AdminUserDetailView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin]
+
 
     def get_object(self, pk):
         try:

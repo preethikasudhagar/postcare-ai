@@ -30,18 +30,33 @@ class UserSerializer(serializers.ModelSerializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    username = serializers.CharField(required=False, allow_blank=True)
+
     class Meta:
         model = User
         fields = ['id', 'email', 'username', 'first_name', 'last_name', 'password', 'role', 'phone']
 
+    def validate_role(self, value):
+        role = (value or '').strip().lower()
+        if role == 'admin':
+            raise serializers.ValidationError('Public self-registration as an Administrator is strictly prohibited.')
+        allowed_roles = ['patient', 'doctor', 'nurse', 'caregiver']
+        if role not in allowed_roles:
+            raise serializers.ValidationError(f"Invalid registration role '{value}'. Permitted roles: {', '.join(allowed_roles)}.")
+        return role
+
     def create(self, validated_data):
+        role = validated_data.get('role', 'patient')
+        if role == 'admin':
+            raise serializers.ValidationError({'role': 'Public self-registration as an Administrator is strictly prohibited.'})
+
         user = User.objects.create_user(
             email=validated_data['email'],
             username=validated_data.get('username') or validated_data['email'],
             password=validated_data['password'],
             first_name=validated_data.get('first_name', ''),
             last_name=validated_data.get('last_name', ''),
-            role=validated_data.get('role', 'patient'),
+            role=role,
             phone=validated_data.get('phone', '')
         )
         if user.role == 'patient':
@@ -57,3 +72,45 @@ class RegisterSerializer(serializers.ModelSerializer):
                 discharge_date=timezone.now().date(),
             )
         return user
+
+
+class AdminUserCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializer used exclusively by authorized administrators to provision
+    any user role (including admin, doctor, nurse, patient, and caregiver).
+    """
+    password = serializers.CharField(write_only=True)
+    username = serializers.CharField(required=False, allow_blank=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'username', 'first_name', 'last_name', 'password', 'role', 'phone']
+
+
+    def create(self, validated_data):
+        role = validated_data.get('role', 'patient')
+        is_staff = role == 'admin'
+        user = User.objects.create_user(
+            email=validated_data['email'],
+            username=validated_data.get('username') or validated_data['email'],
+            password=validated_data['password'],
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', ''),
+            role=role,
+            phone=validated_data.get('phone', ''),
+            is_staff=is_staff
+        )
+        if user.role == 'patient':
+            from apps.patients.models import Patient
+            from django.utils import timezone
+            Patient.objects.create(
+                user=user,
+                patient_id=f"PAT-{user.id:04d}",
+                gender='O',
+                blood_group='O+',
+                surgery_type='General Post-Operative Recovery',
+                surgery_date=timezone.now().date(),
+                discharge_date=timezone.now().date(),
+            )
+        return user
+

@@ -21,5 +21,14 @@ class User(AbstractUser):
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}".strip() or self.email
 
+    def save(self, *args, **kwargs):
+        # Automatically align admin role with Django staff privileges
+        if (self.is_staff or self.is_superuser) and self.role == 'patient':
+            self.role = 'admin'
+        if self.role == 'admin' and not self.is_staff:
+            self.is_staff = True
+        super().save(*args, **kwargs)
+
     class Meta:
         db_table = 'users'
+
