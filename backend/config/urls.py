@@ -26,10 +26,14 @@ def api_root(request):
 
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.static import serve
+from django.urls import re_path
 
 urlpatterns = [
     path('', api_root, name='api_index'),
+    path('health/', api_root, name='health'),
     path('api/', api_root, name='api_root'),
+    path('api/health/', api_root, name='api_health'),
     path('admin/', admin.site.urls),
     path('api/admin/users/', include([
         path('', account_views.AdminUserListCreateView.as_view(), name='admin_user_list_create'),
@@ -48,6 +52,8 @@ urlpatterns = [
     path('api/ml/', include('apps.ml_engine.urls')),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Media files serving (works in dev and as a lightweight fallback in production)
+urlpatterns += [
+    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+]
 

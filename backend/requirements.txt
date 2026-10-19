@@ -4,13 +4,12 @@ djangorestframework-simplejwt==5.3.1
 django-cors-headers==4.4.0
 psycopg2-binary==2.9.9
 python-dotenv==1.0.1
+dj-database-url==2.2.0
 scikit-learn==1.5.2
 pandas==2.2.3
 numpy==1.26.4
 joblib==1.4.2
 Pillow==10.4.0
-celery==5.4.0
-redis==5.1.0
 gunicorn==23.0.0
 whitenoise==6.7.0
 django-filter==24.3

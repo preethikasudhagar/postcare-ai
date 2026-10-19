@@ -26,7 +26,7 @@ function isTokenExpired(token) {
 // ─── Helper: flatten backend error responses into a single readable string ────
 function extractErrorMessage(err, fallback = 'Something went wrong. Please try again.') {
   if (!err.response) {
-    return 'Cannot connect to the server. Make sure the backend is running on port 8000.'
+    return 'Cannot connect to the server. Please check your network connection and try again.'
   }
   const data = err.response.data
   if (!data) return fallback

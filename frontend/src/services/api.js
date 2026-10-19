@@ -1,5 +1,14 @@
 import axios from 'axios'
 
+// ─── API Base URL ─────────────────────────────────────────────────────────────
+// In development: Vite proxy forwards `/api` → `http://127.0.0.1:8000/api`
+// In production (Vercel): VITE_API_BASE_URL is the full Render backend URL
+//   e.g.  https://postcare-ai-backend.onrender.com
+// The env var must NOT have a trailing slash.
+const BASE_URL = import.meta.env.VITE_API_BASE_URL
+  ? `${import.meta.env.VITE_API_BASE_URL}/api`
+  : '/api'
+
 // ─── Public endpoints that must NEVER receive an Authorization header ─────────
 // Sending a stale/expired token to these endpoints causes DRF's JWTAuthentication
 // to reject the request with 401 BEFORE the view logic even runs.
@@ -17,7 +26,7 @@ const isPublicEndpoint = (url = '') =>
 
 // ─── Axios instance ────────────────────────────────────────────────────────────
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: BASE_URL,
   headers: { 'Content-Type': 'application/json' },
 })
 
@@ -111,7 +120,8 @@ api.interceptors.response.use(
 
       try {
         // Use a plain axios call (not the intercepted `api`) to avoid loops.
-        const res = await axios.post('/api/auth/refresh/', { refresh: refreshToken })
+        const refreshURL = BASE_URL.replace(/\/api$/, '') + '/api/auth/refresh/'
+        const res = await axios.post(refreshURL, { refresh: refreshToken })
         const newAccess = res.data.access
         localStorage.setItem('postcare_access', newAccess)
         // If the server also rotates the refresh token, persist it.
