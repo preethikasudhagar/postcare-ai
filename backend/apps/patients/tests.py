@@ -369,3 +369,165 @@ class PatientRecoveryHistoryByUHIDTests(TestCase):
         for item in res.data:
             self.assertTrue(expected_fields.issubset(set(item.keys())),
                             f"Missing fields: {expected_fields - set(item.keys())}")
+
+
+class AdminFacultyAndDepartmentManagementTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+        self.admin = User.objects.create_user(
+            email='superadmin@postcare.test',
+            username='superadmin@postcare.test',
+            password='TestPassword123!',
+            role='admin',
+            first_name='Super',
+            last_name='Admin'
+        )
+
+        self.doctor_user = User.objects.create_user(
+            email='regular_doc@postcare.test',
+            username='regular_doc@postcare.test',
+            password='TestPassword123!',
+            role='doctor',
+            first_name='Regular',
+            last_name='Doctor'
+        )
+
+        self.patient_user = User.objects.create_user(
+            email='regular_pat@postcare.test',
+            username='regular_pat@postcare.test',
+            password='TestPassword123!',
+            role='patient',
+            first_name='Regular',
+            last_name='Patient'
+        )
+
+        from apps.patients.models import Department
+        self.dept = Department.objects.create(name='Cardiology', description='Heart care')
+
+    def test_admin_can_create_department(self):
+        self.client.force_authenticate(user=self.admin)
+        res = self.client.post('/api/patients/departments/', {
+            'name': 'Neurology & Spine',
+            'description': 'Advanced neurological surgery'
+        }, format='json')
+        self.assertEqual(res.status_code, 201)
+        self.assertEqual(res.data['name'], 'Neurology & Spine')
+        from apps.patients.models import Department
+        self.assertTrue(Department.objects.filter(name='Neurology & Spine').exists())
+
+    def test_duplicate_department_name_rejected(self):
+        self.client.force_authenticate(user=self.admin)
+        res = self.client.post('/api/patients/departments/', {
+            'name': 'Cardiology',
+            'description': 'Duplicate'
+        }, format='json')
+        self.assertEqual(res.status_code, 400)
+        self.assertIn('name', res.data)
+
+    def test_non_admin_cannot_create_department(self):
+        self.client.force_authenticate(user=self.doctor_user)
+        res = self.client.post('/api/patients/departments/', {'name': 'Unauthorized'}, format='json')
+        self.assertEqual(res.status_code, 403)
+
+    def test_admin_can_create_doctor(self):
+        self.client.force_authenticate(user=self.admin)
+        res = self.client.post('/api/patients/doctors/', {
+            'first_name': 'Sanjay',
+            'last_name': 'Kulkarni',
+            'email': 'dr.sanjay@postcare.test',
+            'specialization': 'Neurosurgery & Spine',
+            'department': self.dept.id,
+            'license_number': 'MCI-382910-B',
+            'phone': '+91 98765 43210'
+        }, format='json')
+        self.assertEqual(res.status_code, 201)
+        self.assertEqual(res.data['full_name'], 'Sanjay Kulkarni')
+        self.assertEqual(res.data['specialization'], 'Neurosurgery & Spine')
+        self.assertEqual(res.data['department_name'], 'Cardiology')
+
+        from apps.patients.models import Doctor
+        doc = Doctor.objects.get(user__email='dr.sanjay@postcare.test')
+        self.assertEqual(doc.specialization, 'Neurosurgery & Spine')
+        self.assertEqual(doc.user.role, 'doctor')
+
+    def test_duplicate_doctor_email_rejected(self):
+        self.client.force_authenticate(user=self.admin)
+        # Create first doctor
+        self.client.post('/api/patients/doctors/', {
+            'first_name': 'First',
+            'last_name': 'Doctor',
+            'email': 'duplicate.doc@postcare.test',
+            'specialization': 'Orthopedics'
+        }, format='json')
+
+        # Attempt to create second with same email
+        res = self.client.post('/api/patients/doctors/', {
+            'first_name': 'Second',
+            'last_name': 'Doctor',
+            'email': 'duplicate.doc@postcare.test',
+            'specialization': 'Cardiology'
+        }, format='json')
+        self.assertEqual(res.status_code, 400)
+        self.assertIn('email', res.data)
+
+    def test_non_admin_cannot_create_doctor(self):
+        self.client.force_authenticate(user=self.doctor_user)
+        res = self.client.post('/api/patients/doctors/', {
+            'first_name': 'Hacker',
+            'last_name': 'Doc',
+            'email': 'hacker@postcare.test'
+        }, format='json')
+        self.assertEqual(res.status_code, 403)
+
+    def test_admin_can_update_doctor(self):
+        self.client.force_authenticate(user=self.admin)
+        create_res = self.client.post('/api/patients/doctors/', {
+            'first_name': 'Anand',
+            'last_name': 'Deshmukh',
+            'email': 'anand.doc@postcare.test',
+            'specialization': 'Cardiothoracic Surgery'
+        }, format='json')
+        doc_id = create_res.data['id']
+
+        patch_res = self.client.patch(f'/api/patients/doctors/{doc_id}/', {
+            'specialization': 'Senior Cardiac Surgeon',
+            'license_number': 'MCI-999999-Z'
+        }, format='json')
+        self.assertEqual(patch_res.status_code, 200)
+        self.assertEqual(patch_res.data['specialization'], 'Senior Cardiac Surgeon')
+        self.assertEqual(patch_res.data['license_number'], 'MCI-999999-Z')
+
+    def test_admin_can_create_nurse(self):
+        self.client.force_authenticate(user=self.admin)
+        res = self.client.post('/api/patients/nurses/', {
+            'first_name': 'Kavita',
+            'last_name': 'Pillai',
+            'email': 'nurse.kavita@postcare.test',
+            'department': self.dept.id,
+            'license_number': 'KNC-49201-C',
+            'phone': '+91 91234 56789'
+        }, format='json')
+        self.assertEqual(res.status_code, 201)
+        self.assertEqual(res.data['full_name'], 'Kavita Pillai')
+        self.assertEqual(res.data['license_number'], 'KNC-49201-C')
+
+        from apps.patients.models import Nurse
+        nurse = Nurse.objects.get(user__email='nurse.kavita@postcare.test')
+        self.assertEqual(nurse.user.role, 'nurse')
+
+    def test_non_admin_cannot_create_nurse(self):
+        self.client.force_authenticate(user=self.patient_user)
+        res = self.client.post('/api/patients/nurses/', {
+            'first_name': 'Test',
+            'last_name': 'Nurse',
+            'email': 'testnurse@postcare.test'
+        }, format='json')
+        self.assertEqual(res.status_code, 403)
+
+    def test_unauthenticated_request_rejected(self):
+        res_doc = self.client.post('/api/patients/doctors/', {'first_name': 'Anon'}, format='json')
+        self.assertEqual(res_doc.status_code, 401)
+        res_dept = self.client.post('/api/patients/departments/', {'name': 'Anon'}, format='json')
+        self.assertEqual(res_dept.status_code, 401)
+

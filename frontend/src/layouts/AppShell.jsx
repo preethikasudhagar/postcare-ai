@@ -88,10 +88,6 @@ function getNavItems(role) {
         { to: '/admin/departments', icon: Shield, label: 'Departments' },
         { to: '/admin/settings', icon: Settings, label: 'Settings' },
       ]},
-      { section: 'AI & System', items: [
-        { to: '/admin/ml-evaluation', icon: Brain, label: 'ML Evaluation' },
-        { to: '/admin/architecture', icon: Network, label: 'Architecture' },
-      ]},
     ],
     caregiver: [
       { section: 'My Dashboard', items: [

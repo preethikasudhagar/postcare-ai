@@ -39,6 +39,18 @@ urlpatterns = [
         path('', account_views.AdminUserListCreateView.as_view(), name='admin_user_list_create'),
         path('<int:pk>/', account_views.AdminUserDetailView.as_view(), name='admin_user_detail'),
     ])),
+    path('api/admin/doctors/', include([
+        path('', __import__('apps.patients.views', fromlist=['DoctorListCreateView']).DoctorListCreateView.as_view(), name='admin_doctor_list_create'),
+        path('<int:pk>/', __import__('apps.patients.views', fromlist=['DoctorDetailView']).DoctorDetailView.as_view(), name='admin_doctor_detail'),
+    ])),
+    path('api/admin/nurses/', include([
+        path('', __import__('apps.patients.views', fromlist=['NurseListCreateView']).NurseListCreateView.as_view(), name='admin_nurse_list_create'),
+        path('<int:pk>/', __import__('apps.patients.views', fromlist=['NurseDetailView']).NurseDetailView.as_view(), name='admin_nurse_detail'),
+    ])),
+    path('api/admin/departments/', include([
+        path('', __import__('apps.patients.views', fromlist=['DepartmentListCreateView']).DepartmentListCreateView.as_view(), name='admin_department_list_create'),
+        path('<int:pk>/', __import__('apps.patients.views', fromlist=['DepartmentDetailView']).DepartmentDetailView.as_view(), name='admin_department_detail'),
+    ])),
     path('api/admin/patients/link/', __import__('apps.patients.views', fromlist=['PatientLinkAccountView']).PatientLinkAccountView.as_view(), name='admin_patient_link'),
     path('api/auth/', include('apps.accounts.urls')),
     path('api/patients/', include('apps.patients.urls')),

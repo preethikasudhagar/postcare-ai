@@ -71,6 +71,25 @@ class RegisterSerializer(serializers.ModelSerializer):
                 surgery_date=timezone.now().date(),
                 discharge_date=timezone.now().date(),
             )
+        elif user.role == 'doctor':
+            from apps.patients.models import Doctor
+            import random
+            Doctor.objects.get_or_create(
+                user=user,
+                defaults={
+                    'specialization': 'General Surgery',
+                    'license_number': f"MCI-{random.randint(100000, 999999)}-D"
+                }
+            )
+        elif user.role == 'nurse':
+            from apps.patients.models import Nurse
+            import random
+            Nurse.objects.get_or_create(
+                user=user,
+                defaults={
+                    'license_number': f"KNC-{random.randint(10000, 99999)}-N"
+                }
+            )
         return user
 
 
@@ -111,6 +130,25 @@ class AdminUserCreateSerializer(serializers.ModelSerializer):
                 surgery_type='General Post-Operative Recovery',
                 surgery_date=timezone.now().date(),
                 discharge_date=timezone.now().date(),
+            )
+        elif user.role == 'doctor':
+            from apps.patients.models import Doctor
+            import random
+            Doctor.objects.get_or_create(
+                user=user,
+                defaults={
+                    'specialization': 'General Surgery',
+                    'license_number': f"MCI-{random.randint(100000, 999999)}-D"
+                }
+            )
+        elif user.role == 'nurse':
+            from apps.patients.models import Nurse
+            import random
+            Nurse.objects.get_or_create(
+                user=user,
+                defaults={
+                    'license_number': f"KNC-{random.randint(10000, 99999)}-N"
+                }
             )
         return user
 

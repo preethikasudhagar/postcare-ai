@@ -162,7 +162,16 @@ class RiskStratificationReportView(APIView):
     permission_classes = [IsDoctorOrAdmin]
 
     def get(self, request):
-        predictions = RiskPrediction.objects.all().select_related('patient__user', 'checkin', 'reviewed_by').order_by('-predicted_at', '-id')
+        try:
+            predictions = RiskPrediction.objects.all().select_related(
+                'patient__user', 'checkin', 'reviewed_by__user'
+            ).order_by('-predicted_at', '-id')
+        except Exception:
+            # Fallback ordering if predicted_at has collation or schema discrepancy
+            predictions = RiskPrediction.objects.all().select_related(
+                'patient__user', 'checkin', 'reviewed_by__user'
+            ).order_by('-id')
+
         high_risk_count = predictions.filter(risk_level='high').count()
         medium_risk_count = predictions.filter(risk_level='medium').count()
         low_risk_count = predictions.filter(risk_level='low').count()
@@ -187,11 +196,43 @@ class RiskStratificationReportView(APIView):
                 else:
                     p_name = f"Patient #{p.patient.id}"
 
-            created_str = (
-                p.predicted_at.strftime('%d %b %Y, %I:%M %p')
-                if p.predicted_at
-                else (p.checkin.submitted_at.strftime('%d %b %Y, %I:%M %p') if p.checkin and p.checkin.submitted_at else 'N/A')
-            )
+            created_str = 'N/A'
+            if p.predicted_at:
+                try:
+                    created_str = p.predicted_at.strftime('%d %b %Y, %I:%M %p')
+                except Exception:
+                    created_str = str(p.predicted_at)
+            elif p.checkin and p.checkin.submitted_at:
+                try:
+                    created_str = p.checkin.submitted_at.strftime('%d %b %Y, %I:%M %p')
+                except Exception:
+                    created_str = str(p.checkin.submitted_at)
+
+            # Safely resolve reviewer name (Doctor model has .user, not .get_full_name directly)
+            reviewer_name = None
+            if p.reviewed_by:
+                if getattr(p.reviewed_by, 'user', None):
+                    full_name = p.reviewed_by.user.get_full_name().strip()
+                    reviewer_name = f"Dr. {full_name}" if full_name else (p.reviewed_by.user.username or 'Dr. Assigned')
+                else:
+                    reviewer_name = f"Doctor #{p.reviewed_by.id}"
+
+            # Safely parse confidence
+            conf = None
+            if p.confidence is not None:
+                try:
+                    conf = float(p.confidence)
+                except (ValueError, TypeError):
+                    conf = None
+
+            # Safely handle contributing factors (JSON dict)
+            factors = p.contributing_factors or {}
+            if isinstance(factors, str):
+                import json
+                try:
+                    factors = json.loads(factors)
+                except Exception:
+                    factors = {}
 
             item = {
                 'id': p.id,
@@ -200,12 +241,12 @@ class RiskStratificationReportView(APIView):
                 'uhid': pid,
                 'patient_identifier': pid,
                 'risk_level': p.risk_level,
-                'confidence': float(p.confidence) if p.confidence is not None else None,
-                'contributing_factors': p.contributing_factors or {},
+                'confidence': conf,
+                'contributing_factors': factors,
                 'recommendation_category': p.recommendation_category or '',
                 'doctor_review_notes': p.doctor_review_notes or '',
-                'is_reviewed': p.is_reviewed,
-                'reviewed_by': p.reviewed_by.get_full_name() if p.reviewed_by else None,
+                'is_reviewed': bool(p.is_reviewed),
+                'reviewed_by': reviewer_name,
                 'reviewed_at': p.reviewed_at.strftime('%d %b %Y, %I:%M %p') if p.reviewed_at else None,
                 'created_at': created_str,
             }

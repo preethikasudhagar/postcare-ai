@@ -155,8 +155,8 @@ export default function App() {
           <Route path="/admin/reports/medication-compliance" element={<ProtectedRoute roles={['admin']}><MedicationComplianceReport /></ProtectedRoute>} />
           <Route path="/admin/reports/follow-up-completion" element={<ProtectedRoute roles={['admin']}><FollowUpCompletionReport /></ProtectedRoute>} />
           <Route path="/admin/settings"    element={<ProtectedRoute roles={['admin']}><AdminSettings /></ProtectedRoute>} />
-          <Route path="/admin/ml-evaluation" element={<ProtectedRoute roles={['admin']}><MLEvaluation /></ProtectedRoute>} />
-          <Route path="/admin/architecture"  element={<ProtectedRoute roles={['admin']}><Architecture /></ProtectedRoute>} />
+          <Route path="/admin/ml-evaluation" element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="/admin/architecture"  element={<Navigate to="/admin/dashboard" replace />} />
 
           {/* Caregiver routes */}
           <Route path="/caregiver/dashboard"     element={<ProtectedRoute roles={['caregiver']}><CaregiverDashboard /></ProtectedRoute>} />

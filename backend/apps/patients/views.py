@@ -4,12 +4,14 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 from django.db import transaction
+from django.db.models import Q
 
 from apps.accounts.permissions import IsAdmin
 from apps.accounts.models import User
 from apps.accounts.serializers import UserSerializer
 from .models import Patient, Doctor, Nurse, Caregiver, Department
 from .serializers import PatientSerializer, DoctorSerializer, NurseSerializer, CaregiverSerializer, DepartmentSerializer
+
 
 class PatientListView(generics.ListCreateAPIView):
     serializer_class = PatientSerializer
@@ -25,7 +27,8 @@ class PatientListView(generics.ListCreateAPIView):
             return Patient.objects.filter(id=user.patient_profile.id)
         elif user.role == 'caregiver' and hasattr(user, 'caregiver_profile'):
             return Patient.objects.filter(id=user.caregiver_profile.patient.id)
-        return Patient.objects.all()
+        return Patient.objects.all().order_by('-id')
+
 
 class PatientDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PatientSerializer
@@ -46,20 +49,424 @@ class PatientDetailView(generics.RetrieveUpdateDestroyAPIView):
         self.check_object_permissions(self.request, patient)
         return patient
 
-class DoctorListView(generics.ListAPIView):
-    queryset = Doctor.objects.all()
-    serializer_class = DoctorSerializer
-    permission_classes = [IsAuthenticated]
 
-class NurseListView(generics.ListAPIView):
-    queryset = Nurse.objects.all()
-    serializer_class = NurseSerializer
-    permission_classes = [IsAuthenticated]
+# ── Department Views ──────────────────────────────────────────────────────────
 
-class DepartmentListView(generics.ListAPIView):
-    queryset = Department.objects.all()
-    serializer_class = DepartmentSerializer
-    permission_classes = [IsAuthenticated]
+class DepartmentListCreateView(APIView):
+    """
+    List departments (authenticated users) or create a new department (admin only).
+    """
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [IsAuthenticated(), IsAdmin()]
+        return [IsAuthenticated()]
+
+    def get(self, request):
+        departments = Department.objects.all().order_by('name')
+        search = request.query_params.get('search')
+        if search:
+            departments = departments.filter(
+                Q(name__icontains=search) | Q(description__icontains=search)
+            )
+        serializer = DepartmentSerializer(departments, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        name = (request.data.get('name') or '').strip()
+        description = (request.data.get('description') or '').strip()
+
+        if not name:
+            return Response({'name': ['Department name is required.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        if Department.objects.filter(name__iexact=name).exists():
+            return Response({'name': ['A department with this name already exists.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        dept = Department.objects.create(name=name, description=description)
+        return Response(DepartmentSerializer(dept).data, status=status.HTTP_201_CREATED)
+
+
+class DepartmentDetailView(APIView):
+    """
+    Retrieve, update, or remove a department (admin only for modifications).
+    """
+    def get_permissions(self):
+        if self.request.method in ['PATCH', 'PUT', 'DELETE']:
+            return [IsAuthenticated(), IsAdmin()]
+        return [IsAuthenticated()]
+
+    def get_object(self, pk):
+        try:
+            return Department.objects.get(pk=pk)
+        except Department.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        dept = self.get_object(pk)
+        if not dept:
+            return Response({'detail': 'Department not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(DepartmentSerializer(dept).data)
+
+    def patch(self, request, pk):
+        dept = self.get_object(pk)
+        if not dept:
+            return Response({'detail': 'Department not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        name = request.data.get('name')
+        if name is not None:
+            name = name.strip()
+            if not name:
+                return Response({'name': ['Department name cannot be blank.']}, status=status.HTTP_400_BAD_REQUEST)
+            if Department.objects.filter(name__iexact=name).exclude(pk=pk).exists():
+                return Response({'name': ['A department with this name already exists.']}, status=status.HTTP_400_BAD_REQUEST)
+            dept.name = name
+
+        if 'description' in request.data:
+            dept.description = (request.data.get('description') or '').strip()
+
+        dept.save()
+        return Response(DepartmentSerializer(dept).data)
+
+    def delete(self, request, pk):
+        dept = self.get_object(pk)
+        if not dept:
+            return Response({'detail': 'Department not found.'}, status=status.HTTP_404_NOT_FOUND)
+        dept.delete()
+        return Response({'message': 'Department deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+# ── Doctor Views ──────────────────────────────────────────────────────────────
+
+class DoctorListCreateView(APIView):
+    """
+    List doctors (authenticated users) or provision a new doctor/surgeon (admin only).
+    """
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [IsAuthenticated(), IsAdmin()]
+        return [IsAuthenticated()]
+
+    def get(self, request):
+        doctors = Doctor.objects.select_related('user', 'department').all().order_by('-id')
+        search = request.query_params.get('search')
+        if search:
+            doctors = doctors.filter(
+                Q(user__first_name__icontains=search) |
+                Q(user__last_name__icontains=search) |
+                Q(user__email__icontains=search) |
+                Q(specialization__icontains=search) |
+                Q(license_number__icontains=search) |
+                Q(department__name__icontains=search)
+            )
+        dept_id = request.query_params.get('department')
+        if dept_id and dept_id.isdigit():
+            doctors = doctors.filter(department_id=int(dept_id))
+
+        serializer = DoctorSerializer(doctors, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        first_name = (request.data.get('first_name') or '').strip()
+        last_name = (request.data.get('last_name') or '').strip()
+        email = (request.data.get('email') or '').strip().lower()
+        password = request.data.get('password') or 'Doctor@123'
+        phone = (request.data.get('phone') or '').strip()
+        specialization = (request.data.get('specialization') or 'General Surgery').strip()
+        license_number = (request.data.get('license_number') or '').strip()
+        dept_id = request.data.get('department')
+
+        errors = {}
+        if not first_name:
+            errors['first_name'] = ['First name is required.']
+        if not last_name:
+            errors['last_name'] = ['Last name is required.']
+        if not email:
+            errors['email'] = ['Email address is required.']
+        elif '@' not in email:
+            errors['email'] = ['Please enter a valid email address.']
+
+        if errors:
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # Department resolution
+        department_obj = None
+        if dept_id:
+            try:
+                department_obj = Department.objects.get(pk=dept_id)
+            except Department.DoesNotExist:
+                return Response({'department': ['Selected department does not exist.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check existing user
+        existing_user = User.objects.filter(email=email).first()
+        if existing_user:
+            if hasattr(existing_user, 'doctor_profile'):
+                return Response({'email': ['A doctor profile is already registered with this email address.']}, status=status.HTTP_400_BAD_REQUEST)
+            if existing_user.role != 'doctor':
+                return Response({'email': [f"A user with this email already exists with role '{existing_user.role}'."]}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Generate unique license number if blank
+        if not license_number:
+            import random
+            license_number = f"MCI-{random.randint(100000, 999999)}-D"
+
+        with transaction.atomic():
+            if not existing_user:
+                base_username = email.split('@')[0]
+                username = base_username
+                counter = 1
+                while User.objects.filter(username=username).exists():
+                    username = f"{base_username}{counter}"
+                    counter += 1
+
+                user = User.objects.create_user(
+                    email=email,
+                    username=username,
+                    password=password,
+                    first_name=first_name,
+                    last_name=last_name,
+                    phone=phone,
+                    role='doctor',
+                    is_staff=False
+                )
+            else:
+                user = existing_user
+                user.first_name = first_name
+                user.last_name = last_name
+                if phone:
+                    user.phone = phone
+                user.save()
+
+            doctor = Doctor.objects.create(
+                user=user,
+                department=department_obj,
+                specialization=specialization,
+                license_number=license_number
+            )
+
+        return Response(DoctorSerializer(doctor).data, status=status.HTTP_201_CREATED)
+
+
+class DoctorDetailView(APIView):
+    """
+    Retrieve or update a doctor profile (admin only for updates).
+    """
+    def get_permissions(self):
+        if self.request.method in ['PATCH', 'PUT', 'DELETE']:
+            return [IsAuthenticated(), IsAdmin()]
+        return [IsAuthenticated()]
+
+    def get_object(self, pk):
+        try:
+            return Doctor.objects.select_related('user', 'department').get(pk=pk)
+        except Doctor.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        doctor = self.get_object(pk)
+        if not doctor:
+            return Response({'detail': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(DoctorSerializer(doctor).data)
+
+    def patch(self, request, pk):
+        doctor = self.get_object(pk)
+        if not doctor:
+            return Response({'detail': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        user = doctor.user
+        if 'first_name' in request.data:
+            user.first_name = (request.data.get('first_name') or '').strip()
+        if 'last_name' in request.data:
+            user.last_name = (request.data.get('last_name') or '').strip()
+        if 'phone' in request.data:
+            user.phone = (request.data.get('phone') or '').strip()
+        if 'is_active' in request.data:
+            user.is_active = bool(request.data.get('is_active'))
+        user.save()
+
+        if 'specialization' in request.data:
+            doctor.specialization = (request.data.get('specialization') or '').strip()
+        if 'license_number' in request.data:
+            doctor.license_number = (request.data.get('license_number') or '').strip()
+        if 'department' in request.data:
+            dept_id = request.data.get('department')
+            if dept_id:
+                try:
+                    doctor.department = Department.objects.get(pk=dept_id)
+                except Department.DoesNotExist:
+                    return Response({'department': ['Selected department does not exist.']}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                doctor.department = None
+
+        doctor.save()
+        return Response(DoctorSerializer(doctor).data)
+
+
+# ── Nurse Views ───────────────────────────────────────────────────────────────
+
+class NurseListCreateView(APIView):
+    """
+    List nurses (authenticated users) or provision a new nurse staff (admin only).
+    """
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [IsAuthenticated(), IsAdmin()]
+        return [IsAuthenticated()]
+
+    def get(self, request):
+        nurses = Nurse.objects.select_related('user', 'department').all().order_by('-id')
+        search = request.query_params.get('search')
+        if search:
+            nurses = nurses.filter(
+                Q(user__first_name__icontains=search) |
+                Q(user__last_name__icontains=search) |
+                Q(user__email__icontains=search) |
+                Q(license_number__icontains=search) |
+                Q(department__name__icontains=search)
+            )
+        dept_id = request.query_params.get('department')
+        if dept_id and dept_id.isdigit():
+            nurses = nurses.filter(department_id=int(dept_id))
+
+        serializer = NurseSerializer(nurses, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        first_name = (request.data.get('first_name') or '').strip()
+        last_name = (request.data.get('last_name') or '').strip()
+        email = (request.data.get('email') or '').strip().lower()
+        password = request.data.get('password') or 'Nurse@123'
+        phone = (request.data.get('phone') or '').strip()
+        license_number = (request.data.get('license_number') or '').strip()
+        dept_id = request.data.get('department')
+
+        errors = {}
+        if not first_name:
+            errors['first_name'] = ['First name is required.']
+        if not last_name:
+            errors['last_name'] = ['Last name is required.']
+        if not email:
+            errors['email'] = ['Email address is required.']
+        elif '@' not in email:
+            errors['email'] = ['Please enter a valid email address.']
+
+        if errors:
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # Department resolution
+        department_obj = None
+        if dept_id:
+            try:
+                department_obj = Department.objects.get(pk=dept_id)
+            except Department.DoesNotExist:
+                return Response({'department': ['Selected department does not exist.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check existing user
+        existing_user = User.objects.filter(email=email).first()
+        if existing_user:
+            if hasattr(existing_user, 'nurse_profile'):
+                return Response({'email': ['A nurse profile is already registered with this email address.']}, status=status.HTTP_400_BAD_REQUEST)
+            if existing_user.role != 'nurse':
+                return Response({'email': [f"A user with this email already exists with role '{existing_user.role}'."]}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not license_number:
+            import random
+            license_number = f"KNC-{random.randint(10000, 99999)}-N"
+
+        with transaction.atomic():
+            if not existing_user:
+                base_username = email.split('@')[0]
+                username = base_username
+                counter = 1
+                while User.objects.filter(username=username).exists():
+                    username = f"{base_username}{counter}"
+                    counter += 1
+
+                user = User.objects.create_user(
+                    email=email,
+                    username=username,
+                    password=password,
+                    first_name=first_name,
+                    last_name=last_name,
+                    phone=phone,
+                    role='nurse',
+                    is_staff=False
+                )
+            else:
+                user = existing_user
+                user.first_name = first_name
+                user.last_name = last_name
+                if phone:
+                    user.phone = phone
+                user.save()
+
+            nurse = Nurse.objects.create(
+                user=user,
+                department=department_obj,
+                license_number=license_number
+            )
+
+        return Response(NurseSerializer(nurse).data, status=status.HTTP_201_CREATED)
+
+
+class NurseDetailView(APIView):
+    """
+    Retrieve or update a nurse profile (admin only for updates).
+    """
+    def get_permissions(self):
+        if self.request.method in ['PATCH', 'PUT', 'DELETE']:
+            return [IsAuthenticated(), IsAdmin()]
+        return [IsAuthenticated()]
+
+    def get_object(self, pk):
+        try:
+            return Nurse.objects.select_related('user', 'department').get(pk=pk)
+        except Nurse.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        nurse = self.get_object(pk)
+        if not nurse:
+            return Response({'detail': 'Nurse profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(NurseSerializer(nurse).data)
+
+    def patch(self, request, pk):
+        nurse = self.get_object(pk)
+        if not nurse:
+            return Response({'detail': 'Nurse profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        user = nurse.user
+        if 'first_name' in request.data:
+            user.first_name = (request.data.get('first_name') or '').strip()
+        if 'last_name' in request.data:
+            user.last_name = (request.data.get('last_name') or '').strip()
+        if 'phone' in request.data:
+            user.phone = (request.data.get('phone') or '').strip()
+        if 'is_active' in request.data:
+            user.is_active = bool(request.data.get('is_active'))
+        user.save()
+
+        if 'license_number' in request.data:
+            nurse.license_number = (request.data.get('license_number') or '').strip()
+        if 'department' in request.data:
+            dept_id = request.data.get('department')
+            if dept_id:
+                try:
+                    nurse.department = Department.objects.get(pk=dept_id)
+                except Department.DoesNotExist:
+                    return Response({'department': ['Selected department does not exist.']}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                nurse.department = None
+
+        nurse.save()
+        return Response(NurseSerializer(nurse).data)
+
+
+# Backward compatibility aliases
+DoctorListView = DoctorListCreateView
+NurseListView = NurseListCreateView
+DepartmentListView = DepartmentListCreateView
+
+
+# ── Patient Account Linking ───────────────────────────────────────────────────
 
 class PatientLinkAccountView(APIView):
     """
@@ -95,67 +502,76 @@ class PatientLinkAccountView(APIView):
         except User.DoesNotExist:
             return Response({'error': 'User account not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-        # 1. Determine whether a patient profile ALREADY exists for target user (Req 1 & 3)
+        # 1. Determine whether a patient profile ALREADY exists for target user
         existing_profile = getattr(target_user, 'patient_profile', None)
         if existing_profile:
-            if patient_id and (str(patient_id) == str(existing_profile.id) or str(patient_id) == str(existing_profile.patient_id)):
-                return Response({
-                    'message': f'User {target_user.email} is already linked to patient profile {existing_profile.patient_id}.',
-                    'patient': PatientSerializer(existing_profile).data,
-                    'already_linked': True
-                }, status=status.HTTP_200_OK)
-            return Response({
-                'error': f'User {target_user.email} is already linked to patient profile {existing_profile.patient_id}. Duplicate patient profiles are not permitted.'
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    'error': f"User '{target_user.email}' is already linked to patient record '{existing_profile.patient_id}'."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        # 2. If linking to an existing patient record
-        with transaction.atomic():
-            if patient_id and not create_new:
-                try:
-                    if str(patient_id).isdigit():
-                        patient = Patient.objects.select_related('user').get(id=patient_id)
-                    else:
-                        patient = Patient.objects.select_related('user').get(patient_id=patient_id)
-                except Patient.DoesNotExist:
-                    return Response({'error': 'Patient medical record not found.'}, status=status.HTTP_404_NOT_FOUND)
-
-                if patient.user == target_user:
-                    return Response({
-                        'message': f'User {target_user.email} is already linked to patient record {patient.patient_id}.',
-                        'patient': PatientSerializer(patient).data
-                    }, status=status.HTTP_200_OK)
-
-                old_user = patient.user
-                patient.user = target_user
-                target_user.role = 'patient'
-                target_user.save(update_fields=['role'])
-                patient.save(update_fields=['user'])
-
-                return Response({
-                    'message': f'Successfully linked user {target_user.email} ({target_user.get_full_name()}) to patient record {patient.patient_id}.',
-                    'patient': PatientSerializer(patient).data,
-                    'previous_user_id': old_user.id if old_user else None
-                }, status=status.HTTP_200_OK)
-
-            # 3. If provisioning a new patient record for unlinked user
-            target_user.role = 'patient'
-            target_user.save(update_fields=['role'])
-
+        # 2. Handle 'create_new' mode
+        if create_new:
             generated_uhid = f"PAT-{target_user.id:04d}"
             counter = 1
             while Patient.objects.filter(patient_id=generated_uhid).exists():
                 generated_uhid = f"PAT-{target_user.id:04d}-{counter}"
                 counter += 1
 
-            patient = Patient.objects.create(
-                user=target_user,
-                patient_id=generated_uhid,
-                surgery_type=request.data.get('surgery_type') or 'General Post-Operative Recovery',
-                surgery_date=request.data.get('surgery_date') or timezone.now().date(),
-                discharge_date=request.data.get('discharge_date') or timezone.now().date(),
+            surgery_type = request.data.get('surgery_type') or 'General Post-Operative Recovery'
+
+            with transaction.atomic():
+                new_patient = Patient.objects.create(
+                    user=target_user,
+                    patient_id=generated_uhid,
+                    gender='O',
+                    blood_group='O+',
+                    surgery_type=surgery_type,
+                    surgery_date=timezone.now().date(),
+                    discharge_date=timezone.now().date(),
+                )
+                if target_user.role != 'patient':
+                    target_user.role = 'patient'
+                    target_user.save()
+
+            return Response(
+                {
+                    'message': f"New patient record '{new_patient.patient_id}' successfully created and linked to '{target_user.email}'.",
+                    'patient': PatientSerializer(new_patient).data
+                },
+                status=status.HTTP_201_CREATED
             )
 
-            return Response({
-                'message': f'Successfully created and linked new patient profile {patient.patient_id} for user {target_user.email}.',
-                'patient': PatientSerializer(patient).data
-            }, status=status.HTTP_201_CREATED)
+        # 3. Handle 'existing' mode: Link user to an existing patient record
+        if not patient_id:
+            return Response({'error': 'patient_id is required when linking to an existing record.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            if str(patient_id).isdigit():
+                patient_record = Patient.objects.get(id=patient_id)
+            else:
+                patient_record = Patient.objects.get(patient_id=patient_id)
+        except Patient.DoesNotExist:
+            return Response({'error': 'Target patient record not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if patient_record.user_id == target_user.id:
+            return Response({'message': 'Patient record is already linked to this user.'}, status=status.HTTP_200_OK)
+
+        with transaction.atomic():
+            old_user = patient_record.user
+            patient_record.user = target_user
+            patient_record.save()
+
+            if target_user.role != 'patient':
+                target_user.role = 'patient'
+                target_user.save()
+
+        return Response(
+            {
+                'message': f"Successfully linked user '{target_user.email}' to patient record '{patient_record.patient_id}'.",
+                'patient': PatientSerializer(patient_record).data
+            },
+            status=status.HTTP_200_OK
+        )

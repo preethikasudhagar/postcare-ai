@@ -251,3 +251,52 @@ class ClinicalReportsAPITests(TestCase):
         self.assertEqual(data['upcoming_count'], 1)
         self.assertEqual(data['completion_rate'], '50.0%')
         self.assertEqual(len(data['appointments']), 2)
+
+    def test_risk_stratification_with_doctor_review(self):
+        """
+        Verify Risk Stratification Report correctly handles predictions reviewed by a doctor
+        without throwing an AttributeError or 500 error.
+        """
+        from apps.patients.models import Doctor
+        from django.utils import timezone
+
+        doctor_profile = Doctor.objects.create(
+            user=self.doctor,
+            specialization='Cardiothoracic Surgery',
+            license_number='MCI-998877-D'
+        )
+
+        c = RecoveryCheckIn.objects.create(
+            patient=self.patient,
+            date=date(2026, 10, 3),
+            pain_level=6,
+            temperature=38.4,
+            recovery_score=55.0
+        )
+
+        p = RiskPrediction.objects.create(
+            patient=self.patient,
+            checkin=c,
+            risk_level='high',
+            confidence=0.95,
+            contributing_factors={'Fever': 'High', 'Infection': 'Suspected'},
+            recommendation_category='Emergency Consultation',
+            doctor_review_notes='Patient flagged for urgent wound drainage review.',
+            is_reviewed=True,
+            reviewed_by=doctor_profile,
+            reviewed_at=timezone.now()
+        )
+
+        self.client.force_authenticate(user=self.admin)
+        res = self.client.get('/api/reports/risk-stratification/')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        data = res.json()
+
+        self.assertEqual(data['distribution']['high'], 1)
+        self.assertEqual(len(data['recent_predictions']), 1)
+        pred = data['recent_predictions'][0]
+        self.assertTrue(pred['is_reviewed'])
+        self.assertEqual(pred['reviewed_by'], 'Dr. Ananya Sharma')
+        self.assertEqual(pred['doctor_review_notes'], 'Patient flagged for urgent wound drainage review.')
+        self.assertIsNotNone(pred['reviewed_at'])
+
