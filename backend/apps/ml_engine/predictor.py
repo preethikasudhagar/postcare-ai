@@ -22,7 +22,7 @@ def predict_risk(pain_level, temperature, wound_condition, symptoms, medication_
     model = get_model()
 
     wound_map = {'normal': 0, 'mild_redness': 1, 'swelling': 2, 'discharge': 3, 'severe': 4}
-    med_map = {'all': 0, 'some': 1, 'none': 2}
+    med_map = {'all': 0, 'some': 1, 'none': 2, 'no_meds': 0}
     surgery_map = {'Knee Surgery': 0, 'Hip Replacement': 1, 'Appendectomy': 2, 'Cardiac': 3, 'Spinal': 4, 'Other': 5}
     symptom_count = len([s for s in symptoms if s != 'None of the above']) if isinstance(symptoms, list) else 0
 

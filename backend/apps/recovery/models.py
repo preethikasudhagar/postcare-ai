@@ -13,7 +13,8 @@ class RecoveryCheckIn(models.Model):
     MED_ADHERENCE = [
         ('all', 'Took all prescribed doses'),
         ('some', 'Missed some doses'),
-        ('none', 'Did not take medications')
+        ('none', 'Did not take medications'),
+        ('no_meds', 'No medications prescribed')
     ]
 
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='recovery_checkins')
@@ -39,7 +40,7 @@ class RecoveryCheckIn(models.Model):
             score -= 25
         wound_penalties = {'normal': 0, 'mild_redness': 5, 'swelling': 15, 'discharge': 25, 'severe': 40}
         score -= wound_penalties.get(self.wound_condition, 0)
-        med_penalties = {'all': 0, 'some': 10, 'none': 25}
+        med_penalties = {'all': 0, 'some': 10, 'none': 25, 'no_meds': 0}
         score -= med_penalties.get(self.medication_adherence, 0)
         symptom_count = len([s for s in self.symptoms if s != 'None of the above']) if isinstance(self.symptoms, list) else 0
         score -= symptom_count * 5

@@ -496,3 +496,174 @@ class RecoveryHistoryAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
+class RecoveryCheckInMandatoryValidationTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+        self.patient_user = User.objects.create_user(
+            email='checkin.patient@postcare.test',
+            username='checkin.patient@postcare.test',
+            password='TestPassword123!',
+            role='patient',
+            first_name='Ananya',
+            last_name='Nair'
+        )
+        self.patient = Patient.objects.create(
+            user=self.patient_user,
+            patient_id='P-CHK-001',
+            surgery_type='Total Knee Replacement'
+        )
+
+        self.other_user = User.objects.create_user(
+            email='other.patient@postcare.test',
+            username='other.patient@postcare.test',
+            password='TestPassword123!',
+            role='patient',
+            first_name='Vikram',
+            last_name='Singh'
+        )
+        self.other_patient = Patient.objects.create(
+            user=self.other_user,
+            patient_id='P-CHK-002',
+            surgery_type='Spinal Decompression'
+        )
+
+        self.valid_payload = {
+            'pain_level': 3,
+            'temperature': 36.8,
+            'wound_condition': 'normal',
+            'symptoms': ['None of the above'],
+            'medication_adherence': 'all',
+            'additional_notes': 'Healing as expected'
+        }
+
+    def test_unauthenticated_checkin_denied(self):
+        """Unauthenticated check-in submission must return 401."""
+        res = self.client.post('/api/recovery/check-in/', self.valid_payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_valid_checkin_creates_record_and_ml_prediction(self):
+        """Valid complete submission creates checkin and risk prediction."""
+        self.client.force_authenticate(user=self.patient_user)
+        res = self.client.post('/api/recovery/check-in/', self.valid_payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        data = res.json()
+        self.assertIn('checkin', data)
+        self.assertIn('prediction', data)
+        self.assertEqual(data['checkin']['pain_level'], 3)
+        self.assertEqual(data['checkin']['temperature'], 36.8)
+        self.assertEqual(data['checkin']['wound_condition'], 'normal')
+        self.assertEqual(data['checkin']['medication_adherence'], 'all')
+        self.assertEqual(data['checkin']['symptoms'], ['None of the above'])
+
+    def test_valid_checkin_with_no_meds_and_symptoms(self):
+        """Valid check-in with 'no_meds' and multiple symptoms succeeds."""
+        self.client.force_authenticate(user=self.patient_user)
+        payload = {
+            'pain_level': 6,
+            'temperature': 37.9,
+            'wound_condition': 'mild_redness',
+            'symptoms': ['Fever / Chills', 'Nausea / Vomiting'],
+            'medication_adherence': 'no_meds'
+        }
+        res = self.client.post('/api/recovery/check-in/', payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        data = res.json()
+        self.assertEqual(data['checkin']['medication_adherence'], 'no_meds')
+        self.assertEqual(len(data['checkin']['symptoms']), 2)
+
+    def test_missing_pain_level_rejected(self):
+        """Missing pain level must return 400 Bad Request with field error."""
+        self.client.force_authenticate(user=self.patient_user)
+        payload = self.valid_payload.copy()
+        del payload['pain_level']
+        res = self.client.post('/api/recovery/check-in/', payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('pain_level', res.json())
+
+    def test_out_of_bounds_pain_level_rejected(self):
+        """Pain level < 0 or > 10 must return 400."""
+        self.client.force_authenticate(user=self.patient_user)
+        for invalid_pain in [-1, 11, 'high']:
+            payload = self.valid_payload.copy()
+            payload['pain_level'] = invalid_pain
+            res = self.client.post('/api/recovery/check-in/', payload, format='json')
+            self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertIn('pain_level', res.json())
+
+    def test_missing_temperature_rejected(self):
+        """Missing temperature must return 400 Bad Request."""
+        self.client.force_authenticate(user=self.patient_user)
+        payload = self.valid_payload.copy()
+        del payload['temperature']
+        res = self.client.post('/api/recovery/check-in/', payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('temperature', res.json())
+
+    def test_out_of_range_temperature_rejected(self):
+        """Physiologically implausible temperature (< 34°C or > 43°C) must be rejected."""
+        self.client.force_authenticate(user=self.patient_user)
+        for invalid_temp in [32.0, 45.0, 'feverish']:
+            payload = self.valid_payload.copy()
+            payload['temperature'] = invalid_temp
+            res = self.client.post('/api/recovery/check-in/', payload, format='json')
+            self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertIn('temperature', res.json())
+
+    def test_missing_wound_condition_rejected(self):
+        """Missing or invalid wound condition must return 400."""
+        self.client.force_authenticate(user=self.patient_user)
+        payload = self.valid_payload.copy()
+        del payload['wound_condition']
+        res = self.client.post('/api/recovery/check-in/', payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('wound_condition', res.json())
+
+        payload['wound_condition'] = 'completely_fine'
+        res2 = self.client.post('/api/recovery/check-in/', payload, format='json')
+        self.assertEqual(res2.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_missing_symptoms_rejected(self):
+        """Empty symptoms list or missing field must be rejected with 400."""
+        self.client.force_authenticate(user=self.patient_user)
+        payload = self.valid_payload.copy()
+        payload['symptoms'] = []
+        res = self.client.post('/api/recovery/check-in/', payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('symptoms', res.json())
+
+    def test_conflicting_symptoms_rejected(self):
+        """Combining 'None of the above' with specific symptoms is contradictory and rejected."""
+        self.client.force_authenticate(user=self.patient_user)
+        payload = self.valid_payload.copy()
+        payload['symptoms'] = ['None of the above', 'Fever / Chills']
+        res = self.client.post('/api/recovery/check-in/', payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('symptoms', res.json())
+
+    def test_missing_medication_adherence_rejected(self):
+        """Missing or invalid medication adherence must return 400."""
+        self.client.force_authenticate(user=self.patient_user)
+        payload = self.valid_payload.copy()
+        del payload['medication_adherence']
+        res = self.client.post('/api/recovery/check-in/', payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('medication_adherence', res.json())
+
+        payload['medication_adherence'] = 'maybe'
+        res2 = self.client.post('/api/recovery/check-in/', payload, format='json')
+        self.assertEqual(res2.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_patient_submits_only_to_own_account(self):
+        """Patient passing another patient's ID in payload still creates record for authenticated patient."""
+        self.client.force_authenticate(user=self.patient_user)
+        payload = self.valid_payload.copy()
+        payload['patient'] = self.other_patient.id  # attempt to tamper
+        res = self.client.post('/api/recovery/check-in/', payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        data = res.json()
+        self.assertEqual(data['checkin']['patient'], self.patient.id)
+        self.assertNotEqual(data['checkin']['patient'], self.other_patient.id)
+
+
+

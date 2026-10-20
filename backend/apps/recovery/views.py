@@ -15,31 +15,110 @@ class RecoveryCheckInCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        data = request.data.copy()
-        patient = getattr(request.user, 'patient_profile', None)
-        if not patient and 'patient' in data:
-            try:
-                patient = Patient.objects.get(id=data['patient'])
-            except Patient.DoesNotExist:
-                return Response({'error': 'Patient not found'}, status=status.HTTP_404_NOT_FOUND)
-        
-        if not patient:
-            return Response({'error': 'Patient context required'}, status=status.HTTP_400_BAD_REQUEST)
+        user = request.user
+        data = request.data or {}
 
+        # 1. Resolve Patient Context & Enforce Patient Ownership
+        if user.role == 'patient':
+            patient = getattr(user, 'patient_profile', None)
+            if not patient:
+                return Response(
+                    {'detail': 'Authenticated patient profile does not exist.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+        else:
+            # Clinician / Caregiver context: require explicit patient identifier
+            patient_id = data.get('patient')
+            if not patient_id:
+                return Response(
+                    {'error': 'Patient context is required for clinician-initiated check-in.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            try:
+                patient = Patient.objects.get(id=patient_id)
+            except Patient.DoesNotExist:
+                return Response({'error': 'Patient not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # 2. Strict Field-Level Validation (Enforce Mandatory Inputs)
+        errors = {}
+
+        # Pain Level: Required int between 0 and 10
+        raw_pain = data.get('pain_level')
+        if raw_pain is None or raw_pain == '':
+            errors['pain_level'] = ['Pain level rating is mandatory. Please select a value between 0 and 10.']
+        else:
+            try:
+                pain_level = int(raw_pain)
+                if pain_level < 0 or pain_level > 10:
+                    errors['pain_level'] = ['Pain level must be an integer between 0 (no pain) and 10 (severe pain).']
+            except (ValueError, TypeError):
+                errors['pain_level'] = ['Valid numerical pain level between 0 and 10 is required.']
+
+        # Temperature: Required float between 34.0°C and 43.0°C
+        raw_temp = data.get('temperature')
+        if raw_temp is None or raw_temp == '':
+            errors['temperature'] = ['Body temperature is mandatory.']
+        else:
+            try:
+                temp_val = float(raw_temp)
+                if temp_val < 34.0 or temp_val > 43.0:
+                    errors['temperature'] = ['Body temperature must be within a realistic physiological range (34.0°C – 43.0°C).']
+                else:
+                    temperature = round(temp_val, 1)
+            except (ValueError, TypeError):
+                errors['temperature'] = ['Valid numeric temperature is required.']
+
+        # Wound Condition: Required choice
+        valid_wounds = [c[0] for c in RecoveryCheckIn.WOUND_CONDITIONS]
+        raw_wound = data.get('wound_condition')
+        if not raw_wound:
+            errors['wound_condition'] = ['Wound status selection is mandatory.']
+        elif raw_wound not in valid_wounds:
+            errors['wound_condition'] = [f"Invalid wound status '{raw_wound}'. Must be one of: {', '.join(valid_wounds)}."]
+        else:
+            wound_condition = raw_wound
+
+        # Symptoms: Required explicit list. 'None of the above' is mutually exclusive
+        raw_symptoms = data.get('symptoms')
+        if raw_symptoms is None or not isinstance(raw_symptoms, list) or len(raw_symptoms) == 0:
+            errors['symptoms'] = ['Symptoms reporting is mandatory. Please select all applicable symptoms or "None of the above".']
+        else:
+            cleaned_symptoms = [str(s).strip() for s in raw_symptoms if str(s).strip()]
+            if not cleaned_symptoms:
+                errors['symptoms'] = ['Please select at least one symptom or "None of the above".']
+            elif 'None of the above' in cleaned_symptoms and len(cleaned_symptoms) > 1:
+                errors['symptoms'] = ['"None of the above" cannot be combined with other specific symptoms.']
+            else:
+                symptoms = cleaned_symptoms
+
+        # Medication Adherence: Required choice
+        valid_adherences = [c[0] for c in RecoveryCheckIn.MED_ADHERENCE]
+        raw_med = data.get('medication_adherence')
+        if not raw_med:
+            errors['medication_adherence'] = ['Medication adherence status is mandatory.']
+        elif raw_med not in valid_adherences:
+            errors['medication_adherence'] = [f"Invalid medication adherence status. Must be one of: {', '.join(valid_adherences)}."]
+        else:
+            medication_adherence = raw_med
+
+        if errors:
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # 3. Create Check-In
         checkin = RecoveryCheckIn.objects.create(
             patient=patient,
-            date=data.get('date', timezone.now().date()),
-            pain_level=int(data.get('pain_level', 2)),
-            temperature=float(data.get('temperature', 36.6)),
-            wound_condition=data.get('wound_condition', 'normal'),
-            symptoms=data.get('symptoms', []),
-            medication_adherence=data.get('medication_adherence', 'all'),
-            additional_notes=data.get('additional_notes', '')
+            date=data.get('date') or timezone.now().date(),
+            pain_level=pain_level,
+            temperature=temperature,
+            wound_condition=wound_condition,
+            symptoms=symptoms,
+            medication_adherence=medication_adherence,
+            additional_notes=(data.get('additional_notes') or '').strip()
         )
         checkin.calculate_score()
         checkin.save()
 
-        # Run ML Risk Prediction
+        # 4. Run ML Risk Prediction
         pred_res = predict_risk(
             pain_level=checkin.pain_level,
             temperature=checkin.temperature,
@@ -68,7 +147,7 @@ class RecoveryCheckInCreateView(APIView):
             recommendation_category=pred_res['recommendation_category']
         )
 
-        # Automated high risk alert notification
+        # 5. Automated High-Risk Alert Notification
         if pred_res['risk_level'] == 'high' and patient.primary_doctor:
             Notification.objects.create(
                 recipient=patient.primary_doctor.user,
