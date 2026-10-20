@@ -20,7 +20,7 @@ _allowed_hosts_env = os.getenv('ALLOWED_HOSTS', '')
 ALLOWED_HOSTS = (
     [h.strip() for h in _allowed_hosts_env.split(',') if h.strip()]
     if _allowed_hosts_env
-    else ['localhost', '127.0.0.1']
+    else ['localhost', '127.0.0.1', 'testserver']
 )
 
 # ── Installed Apps ────────────────────────────────────────────────────────────

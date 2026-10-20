@@ -150,6 +150,10 @@ export default function App() {
           <Route path="/admin/nurses"      element={<ProtectedRoute roles={['admin']}><AdminNurses /></ProtectedRoute>} />
           <Route path="/admin/departments" element={<ProtectedRoute roles={['admin']}><AdminDepartments /></ProtectedRoute>} />
           <Route path="/admin/reports"     element={<ProtectedRoute roles={['admin']}><AdminReports /></ProtectedRoute>} />
+          <Route path="/admin/reports/recovery-index" element={<ProtectedRoute roles={['admin']}><RecoveryIndexReport /></ProtectedRoute>} />
+          <Route path="/admin/reports/risk-stratification" element={<ProtectedRoute roles={['admin']}><RiskStratificationReport /></ProtectedRoute>} />
+          <Route path="/admin/reports/medication-compliance" element={<ProtectedRoute roles={['admin']}><MedicationComplianceReport /></ProtectedRoute>} />
+          <Route path="/admin/reports/follow-up-completion" element={<ProtectedRoute roles={['admin']}><FollowUpCompletionReport /></ProtectedRoute>} />
           <Route path="/admin/settings"    element={<ProtectedRoute roles={['admin']}><AdminSettings /></ProtectedRoute>} />
           <Route path="/admin/ml-evaluation" element={<ProtectedRoute roles={['admin']}><MLEvaluation /></ProtectedRoute>} />
           <Route path="/admin/architecture"  element={<ProtectedRoute roles={['admin']}><Architecture /></ProtectedRoute>} />
