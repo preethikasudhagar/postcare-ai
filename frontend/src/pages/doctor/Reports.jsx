@@ -43,7 +43,7 @@ export default function DoctorReports() {
       id: 'recovery-index',
       to: `${basePath}/recovery-index`,
       title: '1. Patient Recovery Index',
-      desc: 'Chronological recovery progression, vital sign stability trajectories, and patient check-in telemetry.',
+      desc: 'Recovery progression, vital sign stability trajectories, and check-in history.',
       icon: Activity,
       color: 'text-primary bg-primary-tint',
       borderColor: 'hover:border-primary',
@@ -56,7 +56,7 @@ export default function DoctorReports() {
       id: 'risk-stratification',
       to: `${basePath}/risk-stratification`,
       title: '2. Risk Stratification Report',
-      desc: 'Random Forest risk classification distribution, clinical risk tiers, and predictive feature weights.',
+      desc: 'Machine learning risk classifications and predictive feature weights.',
       icon: ShieldAlert,
       color: 'text-danger bg-danger-tint',
       borderColor: 'hover:border-danger',
@@ -69,7 +69,7 @@ export default function DoctorReports() {
       id: 'medication-compliance',
       to: `${basePath}/medication-compliance`,
       title: '3. Medication Compliance',
-      desc: 'Prescription adherence tracking, scheduled dosage fulfillments, and missed dose audit log.',
+      desc: 'Prescription adherence tracking, scheduled dosages, and missed dose logs.',
       icon: Pill,
       color: 'text-secondary bg-secondary-tint',
       borderColor: 'hover:border-secondary',
@@ -80,7 +80,7 @@ export default function DoctorReports() {
       id: 'follow-up-completion',
       to: `${basePath}/follow-up-completion`,
       title: '4. Follow-Up Completion',
-      desc: 'Appointment fulfillment rates, scheduled reviews, completed consultations, and rescheduling trends.',
+      desc: 'Appointment fulfillment rates, completed consultations, and rescheduling trends.',
       icon: Calendar,
       color: 'text-warning bg-warning-tint',
       borderColor: 'hover:border-warning',
@@ -140,8 +140,7 @@ export default function DoctorReports() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Clinical Analytics & Post-Operative Reports"
-        description="Aggregate surgical cohort outcomes, risk distributions, and specialized clinical analytics modules"
+        title="Clinical Analytics & Reports"
         action={
           <div className="flex items-center gap-2 no-print">
             <button

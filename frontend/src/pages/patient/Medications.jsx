@@ -79,10 +79,7 @@ export default function Medications() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Medication Schedule & Adherence"
-        description="Track all your active prescriptions, log daily dosages, and review weekly adherence rates"
-      />
+      <PageHeader title="Medications" />
 
       {/* Summary statistic cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

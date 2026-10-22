@@ -103,7 +103,6 @@ export default function RecoveryTimeline({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 border-b border-border/60 pb-3.5">
         <div>
           <h3 className="text-md font-semibold text-text">Recovery Timeline</h3>
-          <p className="text-xs text-text-muted mt-0.5">Post-discharge recovery check-in progression</p>
         </div>
 
         {/* Proper Spaced Legend - Desktop & Mobile safe */}

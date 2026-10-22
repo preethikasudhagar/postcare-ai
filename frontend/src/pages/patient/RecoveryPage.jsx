@@ -187,14 +187,13 @@ export default function RecoveryPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Recovery Monitoring & Longitudinal Trends"
-        description="Comprehensive daily biometric trends, pain trajectories, and recovery calculations"
+        title="Recovery Progress"
         action={
           <button
             onClick={() => setDrawerOpen(true)}
-            className="inline-flex items-center gap-1.5 h-9 px-3.5 border border-border-strong text-xs font-medium rounded-sm text-text bg-white hover:bg-surface-muted transition-colors shadow-xs"
+            className="inline-flex items-center gap-1.5 h-9 px-3.5 border border-border-strong text-xs font-medium rounded-sm text-text bg-white hover:bg-surface-muted transition-colors shadow-xs cursor-pointer"
           >
-            <HelpCircle size={14} className="text-primary" /> How is this score calculated?
+            <HelpCircle size={14} className="text-primary" /> Score Breakdown
           </button>
         }
       />

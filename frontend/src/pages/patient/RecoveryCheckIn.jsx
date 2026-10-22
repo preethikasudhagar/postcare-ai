@@ -291,10 +291,7 @@ export default function RecoveryCheckIn() {
 
   return (
     <div className="max-w-form mx-auto space-y-6">
-      <PageHeader
-        title="Daily Recovery Check-In"
-        description="Comprehensive daily health check to monitor post-operative healing and detect early complications"
-      />
+      <PageHeader title="Daily Recovery Check-In" />
 
       {!submitted ? (
         <Card>

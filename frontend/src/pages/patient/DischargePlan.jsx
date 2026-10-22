@@ -10,8 +10,7 @@ export default function DischargePlan() {
   return (
     <div className="max-w-document mx-auto space-y-6">
       <PageHeader
-        title="Post-Operative Discharge Plan"
-        description="Comprehensive clinical care summary, medication schedule, and recovery guidelines"
+        title="Discharge Plan"
         action={
           <div className="flex items-center gap-2 no-print">
             <button

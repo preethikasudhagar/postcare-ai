@@ -299,10 +299,7 @@ export default function FollowUps() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Follow-Up Consultations & Appointments"
-        description="Track your scheduled clinical consultations, post-operative assessments, and physiotherapy reviews"
-      />
+      <PageHeader title="Follow-Up Appointments" />
 
       {/* Success Banner */}
       {successBanner && (

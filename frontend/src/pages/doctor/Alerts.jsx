@@ -123,8 +123,7 @@ export default function DoctorAlerts() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Clinical Alerts & Escalation Inbox"
-        description="Real-time clinical triage queue for acute biomarker spikes, wound escalations, and patient alerts"
+        title="Clinical Alerts"
         action={
           <div className="flex items-center gap-2">
             {unreadTotalCount > 0 && (

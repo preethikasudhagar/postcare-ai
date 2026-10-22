@@ -12,8 +12,7 @@ export default function PatientProfile() {
   return (
     <div className="max-w-form mx-auto space-y-6">
       <PageHeader
-        title="Patient Identity & Clinical Profile"
-        description="Personal demographics, emergency contacts, and surgical record details"
+        title="Patient Profile"
         action={
           <button
             onClick={() => setEditing(e => !e)}

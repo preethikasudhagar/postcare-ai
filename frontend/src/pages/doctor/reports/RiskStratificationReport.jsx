@@ -104,8 +104,7 @@ export default function RiskStratificationReport() {
       </div>
 
       <PageHeader
-        title="Risk Stratification & AI Classification Report"
-        description="Cohort risk tiering, Random Forest decision-support classifications, and high-risk acute alerts"
+        title="Risk Stratification Report"
         action={
           <div className="flex items-center gap-2 no-print">
             <button

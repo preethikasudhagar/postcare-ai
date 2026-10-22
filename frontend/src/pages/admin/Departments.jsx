@@ -115,8 +115,7 @@ export default function AdminDepartments() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Clinical Surgical Departments"
-        description="Configure surgical departments, clinical directors, and ward staffing"
+        title="Departments"
         action={
           <div className="flex items-center gap-2">
             <button

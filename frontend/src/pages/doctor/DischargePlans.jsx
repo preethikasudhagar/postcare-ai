@@ -15,8 +15,7 @@ export default function DischargePlans() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Post-Operative Discharge Plans Repository"
-        description="Create, review, edit, and digitally sign multi-disciplinary surgical discharge plans"
+        title="Discharge Plans"
         action={
           <Link
             to="/doctor/discharge-plans/new"

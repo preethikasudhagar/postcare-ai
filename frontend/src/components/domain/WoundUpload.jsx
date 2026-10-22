@@ -11,8 +11,8 @@ const cn = (...a) => twMerge(clsx(...a))
 
 export default function WoundUpload({ 
   patientId = null, 
-  title = "Wound / Recovery Images", 
-  description = "Upload images for post-operative wound monitoring", 
+  title = "Wound Images", 
+  description = null, 
   readOnly = false 
 }) {
   const { user } = useAuth()

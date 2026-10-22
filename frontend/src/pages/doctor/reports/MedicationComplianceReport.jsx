@@ -94,8 +94,7 @@ export default function MedicationComplianceReport() {
       </div>
 
       <PageHeader
-        title="Medication Compliance & Adherence Report"
-        description="Prescription adherence telemetry, scheduled dosage tracking, and active surgical medications directory"
+        title="Medication Compliance"
         action={
           <div className="flex items-center gap-2 no-print">
             <button

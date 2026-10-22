@@ -120,14 +120,13 @@ export default function RiskPredictions() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="ML Recovery Risk Classifications & Predictions"
-        description="Validated Random Forest decision-support classifications derived from daily clinical recovery check-ins"
+        title="Risk Predictions"
         action={
           <button
             type="button"
             onClick={fetchPredictions}
             disabled={loading}
-            className="inline-flex items-center gap-1.5 h-9 px-3.5 border border-border-strong text-xs font-medium rounded-sm text-text bg-white hover:bg-surface-muted transition-colors shadow-xs disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 h-9 px-3.5 border border-border-strong text-xs font-medium rounded-sm text-text bg-white hover:bg-surface-muted transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
           >
             <RefreshCw size={13} className={loading ? 'animate-spin text-primary' : 'text-text-muted'} /> Refresh
           </button>
@@ -137,27 +136,27 @@ export default function RiskPredictions() {
       {/* Real Model & Classification Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatCard
-          label="Total Predictions Logged"
+          label="Total Predictions"
           value={loading ? '—' : totalCount.toLocaleString()}
-          trend={`${avgConfidence}% average confidence`}
+          trend={`${avgConfidence}% avg confidence`}
           trendUp={true}
           icon={Brain}
           iconBg="bg-primary-tint"
           iconColor="text-primary"
         />
         <StatCard
-          label="High Risk Flagged"
+          label="High-Risk Flags"
           value={loading ? '—' : `${highRiskCount} active`}
-          trend={highRiskCount > 0 ? "Requires prompt clinical review" : "No active acute flags"}
+          trend={highRiskCount > 0 ? "Requires review" : "No active flags"}
           trendUp={highRiskCount === 0}
           icon={ShieldAlert}
           iconBg={highRiskCount > 0 ? "bg-danger-tint" : "bg-success-tint"}
           iconColor={highRiskCount > 0 ? "text-danger" : "text-success"}
         />
         <StatCard
-          label="Model Classification Accuracy"
+          label="Model Accuracy"
           value="94.2%"
-          trend="Random Forest Classifier (N=2,000)"
+          trend="Validation benchmark"
           trendUp={true}
           icon={CheckCircle}
           iconBg="bg-success-tint"

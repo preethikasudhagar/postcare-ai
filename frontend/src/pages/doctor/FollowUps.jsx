@@ -158,10 +158,7 @@ export default function DoctorFollowUps() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Follow-Up Schedule & Clinical Consultations"
-        description="Manage in-person appointments, post-operative assessments, and tele-consultations"
-      />
+      <PageHeader title="Follow-Up Consultations" />
 
       {/* Success Notification */}
       {successBanner && (

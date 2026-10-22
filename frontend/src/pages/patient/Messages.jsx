@@ -384,10 +384,7 @@ export default function PatientMessages() {
 
   return (
     <div className="flex flex-col h-full space-y-4">
-      <PageHeader
-        title="Secure Clinical Messaging"
-        description="Direct encrypted communication with your post-operative surgical and nursing care team"
-      />
+      <PageHeader title="Messages" />
 
       {/* Global Error Banner with Actionable Dismiss / Retry */}
       {error && (

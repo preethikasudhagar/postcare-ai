@@ -112,10 +112,7 @@ export default function PatientList() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Post-Operative Patients Directory"
-        description="Comprehensive directory of monitored surgical patients with live AI risk indicators"
-      />
+      <PageHeader title="Patient Directory" />
 
       {/* Filter and Search Bar */}
       <div className="bg-white border border-border rounded-[10px] p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">

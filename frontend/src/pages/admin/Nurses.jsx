@@ -160,8 +160,7 @@ export default function AdminNurses() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Nursing & Triage Coordinators"
-        description="Nursing staff roster, ward assignments, and post-op care triage coordination"
+        title="Nurses"
         action={
           <div className="flex items-center gap-2">
             <button

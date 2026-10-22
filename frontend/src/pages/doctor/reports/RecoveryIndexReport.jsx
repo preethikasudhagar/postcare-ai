@@ -111,8 +111,7 @@ export default function RecoveryIndexReport() {
       </div>
 
       <PageHeader
-        title="Patient Recovery Index Report"
-        description="Chronological recovery progression, vital sign stability trajectories, and patient check-in telemetry"
+        title="Patient Recovery Index"
         action={
           <div className="flex items-center gap-2 no-print">
             <button

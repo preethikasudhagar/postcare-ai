@@ -80,13 +80,12 @@ export default function PatientDashboard() {
     <div className="space-y-6">
       <PageHeader
         title={`Good morning, ${user?.first_name || 'Rahul'}`}
-        description="Here is your post-operative recovery progress and today's care checklist."
         action={
           <Link
             to="/patient/check-in"
-            className="inline-flex items-center gap-2 h-10 px-4 bg-primary text-white text-sm font-medium rounded-sm hover:bg-primary-hover shadow-xs transition-colors"
+            className="inline-flex items-center gap-2 h-9 px-3.5 bg-primary text-white text-xs font-semibold rounded hover:bg-primary-hover shadow-xs transition-colors"
           >
-            <Activity size={16} /> Submit Today's Check-in
+            <Activity size={15} /> Submit Today's Check-in
           </Link>
         }
       />
@@ -96,16 +95,16 @@ export default function PatientDashboard() {
         <StatCard
           label="Recovery Score"
           value={`${currentScore} / 100`}
-          trend={currentScore >= 80 ? "Steady recovery progress" : "Requires close observation"}
+          trend={currentScore >= 80 ? "Steady recovery" : "Needs observation"}
           trendUp={currentScore >= 80}
           icon={Activity}
           iconBg="bg-success-tint"
           iconColor="text-success"
         />
         <StatCard
-          label="Risk Classification"
+          label="Risk Level"
           value={currentRisk === 'high' ? 'High Risk' : currentRisk === 'medium' ? 'Medium Risk' : 'Low Risk'}
-          trend="ML decision support"
+          trend="ML assessed"
           trendUp={currentRisk === 'low'}
           icon={ShieldAlert}
           iconBg={currentRisk === 'high' ? 'bg-danger-tint' : currentRisk === 'medium' ? 'bg-warning-tint' : 'bg-primary-tint'}
@@ -122,7 +121,7 @@ export default function PatientDashboard() {
         <StatCard
           label="Prescriptions"
           value={`${medCount} Active`}
-          trend="On prescribed schedule"
+          trend="On schedule"
           trendUp={true}
           icon={Pill}
           iconBg="bg-warning-tint"
@@ -137,8 +136,7 @@ export default function PatientDashboard() {
           {/* Today's Check-in Card */}
           <Card>
             <CardHeader
-              title="Today's Recovery Status"
-              description="Post-operative monitoring and assessment"
+              title="Today's Status"
               action={
                 <span className="text-xs text-text-muted">
                   {latestCheckin ? `Recorded ${latestCheckin.date}` : "Today"}
@@ -146,13 +144,13 @@ export default function PatientDashboard() {
               }
             />
             <CardBody>
-              <div className="flex flex-col sm:flex-row items-center justify-between p-4 bg-primary-tint/50 border border-primary/20 rounded-[8px] gap-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between p-4 bg-primary-tint/40 border border-primary/20 rounded-lg gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">
+                  <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
                     {currentScore}
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold text-text">Daily Assessment Recorded</h4>
+                    <h4 className="text-xs font-semibold text-text">Daily Assessment Recorded</h4>
                     <p className="text-xs text-text-secondary mt-0.5">
                       Pain: <strong className="text-text">{latestCheckin?.pain_level ?? 2}/10</strong> · Temp: <strong className="text-text">{latestCheckin?.temperature ?? 36.6}°C</strong> · Wound: <strong className="text-text capitalize">{latestCheckin?.wound_condition?.replace('_', ' ') ?? 'Normal'}</strong>
                     </p>
@@ -162,7 +160,7 @@ export default function PatientDashboard() {
                   <RiskBadge level={currentRisk} />
                   <Link
                     to="/patient/check-in"
-                    className="text-xs font-medium text-primary hover:underline ml-2"
+                    className="text-xs font-semibold text-primary hover:underline ml-2"
                   >
                     New check-in
                   </Link>
@@ -176,10 +174,7 @@ export default function PatientDashboard() {
 
           {/* Recovery Progress Chart */}
           <Card>
-            <CardHeader
-              title="Recovery Progression Curve"
-              description="Calculated recovery score across post-operative days (Normal range: 80–100)"
-            />
+            <CardHeader title="Recovery Progression" />
             <CardBody>
               <LineTrend data={trendData} />
             </CardBody>
@@ -190,7 +185,7 @@ export default function PatientDashboard() {
         <div className="lg:col-span-4 space-y-6">
           {/* Recovery Ring */}
           <Card>
-            <CardHeader title="Current Health Status" />
+            <CardHeader title="Health Status" />
             <CardBody>
               <div className="py-2">
                 <RecoveryRing value={currentScore} size={130} />
@@ -208,16 +203,13 @@ export default function PatientDashboard() {
 
           {/* Today's Tasks Interactive Checklist */}
           <Card>
-            <CardHeader
-              title="Today's Care Tasks"
-              description="Check off items as you complete them"
-            />
+            <CardHeader title="Today's Care Tasks" />
             <CardBody>
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {tasks.map((t) => (
                   <div
                     key={t.id}
-                    className="flex items-start gap-2.5 p-2.5 rounded-sm hover:bg-surface-muted transition-colors cursor-pointer border border-border"
+                    className="flex items-start gap-2.5 p-2.5 rounded hover:bg-surface-muted transition-colors cursor-pointer border border-border"
                     onClick={() => toggleTask(t.id)}
                   >
                     <input
@@ -241,7 +233,7 @@ export default function PatientDashboard() {
           <Card>
             <CardHeader title="Next Follow-Up" />
             <CardBody>
-              <div className="p-3 bg-secondary-tint/40 border border-secondary/20 rounded-[8px]">
+              <div className="p-3 bg-secondary-tint/40 border border-secondary/20 rounded-lg">
                 <div className="flex items-center gap-2 mb-1">
                   <Calendar size={14} className="text-secondary" />
                   <span className="text-xs font-semibold text-secondary">24 September 2026 · 10:30 AM</span>
@@ -252,7 +244,7 @@ export default function PatientDashboard() {
                   to="/patient/follow-ups"
                   className="inline-flex items-center gap-1 text-xs text-primary font-medium mt-3 hover:underline"
                 >
-                  View appointment details <ArrowRight size={12} />
+                  View details <ArrowRight size={12} />
                 </Link>
               </div>
             </CardBody>

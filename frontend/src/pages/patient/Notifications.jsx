@@ -76,8 +76,7 @@ export default function Notifications() {
   return (
     <div className="max-w-form mx-auto space-y-6">
       <PageHeader
-        title="Notification Center"
-        description="Medication reminders, follow-up alerts, and care team announcements"
+        title="Notifications"
         action={
           <button
             onClick={markAllRead}

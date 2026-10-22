@@ -53,8 +53,7 @@ export default function DoctorNotifications() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       <PageHeader
-        title="Clinical Notifications & Escalations"
-        description="Real-time clinical stream of high-risk patient alerts, recovery check-in logs, and surgical care updates"
+        title="Notifications"
         action={
           unreadCount > 0 && (
             <button

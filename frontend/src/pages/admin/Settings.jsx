@@ -83,10 +83,7 @@ export default function AdminSettings() {
 
   return (
     <div className="max-w-form mx-auto space-y-6">
-      <PageHeader
-        title="System Configuration & Clinical Thresholds"
-        description="Global hospital governance rules, ML alert triggers, and compliance targets"
-      />
+      <PageHeader title="Settings" />
 
       <Card>
         <CardHeader title="AI Risk Engine & Alert Thresholds" />

@@ -207,10 +207,7 @@ export default function DoctorMessages() {
 
   return (
     <div className="flex flex-col h-full space-y-4">
-      <PageHeader
-        title="Clinical Telehealth Inbox"
-        description="Secure bidirectional direct communication with post-operative surgical patients"
-      />
+      <PageHeader title="Messages" />
 
       {error && (
         <div className="bg-danger-tint border border-danger/30 rounded-lg p-3 text-xs text-danger flex items-center justify-between flex-shrink-0">

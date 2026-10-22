@@ -1,27 +1,24 @@
 import React from 'react'
 import { PageHeader, Card, CardHeader, CardBody, StatCard } from '../../components/ui/index.jsx'
-import { RiskBadge, StatusBadge } from '../../components/ui/Badge.jsx'
+import { RiskBadge } from '../../components/ui/Badge.jsx'
 import RecoveryRing from '../../components/domain/RecoveryRing.jsx'
 import RecoveryTimeline from '../../components/domain/RecoveryTimeline.jsx'
 import WoundUpload from '../../components/domain/WoundUpload.jsx'
-import { Heart, Activity, Calendar, Pill, AlertTriangle, Phone } from 'lucide-react'
+import { Heart, Activity, Calendar, Pill, Phone } from 'lucide-react'
 
 export default function CaregiverDashboard() {
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Family & Caregiver Support Portal"
-        description="Reassuring, real-time post-operative monitoring for your loved one"
-      />
+      <PageHeader title="Caregiver Dashboard" />
 
       {/* Linked Patient Identity Banner */}
-      <div className="p-4 bg-secondary-tint border border-secondary/20 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
+      <div className="p-4 bg-secondary-tint/40 border border-secondary/20 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center font-bold">
-            <Heart size={20} />
+            <Heart size={18} />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-text">Monitoring: Rahul Kumar (Husband)</h3>
+            <h3 className="text-sm font-semibold text-text">Monitoring: Rahul Kumar (Husband)</h3>
             <p className="text-2xs text-text-muted">Total Knee Arthroplasty (L) · Post-Op Day 14 · Dr. Rajesh Varma</p>
           </div>
         </div>
@@ -33,7 +30,7 @@ export default function CaregiverDashboard() {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatCard
-          label="Today's Recovery Score"
+          label="Recovery Score"
           value="88 / 100"
           trend="Good progress"
           trendUp={true}
@@ -44,14 +41,14 @@ export default function CaregiverDashboard() {
         <StatCard
           label="Medications Taken"
           value="3 of 4 doses"
-          trend="Evening dose at 8:00 PM"
+          trend="On schedule"
           trendUp={true}
           icon={Pill}
           iconBg="bg-primary-tint"
           iconColor="text-primary"
         />
         <StatCard
-          label="Upcoming Appointment"
+          label="Next Appointment"
           value="24 Sep"
           trend="10:30 AM · Orthopedics"
           icon={Calendar}
@@ -66,16 +63,18 @@ export default function CaregiverDashboard() {
           <WoundUpload />
         </div>
 
-        <div className="lg:col-span-4 space-y-4">
+        <div className="lg:col-span-4 space-y-6">
           <Card>
-            <CardHeader title="Overall Healing Index" />
+            <CardHeader title="Healing Progress" />
             <CardBody>
-              <RecoveryRing value={88} size={120} />
+              <div className="py-2">
+                <RecoveryRing value={88} size={120} />
+              </div>
             </CardBody>
           </Card>
 
           <Card>
-            <CardHeader title="Caregiver Support Hotline" />
+            <CardHeader title="Caregiver Helpline" />
             <CardBody>
               <div className="p-3 bg-surface-muted rounded text-xs space-y-2 border border-border">
                 <p className="font-semibold text-text">Emergency Nursing Helpdesk</p>

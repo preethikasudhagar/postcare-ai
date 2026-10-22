@@ -159,8 +159,7 @@ export default function AdminDoctors() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Consultant Surgical Faculty"
-        description="Manage credentialed attending surgeons, departmental assignments, and patient loads"
+        title="Doctors"
         action={
           <button
             type="button"

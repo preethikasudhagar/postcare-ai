@@ -94,8 +94,7 @@ export default function FollowUpCompletionReport() {
       </div>
 
       <PageHeader
-        title="Follow-Up Completion & Attendance Report"
-        description="Appointment fulfillment rates, scheduled surgical reviews, completed consultations, and rescheduling trends"
+        title="Follow-Up Completion"
         action={
           <div className="flex items-center gap-2 no-print">
             <button

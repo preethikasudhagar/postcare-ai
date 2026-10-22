@@ -172,8 +172,7 @@ export default function AdminUsers() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="User Identity & Role Governance"
-        description="Provision, activate, deactivate, audit credentials, and manage patient-account associations"
+        title="User Management"
         action={
           <div className="flex items-center gap-2">
             <button 
