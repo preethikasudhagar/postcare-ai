@@ -145,9 +145,7 @@ export default function RegisterPage() {
             className="w-full h-11 px-3 text-sm bg-white border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all text-text cursor-pointer"
           >
             <option value="patient">Patient (Recovering from surgery)</option>
-            <option value="doctor">Doctor (Attending Surgeon / Physician)</option>
-            <option value="nurse">Nurse (Post-Op Care Coordinator)</option>
-            <option value="caregiver">Caregiver (Family / Helper)</option>
+            <option value="caregiver">Caregiver (Family member / Guardian)</option>
           </select>
         </div>
 

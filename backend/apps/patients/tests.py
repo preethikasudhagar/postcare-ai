@@ -531,3 +531,62 @@ class AdminFacultyAndDepartmentManagementTests(TestCase):
         res_dept = self.client.post('/api/patients/departments/', {'name': 'Anon'}, format='json')
         self.assertEqual(res_dept.status_code, 401)
 
+    def test_admin_can_create_and_update_caregiver(self):
+        self.client.force_authenticate(user=self.admin)
+        from apps.patients.models import Patient
+        patient = getattr(self.patient_user, 'patient_profile', None) or Patient.objects.filter(user=self.patient_user).first()
+        res = self.client.post('/api/patients/caregivers/', {
+            'first_name': 'Sunita',
+            'last_name': 'Sharma',
+            'email': 'sunita.sharma@postcare.test',
+            'phone': '+91 98765 43210',
+            'relationship': 'Spouse',
+            'patient': patient.id if patient else None,
+            'password': 'SecurePassword123!'
+        }, format='json')
+        self.assertEqual(res.status_code, 201)
+        self.assertEqual(res.data['full_name'], 'Sunita Sharma')
+        self.assertEqual(res.data['relationship'], 'Spouse')
+
+        cg_id = res.data['id']
+        patch_res = self.client.patch(f'/api/patients/caregivers/{cg_id}/', {
+            'relationship': 'Primary Caregiver',
+            'phone': '+91 99999 88888'
+        }, format='json')
+        self.assertEqual(patch_res.status_code, 200)
+        self.assertEqual(patch_res.data['relationship'], 'Primary Caregiver')
+        self.assertEqual(patch_res.data['phone'], '+91 99999 88888')
+
+    def test_non_admin_cannot_create_caregiver_via_staff_endpoint(self):
+        self.client.force_authenticate(user=self.patient_user)
+        res = self.client.post('/api/patients/caregivers/', {
+            'first_name': 'Unauthorized',
+            'last_name': 'User',
+            'email': 'unauth.cg@postcare.test',
+            'relationship': 'Sibling'
+        }, format='json')
+        self.assertEqual(res.status_code, 403)
+
+    def test_caregiver_public_registration_allowed_and_doctor_prohibited(self):
+        # 1. Doctor registration via public endpoint is prohibited
+        res_doc = self.client.post('/api/auth/register/', {
+            'email': 'public.doc@postcare.test',
+            'password': 'StrongPassword123!',
+            'role': 'doctor',
+            'first_name': 'Fake',
+            'last_name': 'Doctor'
+        }, format='json')
+        self.assertEqual(res_doc.status_code, 400)
+
+        # 2. Caregiver registration via public endpoint is permitted
+        res_cg = self.client.post('/api/auth/register/', {
+            'email': 'family.helper@postcare.test',
+            'password': 'StrongPassword123!',
+            'role': 'caregiver',
+            'first_name': 'Family',
+            'last_name': 'Helper'
+        }, format='json')
+        self.assertEqual(res_cg.status_code, 201)
+        self.assertEqual(res_cg.data['user']['role'], 'caregiver')
+
+

@@ -26,7 +26,9 @@ class PatientListView(generics.ListCreateAPIView):
         elif user.role == 'patient' and hasattr(user, 'patient_profile'):
             return Patient.objects.filter(id=user.patient_profile.id)
         elif user.role == 'caregiver' and hasattr(user, 'caregiver_profile'):
-            return Patient.objects.filter(id=user.caregiver_profile.patient.id)
+            if user.caregiver_profile and user.caregiver_profile.patient_id:
+                return Patient.objects.filter(id=user.caregiver_profile.patient_id)
+            return Patient.objects.none()
         return Patient.objects.all().order_by('-id')
 
 
@@ -460,9 +462,198 @@ class NurseDetailView(APIView):
         return Response(NurseSerializer(nurse).data)
 
 
+class CaregiverListCreateView(APIView):
+    """
+    List caregivers (authenticated users; filtered by role) or provision a new caregiver (admin only).
+    """
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [IsAuthenticated(), IsAdmin()]
+        return [IsAuthenticated()]
+
+    def get(self, request):
+        user = request.user
+        caregivers = Caregiver.objects.select_related('user', 'patient', 'patient__user').all().order_by('-id')
+
+        # Role-based restriction
+        if user.role == 'patient' and hasattr(user, 'patient_profile'):
+            caregivers = caregivers.filter(patient=user.patient_profile)
+        elif user.role == 'caregiver' and hasattr(user, 'caregiver_profile'):
+            caregivers = caregivers.filter(id=user.caregiver_profile.id)
+
+        search = request.query_params.get('search')
+        if search:
+            caregivers = caregivers.filter(
+                Q(user__first_name__icontains=search) |
+                Q(user__last_name__icontains=search) |
+                Q(user__email__icontains=search) |
+                Q(relationship__icontains=search) |
+                Q(patient__patient_id__icontains=search) |
+                Q(patient__user__first_name__icontains=search) |
+                Q(patient__user__last_name__icontains=search)
+            )
+
+        patient_param = request.query_params.get('patient') or request.query_params.get('patient_id')
+        if patient_param:
+            if str(patient_param).isdigit():
+                caregivers = caregivers.filter(patient_id=int(patient_param))
+            else:
+                caregivers = caregivers.filter(patient__patient_id=patient_param)
+
+        serializer = CaregiverSerializer(caregivers, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        email = (request.data.get('email') or '').strip().lower()
+        first_name = (request.data.get('first_name') or '').strip()
+        last_name = (request.data.get('last_name') or '').strip()
+        phone = (request.data.get('phone') or '').strip()
+        password = request.data.get('password')
+        relationship = (request.data.get('relationship') or 'Primary Caregiver').strip()
+        patient_id = request.data.get('patient') or request.data.get('patient_id')
+
+        if not email:
+            return Response({'email': ['Email address is required.']}, status=status.HTTP_400_BAD_REQUEST)
+        if not first_name:
+            return Response({'first_name': ['First name is required.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Resolve patient if provided
+        patient_obj = None
+        if patient_id:
+            try:
+                if str(patient_id).isdigit():
+                    patient_obj = Patient.objects.get(pk=int(patient_id))
+                else:
+                    patient_obj = Patient.objects.get(patient_id=patient_id)
+            except Patient.DoesNotExist:
+                return Response({'patient': ['Selected patient does not exist.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        existing_user = User.objects.filter(email=email).first()
+        if existing_user and hasattr(existing_user, 'caregiver_profile'):
+            return Response({'email': ['A caregiver profile already exists for this email address.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not existing_user and not password:
+            return Response({'password': ['Password is required for provisioning a new caregiver user account.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        with transaction.atomic():
+            if not existing_user:
+                base_username = email.split('@')[0]
+                username = base_username
+                counter = 1
+                while User.objects.filter(username=username).exists():
+                    username = f"{base_username}{counter}"
+                    counter += 1
+
+                user = User.objects.create_user(
+                    email=email,
+                    username=username,
+                    password=password,
+                    first_name=first_name,
+                    last_name=last_name,
+                    phone=phone,
+                    role='caregiver',
+                    is_staff=False
+                )
+            else:
+                user = existing_user
+                user.first_name = first_name
+                user.last_name = last_name
+                if phone:
+                    user.phone = phone
+                if user.role != 'caregiver':
+                    user.role = 'caregiver'
+                user.save()
+
+            caregiver = Caregiver.objects.create(
+                user=user,
+                patient=patient_obj,
+                relationship=relationship
+            )
+
+        return Response(CaregiverSerializer(caregiver).data, status=status.HTTP_201_CREATED)
+
+
+class CaregiverDetailView(APIView):
+    """
+    Retrieve or update a caregiver profile (admin only for edits).
+    """
+    def get_permissions(self):
+        if self.request.method in ['PATCH', 'PUT', 'DELETE']:
+            return [IsAuthenticated(), IsAdmin()]
+        return [IsAuthenticated()]
+
+    def get_object(self, pk):
+        try:
+            return Caregiver.objects.select_related('user', 'patient', 'patient__user').get(pk=pk)
+        except Caregiver.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        caregiver = self.get_object(pk)
+        if not caregiver:
+            return Response({'detail': 'Caregiver profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        user = request.user
+        if user.role == 'caregiver' and hasattr(user, 'caregiver_profile') and user.caregiver_profile.id != caregiver.id:
+            return Response({'detail': 'You do not have permission to view this caregiver.'}, status=status.HTTP_403_FORBIDDEN)
+        if user.role == 'patient' and hasattr(user, 'patient_profile'):
+            if not caregiver.patient or caregiver.patient.id != user.patient_profile.id:
+                return Response({'detail': 'You do not have permission to view this caregiver.'}, status=status.HTTP_403_FORBIDDEN)
+
+        return Response(CaregiverSerializer(caregiver).data)
+
+    def patch(self, request, pk):
+        caregiver = self.get_object(pk)
+        if not caregiver:
+            return Response({'detail': 'Caregiver profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        user = caregiver.user
+        if 'first_name' in request.data:
+            user.first_name = (request.data.get('first_name') or '').strip()
+        if 'last_name' in request.data:
+            user.last_name = (request.data.get('last_name') or '').strip()
+        if 'phone' in request.data:
+            user.phone = (request.data.get('phone') or '').strip()
+        if 'is_active' in request.data:
+            user.is_active = bool(request.data.get('is_active'))
+        user.save()
+
+        if 'relationship' in request.data:
+            caregiver.relationship = (request.data.get('relationship') or '').strip()
+        if 'is_primary' in request.data:
+            caregiver.is_primary = bool(request.data.get('is_primary'))
+        if 'patient' in request.data or 'patient_id' in request.data:
+            patient_id = request.data.get('patient') if 'patient' in request.data else request.data.get('patient_id')
+            if patient_id:
+                try:
+                    if str(patient_id).isdigit():
+                        caregiver.patient = Patient.objects.get(pk=int(patient_id))
+                    else:
+                        caregiver.patient = Patient.objects.get(patient_id=patient_id)
+                except Patient.DoesNotExist:
+                    return Response({'patient': ['Selected patient does not exist.']}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                caregiver.patient = None
+
+        caregiver.save()
+        return Response(CaregiverSerializer(caregiver).data)
+
+    def delete(self, request, pk):
+        caregiver = self.get_object(pk)
+        if not caregiver:
+            return Response({'detail': 'Caregiver profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        user = caregiver.user
+        user.is_active = False
+        user.save()
+        caregiver.delete()
+        return Response({'message': 'Caregiver profile successfully removed.'}, status=status.HTTP_200_OK)
+
+
 # Backward compatibility aliases
 DoctorListView = DoctorListCreateView
 NurseListView = NurseListCreateView
+CaregiverListView = CaregiverListCreateView
 DepartmentListView = DepartmentListCreateView
 
 

@@ -101,9 +101,6 @@ export default function AdminSettings() {
                 onChange={(e) => setHighRiskThreshold(Number(e.target.value))}
                 className="w-full sm:w-48 p-2 text-xs bg-surface border border-border rounded focus:outline-none focus:ring-1 focus:ring-primary text-text"
               />
-              <p className="text-2xs text-text-muted mt-1">
-                Patients with recovery scores falling below this threshold immediately trigger urgent surgical team escalation.
-              </p>
             </div>
 
             <div>
@@ -118,15 +115,11 @@ export default function AdminSettings() {
                 onChange={(e) => setMedAdherenceTarget(Number(e.target.value))}
                 className="w-full sm:w-48 p-2 text-xs bg-surface border border-border rounded focus:outline-none focus:ring-1 focus:ring-primary text-text"
               />
-              <p className="text-2xs text-text-muted mt-1">
-                Hospital compliance benchmark for patient post-op prescription compliance tracking.
-              </p>
             </div>
 
             <div className="pt-2 border-t border-border flex items-center justify-between">
               <div>
                 <strong className="text-text block">Automated Clinical Notifications</strong>
-                <span className="text-2xs text-text-muted">Dispatch urgent alerts to assigned surgical team on critical biomarker spikes</span>
               </div>
               <input
                 type="checkbox"
@@ -139,7 +132,6 @@ export default function AdminSettings() {
             <div className="pt-2 border-t border-border flex items-center justify-between">
               <div>
                 <strong className="text-text block">Urgent SMS Patient Escalation</strong>
-                <span className="text-2xs text-text-muted">Send SMS reminders when daily check-ins are overdue past 18:00</span>
               </div>
               <input
                 type="checkbox"
@@ -152,7 +144,6 @@ export default function AdminSettings() {
             <div className="pt-2 border-t border-border flex items-center justify-between">
               <div>
                 <strong className="text-text block">Automated Discharge Summaries</strong>
-                <span className="text-2xs text-text-muted">Generate AI draft discharge summaries upon patient hospital exit</span>
               </div>
               <input
                 type="checkbox"

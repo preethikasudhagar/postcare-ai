@@ -5,6 +5,7 @@ from .models import Patient, Doctor, Nurse, Caregiver, Department
 
 class DepartmentSerializer(serializers.ModelSerializer):
     doctors_count = serializers.SerializerMethodField()
+    caregivers_count = serializers.SerializerMethodField()
     nurses_count = serializers.SerializerMethodField()
     patients_count = serializers.SerializerMethodField()
     head_name = serializers.SerializerMethodField()
@@ -13,15 +14,18 @@ class DepartmentSerializer(serializers.ModelSerializer):
         model = Department
         fields = [
             'id', 'name', 'description', 'created_at',
-            'doctors_count', 'nurses_count', 'patients_count', 'head_name'
+            'doctors_count', 'caregivers_count', 'nurses_count', 'patients_count', 'head_name'
         ]
-        read_only_fields = ['id', 'created_at', 'doctors_count', 'nurses_count', 'patients_count', 'head_name']
+        read_only_fields = ['id', 'created_at', 'doctors_count', 'caregivers_count', 'nurses_count', 'patients_count', 'head_name']
 
     def get_doctors_count(self, obj):
         return Doctor.objects.filter(department=obj).count()
 
+    def get_caregivers_count(self, obj):
+        return Caregiver.objects.filter(patient__primary_doctor__department=obj).count()
+
     def get_nurses_count(self, obj):
-        return Nurse.objects.filter(department=obj).count()
+        return self.get_caregivers_count(obj)
 
     def get_patients_count(self, obj):
         return Patient.objects.filter(primary_doctor__department=obj, is_active=True).count()
@@ -80,8 +84,27 @@ class PatientSerializer(serializers.ModelSerializer):
 
 class CaregiverSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    patient = PatientSerializer(read_only=True)
+    full_name = serializers.CharField(source='user.get_full_name', read_only=True)
+    email = serializers.EmailField(source='user.email', read_only=True)
+    phone = serializers.CharField(source='user.phone', read_only=True)
+    is_active = serializers.BooleanField(source='user.is_active', read_only=True)
+    patient_name = serializers.SerializerMethodField()
+    patient_uhid = serializers.SerializerMethodField()
 
     class Meta:
         model = Caregiver
-        fields = '__all__'
+        fields = [
+            'id', 'user', 'full_name', 'email', 'phone', 'is_active',
+            'patient', 'patient_name', 'patient_uhid', 'relationship', 'created_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'full_name', 'email', 'phone', 'is_active', 'patient_name', 'patient_uhid']
+
+    def get_patient_name(self, obj):
+        if obj.patient and obj.patient.user:
+            return obj.patient.user.get_full_name()
+        return 'Not assigned'
+
+    def get_patient_uhid(self, obj):
+        if obj.patient:
+            return obj.patient.patient_id
+        return '—'

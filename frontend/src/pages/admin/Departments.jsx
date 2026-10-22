@@ -173,7 +173,7 @@ export default function AdminDepartments() {
                   <th className="p-3">Department Name</th>
                   <th className="p-3">Clinical Director / Lead</th>
                   <th className="p-3">Active Patients</th>
-                  <th className="p-3">Staffing (Docs / Nurses)</th>
+                  <th className="p-3">Staffing (Doctors / Caregivers)</th>
                   <th className="p-3">Description</th>
                   <th className="p-3 text-right">Action</th>
                 </tr>
@@ -227,7 +227,7 @@ export default function AdminDepartments() {
                         <span className="inline-flex items-center gap-1">
                           <Users size={12} />
                           <span>
-                            {d.doctors_count ?? 0} Doctors · {d.nurses_count ?? 0} Nurses
+                            {d.doctors_count ?? 0} Doctors · {d.caregivers_count ?? d.nurses_count ?? 0} Caregivers
                           </span>
                         </span>
                       </td>

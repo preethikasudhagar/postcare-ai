@@ -77,7 +77,7 @@ export default function CaregiverDashboard() {
             <CardHeader title="Caregiver Helpline" />
             <CardBody>
               <div className="p-3 bg-surface-muted rounded text-xs space-y-2 border border-border">
-                <p className="font-semibold text-text">Emergency Nursing Helpdesk</p>
+                <p className="font-semibold text-text">Emergency Care Helpdesk</p>
                 <div className="flex items-center gap-2 text-primary font-bold">
                   <Phone size={14} /> +91 80 2345 6789 (24/7 Helpline)
                 </div>

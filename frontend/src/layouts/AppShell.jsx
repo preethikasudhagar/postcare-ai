@@ -5,7 +5,8 @@ import api from '../services/api'
 import {
   LayoutDashboard, Users, FileText, Pill, Calendar, Activity, AlertTriangle,
   MessageSquare, BarChart2, User, Settings, ChevronLeft, ChevronRight,
-  Bell, Search, LogOut, Menu, X, Brain, Network, Shield, Home, CheckCheck, Info
+  Bell, Search, LogOut, Menu, X, Brain, Network, Shield, Home, CheckCheck, Info,
+  HeartHandshake
 } from 'lucide-react'
 import { ErrorBoundary } from '../components/ui/index.jsx'
 import { clsx } from 'clsx'
@@ -84,7 +85,7 @@ function getNavItems(role) {
       { section: 'Administration', items: [
         { to: '/admin/users', icon: Users, label: 'Users' },
         { to: '/admin/doctors', icon: User, label: 'Doctors' },
-        { to: '/admin/nurses', icon: User, label: 'Nurses' },
+        { to: '/admin/caregivers', icon: HeartHandshake, label: 'Caregivers' },
         { to: '/admin/departments', icon: Shield, label: 'Departments' },
         { to: '/admin/settings', icon: Settings, label: 'Settings' },
       ]},

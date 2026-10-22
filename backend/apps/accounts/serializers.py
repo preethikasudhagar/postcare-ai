@@ -38,17 +38,19 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate_role(self, value):
         role = (value or '').strip().lower()
-        if role == 'admin':
-            raise serializers.ValidationError('Public self-registration as an Administrator is strictly prohibited.')
-        allowed_roles = ['patient', 'doctor', 'nurse', 'caregiver']
+        if role in ['admin', 'doctor', 'nurse']:
+            raise serializers.ValidationError(
+                f"Public self-registration as '{role.title()}' is not permitted. Staff accounts must be provisioned by an administrator."
+            )
+        allowed_roles = ['patient', 'caregiver']
         if role not in allowed_roles:
             raise serializers.ValidationError(f"Invalid registration role '{value}'. Permitted roles: {', '.join(allowed_roles)}.")
         return role
 
     def create(self, validated_data):
         role = validated_data.get('role', 'patient')
-        if role == 'admin':
-            raise serializers.ValidationError({'role': 'Public self-registration as an Administrator is strictly prohibited.'})
+        if role in ['admin', 'doctor', 'nurse']:
+            raise serializers.ValidationError({'role': 'Public self-registration for this role is not permitted.'})
 
         user = User.objects.create_user(
             email=validated_data['email'],
@@ -70,6 +72,14 @@ class RegisterSerializer(serializers.ModelSerializer):
                 surgery_type='General Post-Operative Recovery',
                 surgery_date=timezone.now().date(),
                 discharge_date=timezone.now().date(),
+            )
+        elif user.role == 'caregiver':
+            from apps.patients.models import Caregiver
+            Caregiver.objects.get_or_create(
+                user=user,
+                defaults={
+                    'relationship': 'Primary Caregiver'
+                }
             )
         elif user.role == 'doctor':
             from apps.patients.models import Doctor
@@ -130,6 +140,14 @@ class AdminUserCreateSerializer(serializers.ModelSerializer):
                 surgery_type='General Post-Operative Recovery',
                 surgery_date=timezone.now().date(),
                 discharge_date=timezone.now().date(),
+            )
+        elif user.role == 'caregiver':
+            from apps.patients.models import Caregiver
+            Caregiver.objects.get_or_create(
+                user=user,
+                defaults={
+                    'relationship': 'Primary Caregiver'
+                }
             )
         elif user.role == 'doctor':
             from apps.patients.models import Doctor

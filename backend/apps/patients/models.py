@@ -65,7 +65,7 @@ class Patient(models.Model):
 
 class Caregiver(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='caregiver_profile')
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='caregivers')
+    patient = models.ForeignKey(Patient, on_delete=models.SET_NULL, null=True, blank=True, related_name='caregivers')
     relationship = models.CharField(max_length=50, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -73,4 +73,5 @@ class Caregiver(models.Model):
         db_table = 'caregivers'
 
     def __str__(self):
-        return f"{self.user.get_full_name()} (Caregiver for {self.patient.user.get_full_name()})"
+        patient_name = self.patient.user.get_full_name() if self.patient and self.patient.user else "Unassigned"
+        return f"{self.user.get_full_name()} (Caregiver for {patient_name})"

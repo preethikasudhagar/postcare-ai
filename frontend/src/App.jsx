@@ -56,7 +56,8 @@ const NurseFollowUps = lazy(() => import('./pages/nurse/FollowUps'))
 const AdminDashboard    = lazy(() => import('./pages/admin/AdminDashboard'))
 const AdminUsers        = lazy(() => import('./pages/admin/Users'))
 const AdminDoctors      = lazy(() => import('./pages/admin/Doctors'))
-const AdminNurses       = lazy(() => import('./pages/admin/Nurses'))
+const AdminCaregivers   = lazy(() => import('./pages/admin/Caregivers'))
+const AdminNurses       = lazy(() => import('./pages/admin/Caregivers'))
 const AdminDepartments  = lazy(() => import('./pages/admin/Departments'))
 const AdminReports      = lazy(() => import('./pages/admin/Reports'))
 const AdminSettings     = lazy(() => import('./pages/admin/Settings'))
@@ -136,18 +137,15 @@ export default function App() {
           <Route path="/doctor/reports/medication-compliance" element={<ProtectedRoute roles={['doctor']}><MedicationComplianceReport /></ProtectedRoute>} />
           <Route path="/doctor/reports/follow-up-completion" element={<ProtectedRoute roles={['doctor']}><FollowUpCompletionReport /></ProtectedRoute>} />
 
-          {/* Nurse routes */}
-          <Route path="/nurse/dashboard"  element={<ProtectedRoute roles={['nurse']}><NurseDashboard /></ProtectedRoute>} />
-          <Route path="/nurse/patients"   element={<ProtectedRoute roles={['nurse']}><NursePatients /></ProtectedRoute>} />
-          <Route path="/nurse/recovery"   element={<ProtectedRoute roles={['nurse']}><NurseRecovery /></ProtectedRoute>} />
-          <Route path="/nurse/alerts"     element={<ProtectedRoute roles={['nurse']}><NurseAlerts /></ProtectedRoute>} />
-          <Route path="/nurse/follow-ups" element={<ProtectedRoute roles={['nurse']}><NurseFollowUps /></ProtectedRoute>} />
+          {/* Nurse routes (Redirected to Caregiver) */}
+          <Route path="/nurse/*"          element={<Navigate to="/caregiver/dashboard" replace />} />
 
           {/* Admin routes */}
           <Route path="/admin/dashboard"   element={<ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/users"       element={<ProtectedRoute roles={['admin']}><AdminUsers /></ProtectedRoute>} />
           <Route path="/admin/doctors"     element={<ProtectedRoute roles={['admin']}><AdminDoctors /></ProtectedRoute>} />
-          <Route path="/admin/nurses"      element={<ProtectedRoute roles={['admin']}><AdminNurses /></ProtectedRoute>} />
+          <Route path="/admin/caregivers"  element={<ProtectedRoute roles={['admin']}><AdminCaregivers /></ProtectedRoute>} />
+          <Route path="/admin/nurses"      element={<Navigate to="/admin/caregivers" replace />} />
           <Route path="/admin/departments" element={<ProtectedRoute roles={['admin']}><AdminDepartments /></ProtectedRoute>} />
           <Route path="/admin/reports"     element={<ProtectedRoute roles={['admin']}><AdminReports /></ProtectedRoute>} />
           <Route path="/admin/reports/recovery-index" element={<ProtectedRoute roles={['admin']}><RecoveryIndexReport /></ProtectedRoute>} />
