@@ -304,7 +304,7 @@ export default function RecoveryPage() {
               dataKey="score"
               xAxisKey="day"
               name="Recovery Score"
-              color="#1D5FD1"
+              color="#5B21B6"
               domain={[0, 100]}
               ticks={[0, 20, 40, 60, 80, 100]}
               bands={true}

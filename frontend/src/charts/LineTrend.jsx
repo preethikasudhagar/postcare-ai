@@ -16,7 +16,7 @@ export default function LineTrend({
   dataKey = 'score',
   xAxisKey = 'day',
   name = 'Recovery score',
-  color = '#1D5FD1',
+  color = '#5B21B6',
   unit = '',
   height = 240,
   domain,

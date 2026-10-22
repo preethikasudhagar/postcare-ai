@@ -24,10 +24,10 @@ function Navbar() {
       <div className="max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between h-16">
         <div className="flex items-center gap-3">
           <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <rect width="32" height="32" rx="8" fill="#1D5FD1" />
+            <rect width="32" height="32" rx="8" fill="#5B21B6" />
             <path d="M16 6v20M6 16h20" stroke="white" strokeWidth="3" strokeLinecap="round" />
-            <path d="M22 10 C26 10 28 13 28 16" stroke="#93C5FD" strokeWidth="2.5" strokeLinecap="round" />
-            <circle cx="28" cy="14" r="2" fill="#93C5FD" />
+            <path d="M22 10 C26 10 28 13 28 16" stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round" />
+            <circle cx="28" cy="14" r="2" fill="#F59E0B" />
           </svg>
           <span className="text-base font-bold text-text">PostCare AI</span>
         </div>
@@ -145,7 +145,7 @@ export default function LandingPage() {
                 <div className="relative w-20 h-20">
                   <svg viewBox="0 0 36 36" className="w-20 h-20 -rotate-90">
                     <circle cx="18" cy="18" r="15.9" fill="none" stroke="#E2E8F0" strokeWidth="3.2" />
-                    <circle cx="18" cy="18" r="15.9" fill="none" stroke="#1D5FD1" strokeWidth="3.2"
+                    <circle cx="18" cy="18" r="15.9" fill="none" stroke="#5B21B6" strokeWidth="3.2"
                       strokeDasharray="60 100" strokeLinecap="round" />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">

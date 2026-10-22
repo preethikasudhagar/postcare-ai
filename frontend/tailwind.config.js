@@ -5,27 +5,27 @@ export default {
     extend: {
       colors: {
         // Neutrals
-        bg: '#F7F9FC',
+        bg: '#F8FAFC',
         surface: '#FFFFFF',
         'surface-muted': '#F1F5F9',
         border: '#E2E8F0',
         'border-strong': '#CBD5E1',
-        text: '#0F1B2D',
+        text: '#0F172A',
         'text-secondary': '#475569',
         'text-muted': '#64748B',
         // Brand
-        primary: { DEFAULT: '#1D5FD1', hover: '#174EAE', tint: '#EAF1FD' },
-        secondary: { DEFAULT: '#0E8F9C', hover: '#0B7681', tint: '#E3F5F6' },
+        primary: { DEFAULT: '#5B21B6', hover: '#4C1D95', tint: '#F3E8FF' },
+        secondary: { DEFAULT: '#F59E0B', hover: '#D97706', tint: '#FEF3C7' },
         success: { DEFAULT: '#15803D', hover: '#116932', tint: '#E7F6EC' },
         warning: { DEFAULT: '#B45309', hover: '#92400E', tint: '#FEF3C7' },
         danger: { DEFAULT: '#C62828', hover: '#A82020', tint: '#FDECEC' },
         // Charts
-        'chart-low': '#22A05A',
-        'chart-medium': '#F2A311',
-        'chart-high': '#DC3B3B',
-        'chart-blue': '#2F6FE0',
-        'chart-teal': '#18A7B5',
-        'chart-grid': '#E8EDF4',
+        'chart-low': '#10B981',
+        'chart-medium': '#F59E0B',
+        'chart-high': '#EF4444',
+        'chart-blue': '#6D28D9',
+        'chart-teal': '#F59E0B',
+        'chart-grid': '#E2E8F0',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],

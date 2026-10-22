@@ -13,7 +13,7 @@ import { Activity, AlertCircle, Loader2 } from 'lucide-react'
 export default function BarCompare({
   data = [],
   dataKey = 'value',
-  color = '#1D5FD1',
+  color = '#5B21B6',
   unit = '%',
   height = 200,
   loading = false,
