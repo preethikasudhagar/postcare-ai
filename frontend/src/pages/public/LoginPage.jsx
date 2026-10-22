@@ -8,7 +8,6 @@ const DEMO_ACCOUNTS = [
   { role: 'Patient', email: 'patient@postcare.demo', password: 'Patient@123', icon: User, color: 'bg-secondary-tint text-secondary border-secondary/20' },
   { role: 'Doctor', email: 'doctor@postcare.demo', password: 'Doctor@123', icon: Stethoscope, color: 'bg-primary-tint text-primary border-primary/20' },
   { role: 'Caregiver', email: 'caregiver@postcare.demo', password: 'Caregiver@123', icon: HeartPulse, color: 'bg-warning-tint text-warning border-warning/20' },
-  { role: 'Admin', email: 'admin@postcare.demo', password: 'Admin@123', icon: ShieldCheck, color: 'bg-danger-tint text-danger border-danger/20' },
 ]
 
 const ROLE_DASHBOARDS = {
@@ -127,8 +126,8 @@ export default function LoginPage() {
             <ShieldCheck size={16} />
           </div>
           <div className="text-left">
-            <p className="text-xs font-semibold text-text leading-tight">System Administrator?</p>
-            <p className="text-[11px] text-text-muted leading-tight">Clinical IT & governance portal</p>
+            <p className="text-xs font-semibold text-text leading-tight">Admin</p>
+            <p className="text-[11px] text-text-muted leading-tight">System Administrator</p>
           </div>
         </div>
         <Link
@@ -146,7 +145,7 @@ export default function LoginPage() {
         <p className="text-xs font-semibold text-text-muted mb-2.5 text-center">
           Quick Demo Accounts
         </p>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           {DEMO_ACCOUNTS.map((acc) => (
             <button
               key={acc.role}
@@ -156,18 +155,18 @@ export default function LoginPage() {
                 setPassword(acc.password)
                 setError('')
               }}
-              className="flex items-center gap-2.5 p-2.5 border border-border rounded-lg hover:border-primary hover:bg-primary-tint/30 transition-all text-left group focus:outline-none focus:ring-1 focus:ring-primary"
+              className="flex items-center gap-2 p-2 border border-border rounded-lg hover:border-primary hover:bg-primary-tint/30 transition-all text-left group focus:outline-none focus:ring-1 focus:ring-primary"
             >
               <div
-                className={`w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0 border ${acc.color}`}
+                className={`w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 border ${acc.color}`}
               >
-                <acc.icon size={15} />
+                <acc.icon size={14} />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-semibold text-text group-hover:text-primary transition-colors">
                   {acc.role}
                 </p>
-                <p className="text-[11px] text-text-muted truncate">
+                <p className="text-[10px] text-text-muted truncate">
                   {acc.email.split('@')[0]}
                 </p>
               </div>
