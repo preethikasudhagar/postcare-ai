@@ -271,3 +271,24 @@ class LogoutView(APIView):
         except Exception:
             pass
         return Response({'message': 'Logged out successfully'})
+
+
+class AdminSeedDemoDataView(APIView):
+    """
+    Authenticated Administrator endpoint to trigger the idempotent demo data seeder.
+    Populates 50 Patients, 12 Doctors, 15 Caregivers, 8 Departments, 50 Discharge Plans,
+    and associated clinical telemetry.
+    """
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def post(self, request):
+        from io import StringIO
+        from django.core.management import call_command
+        out = StringIO()
+        call_command('seed_demo_data', stdout=out)
+        return Response({
+            'status': 'success',
+            'message': 'Demo dataset seeded successfully',
+            'output': out.getvalue()
+        }, status=status.HTTP_200_OK)
+

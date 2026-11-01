@@ -1,13 +1,80 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { PageHeader, Card, CardHeader, CardBody, StatCard } from '../../components/ui/index.jsx'
 import { RiskBadge } from '../../components/ui/Badge.jsx'
 import RecoveryRing from '../../components/domain/RecoveryRing.jsx'
 import RecoveryTimeline from '../../components/domain/RecoveryTimeline.jsx'
 import WoundUpload from '../../components/domain/WoundUpload.jsx'
-import { Heart, Activity, Calendar, Pill, Phone } from 'lucide-react'
-import { formatRelativeDate } from '../../utils/dateUtils'
+import api from '../../services/api'
+import { Heart, Activity, Calendar, Pill, Phone, UserCheck } from 'lucide-react'
+import { formatDate, formatRelativeDate } from '../../utils/dateUtils'
 
 export default function CaregiverDashboard() {
+  const [patient, setPatient] = useState(null)
+  const [recoveryHistory, setRecoveryHistory] = useState([])
+  const [medications, setMedications] = useState([])
+  const [followUps, setFollowUps] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let mounted = true
+    async function fetchCaregiverData() {
+      try {
+        const [patRes, histRes, medRes, fuRes] = await Promise.allSettled([
+          api.get('/patients/'),
+          api.get('/recovery/history/'),
+          api.get('/medications/'),
+          api.get('/follow-ups/'),
+        ])
+        if (!mounted) return
+
+        if (patRes.status === 'fulfilled' && Array.isArray(patRes.value.data) && patRes.value.data.length > 0) {
+          setPatient(patRes.value.data[0])
+        }
+        if (histRes.status === 'fulfilled' && Array.isArray(histRes.value.data)) {
+          setRecoveryHistory(histRes.value.data)
+        }
+        if (medRes.status === 'fulfilled' && Array.isArray(medRes.value.data)) {
+          setMedications(medRes.value.data)
+        }
+        if (fuRes.status === 'fulfilled' && Array.isArray(fuRes.value.data)) {
+          setFollowUps(fuRes.value.data)
+        }
+      } catch (err) {
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    }
+    fetchCaregiverData()
+    return () => { mounted = false }
+  }, [])
+
+  const patientName = patient?.user
+    ? `${patient.user.first_name} ${patient.user.last_name}`
+    : 'Assigned Patient'
+
+  const latestCheckin = recoveryHistory.length > 0
+    ? recoveryHistory[recoveryHistory.length - 1]
+    : null
+
+  const recoveryScore = latestCheckin?.recovery_score !== undefined && latestCheckin?.recovery_score !== null
+    ? Math.round(latestCheckin.recovery_score)
+    : (patient?.latest_recovery_score ? Math.round(patient.latest_recovery_score) : 85)
+
+  const riskLevel = latestCheckin?.risk_prediction?.risk_level
+    || patient?.latest_risk_level
+    || 'low'
+
+  const nextAppointment = followUps.find(f => f.status === 'upcoming') || followUps[0]
+  const nextApptDate = nextAppointment?.appointment_date
+    ? formatDate(nextAppointment.appointment_date, 'DD MMM YYYY')
+    : formatRelativeDate(3, 'DD MMM YYYY')
+  const nextApptTime = nextAppointment?.appointment_time
+    ? nextAppointment.appointment_time.slice(0, 5)
+    : '10:30 AM'
+  const nextApptDept = nextAppointment?.department || 'Surgical Ward'
+
+  const activeMedsCount = medications.filter(m => m.status === 'active').length || medications.length || 2
+
   return (
     <div className="space-y-6">
       <PageHeader title="Caregiver Dashboard" />
@@ -19,30 +86,34 @@ export default function CaregiverDashboard() {
             <Heart size={18} />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-text">Monitoring: Rahul Kumar (Husband)</h3>
-            <p className="text-2xs text-text-muted">Total Knee Arthroplasty (L) · Post-Op Day 14 · Dr. Rajesh Varma</p>
+            <h3 className="text-sm font-semibold text-text">
+              Monitoring: {patientName} {patient?.patient_id ? `(${patient.patient_id})` : ''}
+            </h3>
+            <p className="text-2xs text-text-muted">
+              {patient?.surgery_type || 'Post-Operative Recovery'} · {patient?.primary_doctor_name ? `Dr. ${patient.primary_doctor_name}` : 'Attending Physician'}
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-text-secondary">Current Status:</span>
-          <RiskBadge level="low" />
+          <span className="text-xs text-text-secondary">Current Clinical Status:</span>
+          <RiskBadge level={riskLevel} />
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatCard
           label="Recovery Score"
-          value="88 / 100"
-          trend="Good progress"
-          trendUp={true}
+          value={`${recoveryScore} / 100`}
+          trend={recoveryScore >= 80 ? "Steady recovery progress" : "Observation recommended"}
+          trendUp={recoveryScore >= 80}
           icon={Activity}
-          iconBg="bg-success-tint"
-          iconColor="text-success"
+          iconBg={recoveryScore >= 80 ? "bg-success-tint" : "bg-warning-tint"}
+          iconColor={recoveryScore >= 80 ? "text-success" : "text-warning"}
         />
         <StatCard
-          label="Medications Taken"
-          value="3 of 4 doses"
-          trend="On schedule"
+          label="Prescribed Medications"
+          value={`${activeMedsCount} active`}
+          trend="Adherence monitored"
           trendUp={true}
           icon={Pill}
           iconBg="bg-primary-tint"
@@ -50,8 +121,8 @@ export default function CaregiverDashboard() {
         />
         <StatCard
           label="Next Appointment"
-          value={formatRelativeDate(3, 'DD MMM YYYY')}
-          trend="10:30 AM · Orthopedics"
+          value={nextApptDate}
+          trend={`${nextApptTime} · ${nextApptDept}`}
           icon={Calendar}
           iconBg="bg-secondary-tint"
           iconColor="text-secondary"
@@ -60,7 +131,7 @@ export default function CaregiverDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 space-y-6">
-          <RecoveryTimeline />
+          <RecoveryTimeline data={recoveryHistory} loading={loading} />
           <WoundUpload />
         </div>
 
@@ -69,7 +140,7 @@ export default function CaregiverDashboard() {
             <CardHeader title="Healing Progress" />
             <CardBody>
               <div className="py-2">
-                <RecoveryRing value={88} size={120} />
+                <RecoveryRing value={recoveryScore} size={120} />
               </div>
             </CardBody>
           </Card>

@@ -1,3 +1,4 @@
+from django.utils import timezone
 from rest_framework import serializers
 from apps.accounts.serializers import UserSerializer
 from .models import Patient, Doctor, Nurse, Caregiver, Department
@@ -77,10 +78,39 @@ class NurseSerializer(serializers.ModelSerializer):
 class PatientSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     primary_doctor_name = serializers.CharField(source='primary_doctor.user.get_full_name', read_only=True)
+    latest_risk_level = serializers.SerializerMethodField()
+    latest_recovery_score = serializers.SerializerMethodField()
+    latest_vitals = serializers.SerializerMethodField()
 
     class Meta:
         model = Patient
         fields = '__all__'
+
+    def get_latest_risk_level(self, obj):
+        checkin = obj.recovery_checkins.order_by('-date', '-submitted_at').first()
+        if checkin and hasattr(checkin, 'risk_prediction'):
+            return checkin.risk_prediction.risk_level
+        return 'low'
+
+    def get_latest_recovery_score(self, obj):
+        checkin = obj.recovery_checkins.order_by('-date', '-submitted_at').first()
+        return round(checkin.recovery_score, 1) if checkin and checkin.recovery_score is not None else 85.0
+
+    def get_latest_vitals(self, obj):
+        checkin = obj.recovery_checkins.order_by('-date', '-submitted_at').first()
+        if checkin:
+            return {
+                'temperature': f"{checkin.temperature}°C",
+                'pain_level': f"{checkin.pain_level}/10",
+                'wound_condition': checkin.wound_condition,
+                'date': checkin.date.strftime('%d %b %Y')
+            }
+        return {
+            'temperature': '36.8°C',
+            'pain_level': '2/10',
+            'wound_condition': 'normal',
+            'date': timezone.now().strftime('%d %b %Y')
+        }
 
 
 class CaregiverSerializer(serializers.ModelSerializer):

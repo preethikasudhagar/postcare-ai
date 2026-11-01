@@ -28,4 +28,10 @@ echo "[4/4] Database migrations applied."
 # 5. Bootstrap admin if environment variables are set
 python backend/manage.py bootstrap_admin || true
 
+# 6. Optional: Seed demo data if flag is set in environment
+if [ "$SEED_DEMO_DATA" = "true" ] || [ "$POPULATE_DEMO_DATA" = "true" ]; then
+    echo "=== Running Demo Data Seeder ==="
+    python backend/manage.py seed_demo_data || true
+fi
+
 echo "=== PostCare AI Build Complete ==="

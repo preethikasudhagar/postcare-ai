@@ -51,6 +51,7 @@ urlpatterns = [
         path('', __import__('apps.patients.views', fromlist=['DepartmentListCreateView']).DepartmentListCreateView.as_view(), name='admin_department_list_create'),
         path('<int:pk>/', __import__('apps.patients.views', fromlist=['DepartmentDetailView']).DepartmentDetailView.as_view(), name='admin_department_detail'),
     ])),
+    path('api/admin/seed-demo-data/', account_views.AdminSeedDemoDataView.as_view(), name='admin_seed_demo_data'),
     path('api/admin/patients/link/', __import__('apps.patients.views', fromlist=['PatientLinkAccountView']).PatientLinkAccountView.as_view(), name='admin_patient_link'),
     path('api/auth/', include('apps.accounts.urls')),
     path('api/patients/', include('apps.patients.urls')),

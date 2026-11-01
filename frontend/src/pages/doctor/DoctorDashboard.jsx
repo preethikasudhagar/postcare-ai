@@ -16,15 +16,17 @@ export default function DoctorDashboard() {
   const { user } = useAuth()
   const [notifications, setNotifications] = useState([])
   const [patients, setPatients] = useState([])
+  const [followUps, setFollowUps] = useState([])
   const [reportStats, setReportStats] = useState(null)
   const [loading, setLoading] = useState(true)
 
   const fetchDashboardData = async () => {
     try {
-      const [notifRes, patRes, repRes] = await Promise.allSettled([
+      const [notifRes, patRes, repRes, fuRes] = await Promise.allSettled([
         api.get('/notifications/'),
         api.get('/patients/'),
         api.get('/reports/recovery/'),
+        api.get('/follow-ups/'),
       ])
       if (notifRes.status === 'fulfilled' && Array.isArray(notifRes.value.data)) {
         setNotifications(notifRes.value.data)
@@ -34,6 +36,9 @@ export default function DoctorDashboard() {
       }
       if (repRes.status === 'fulfilled' && repRes.value.data) {
         setReportStats(repRes.value.data)
+      }
+      if (fuRes.status === 'fulfilled' && Array.isArray(fuRes.value.data)) {
+        setFollowUps(fuRes.value.data)
       }
     } catch (e) {
     } finally {
@@ -67,18 +72,26 @@ export default function DoctorDashboard() {
   const highRiskAlerts = notifications.filter((n) => n.type === 'high_risk_alert')
   const unreadHighRisk = highRiskAlerts.filter((n) => !n.is_read)
 
-  const highRiskPatients = [
-    { id: 'P-101', name: 'Vikram Mehta', surgery: 'Cardiac Bypass (CABG)', risk: 'high', score: 38, checkin: 'Today 08:20 AM', temp: '38.6°C', pain: '8/10' },
-    { id: 'P-104', name: 'Anil Sengupta', surgery: 'Spinal Lumbar Fusion', risk: 'high', score: 42, checkin: 'Today 07:45 AM', temp: '38.4°C', pain: '7/10' },
-    { id: 'P-108', name: 'Sunita Rao', surgery: 'Appendectomy', risk: 'high', score: 45, checkin: 'Yesterday 09:10 PM', temp: '38.2°C', pain: '8/10' },
-  ]
+  const highRiskPatients = patients
+    .filter((p) => p.latest_risk_level === 'high' || p.latest_recovery_score < 60)
+    .slice(0, 6)
+    .map((p) => ({
+      id: p.patient_id,
+      name: p.user ? `${p.user.first_name} ${p.user.last_name}` : p.patient_id,
+      surgery: p.surgery_type || 'Post-Op Recovery',
+      risk: p.latest_risk_level || 'high',
+      score: p.latest_recovery_score ?? 45,
+      checkin: p.latest_vitals?.date ? `Date: ${p.latest_vitals.date}` : 'Recent',
+      temp: p.latest_vitals?.temperature || '38.2°C',
+      pain: p.latest_vitals?.pain_level || '7/10',
+    }))
 
-  const todayFollowUps = [
-    { time: '10:00 AM', name: 'Rahul Sharma', type: 'Post-Op Day 14 Staple Removal', status: 'upcoming' },
-    { time: '11:30 AM', name: 'Deepa Krishnan', type: 'Wound Dressing & Range Assessment', status: 'upcoming' },
-    { time: '02:00 PM', name: 'Sanjay Deshmukh', type: 'Virtual Pain Management Review', status: 'upcoming' },
-    { time: '04:15 PM', name: 'Kavita Menon', type: 'Physical Therapy Load Clearance', status: 'upcoming' },
-  ]
+  const todayFollowUps = followUps.slice(0, 5).map((fu) => ({
+    time: fu.appointment_time ? fu.appointment_time.slice(0, 5) : '10:00 AM',
+    name: fu.patient_name || 'Patient',
+    type: fu.purpose || 'Post-Op Clinical Review',
+    status: fu.status || 'upcoming',
+  }))
 
   return (
     <div className="space-y-6">
@@ -111,9 +124,9 @@ export default function DoctorDashboard() {
       {/* 4 Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          label="Active Patients"
-          value={patients.length > 0 ? `${patients.length + 127}` : "128"}
-          trend="+12 this week"
+          label="Assigned Patients"
+          value={patients.length}
+          trend={`${patients.filter(p => p.is_active).length} active under care`}
           trendUp={true}
           icon={Users}
           iconBg="bg-primary-tint"
@@ -129,9 +142,9 @@ export default function DoctorDashboard() {
           iconColor={unreadHighRisk.length > 0 ? "text-danger" : "text-success"}
         />
         <StatCard
-          label="Today's Follow-Ups"
-          value="4 scheduled"
-          trend="On schedule"
+          label="Clinical Follow-Ups"
+          value={`${followUps.length} scheduled`}
+          trend="Upcoming appointments"
           trendUp={true}
           icon={Calendar}
           iconBg="bg-secondary-tint"
@@ -241,11 +254,11 @@ export default function DoctorDashboard() {
             <CardBody>
               <RiskDonut
                 data={[
-                  { name: 'Low Risk', value: reportStats?.risk_distribution?.low ?? 94, color: '#15803D' },
-                  { name: 'Medium Risk', value: reportStats?.risk_distribution?.medium ?? 27, color: '#92400E' },
-                  { name: 'High Risk', value: reportStats?.risk_distribution?.high ?? 7, color: '#B91C1C' },
+                  { name: 'Low Risk', value: reportStats?.risk_distribution?.low ?? 0, color: '#15803D' },
+                  { name: 'Medium Risk', value: reportStats?.risk_distribution?.medium ?? 0, color: '#92400E' },
+                  { name: 'High Risk', value: reportStats?.risk_distribution?.high ?? 0, color: '#B91C1C' },
                 ]}
-                total={reportStats?.total_active_patients ?? (patients.length > 0 ? patients.length + 127 : 128)}
+                total={reportStats?.risk_distribution?.total ?? patients.length}
               />
             </CardBody>
           </Card>
@@ -258,7 +271,11 @@ export default function DoctorDashboard() {
           <Card>
             <CardHeader title="14-Day Recovery Trend" />
             <CardBody>
-              <LineTrend />
+              <LineTrend
+                data={reportStats?.daily_trajectory || []}
+                loading={loading}
+                emptyMessage="No recovery check-in trajectory available."
+              />
             </CardBody>
           </Card>
         </div>

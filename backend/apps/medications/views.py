@@ -14,6 +14,8 @@ class MedicationListCreateView(generics.ListCreateAPIView):
         user = self.request.user
         if hasattr(user, 'patient_profile'):
             return Medication.objects.filter(patient=user.patient_profile)
+        elif hasattr(user, 'caregiver_profile') and user.caregiver_profile.patient:
+            return Medication.objects.filter(patient=user.caregiver_profile.patient)
         return Medication.objects.all()
 
 class MedicationDetailView(generics.RetrieveUpdateDestroyAPIView):
