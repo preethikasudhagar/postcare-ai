@@ -24,13 +24,6 @@ def auto_bootstrap_admin(email=None, password=None, name=None):
     - If user does not exist: creates a new active admin user with the provided password.
     - If database table is not ready (e.g. before migrations), safely exits without raising errors.
     """
-    target_email = (email or os.getenv('ADMIN_EMAIL') or '').strip().lower()
-    target_password = (password or os.getenv('ADMIN_PASSWORD') or '').strip()
-    target_name = (name or os.getenv('ADMIN_NAME') or 'System Administrator').strip()
-
-    if not target_email:
-        return {'status': 'skipped', 'message': 'No ADMIN_EMAIL defined.'}
-
     # Safe check if table exists
     try:
         tables = connection.introspection.table_names()
@@ -38,6 +31,21 @@ def auto_bootstrap_admin(email=None, password=None, name=None):
             return {'status': 'skipped', 'message': 'users table does not exist yet.'}
     except Exception as exc:
         return {'status': 'error', 'message': f'Database table introspection failed: {exc}'}
+
+    # Requirement: Do not create a new admin account if one already exists
+    has_explicit_target = bool(email or os.getenv('ADMIN_EMAIL'))
+    if not has_explicit_target:
+        existing_admin = User.objects.filter(role='admin').first()
+        if existing_admin:
+            msg = f"An administrator account already exists ('{existing_admin.email}'). Skipping automatic bootstrap."
+            print(f"[Admin Setup] {msg}")
+            return {'status': 'skipped', 'email': existing_admin.email, 'message': msg}
+
+    target_email = (email or os.getenv('ADMIN_EMAIL') or 'admin@postcare.demo').strip().lower()
+    target_name = (name or os.getenv('ADMIN_NAME') or 'Hospital Administrator').strip()
+
+    if not target_email:
+        return {'status': 'skipped', 'message': 'No ADMIN_EMAIL defined.'}
 
     name_parts = target_name.split(' ', 1)
     first_name = name_parts[0]
@@ -51,15 +59,18 @@ def auto_bootstrap_admin(email=None, password=None, name=None):
             user.is_staff = True
             user.is_superuser = True
             user.is_active = True
-            if target_password:
-                user.set_password(target_password)
+            # Only update password for an existing user if explicitly provided
+            explicit_password = password or os.getenv('ADMIN_PASSWORD')
+            if explicit_password:
+                user.set_password(explicit_password.strip())
             user.save()
             msg = f"Successfully promoted existing user '{target_email}' to Administrator."
             print(f"[Admin Setup] {msg}")
             return {'status': 'promoted', 'email': target_email, 'message': msg}
         else:
-            if not target_password:
-                msg = f"ADMIN_EMAIL '{target_email}' provided, but no existing user was found and no ADMIN_PASSWORD was given. Cannot create without password."
+            new_password = (password or os.getenv('ADMIN_PASSWORD') or 'Admin@123').strip()
+            if not new_password:
+                msg = f"ADMIN_EMAIL '{target_email}' provided, but no existing user was found and no password was given. Cannot create without password."
                 print(f"[Admin Setup] {msg}")
                 return {'status': 'skipped', 'message': msg}
 
@@ -73,7 +84,7 @@ def auto_bootstrap_admin(email=None, password=None, name=None):
                 is_superuser=True,
                 is_active=True,
             )
-            user.set_password(target_password)
+            user.set_password(new_password)
             user.save()
             msg = f"Successfully created new Administrator account '{target_email}'."
             print(f"[Admin Setup] {msg}")

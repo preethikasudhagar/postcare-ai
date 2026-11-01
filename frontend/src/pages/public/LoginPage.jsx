@@ -123,23 +123,34 @@ export default function LoginPage() {
         </button>
       </form>
 
-      {/* Dedicated Administrator Portal Entry */}
-      <div className="mt-4 p-3 bg-slate-50 border border-slate-200/80 rounded-lg flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-md bg-danger-tint border border-danger/20 flex items-center justify-center text-danger flex-shrink-0">
-            <ShieldCheck size={16} />
-          </div>
-          <div className="text-left">
-            <p className="text-xs font-semibold text-text leading-tight">Admin</p>
-            <p className="text-[11px] text-text-muted leading-tight">System Administrator</p>
+      {/* Prominent Administrator Sign In Card */}
+      <div className="mt-5 p-4 rounded-xl bg-gradient-to-br from-primary-tint/30 via-surface to-slate-50 border-2 border-primary/30 shadow-xs">
+        <div className="flex items-start justify-between gap-3 mb-2.5">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-lg bg-primary text-white flex items-center justify-center shadow-xs flex-shrink-0">
+              <ShieldCheck size={18} />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-bold text-text">Administrator Portal</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-primary/10 text-primary">
+                  Restricted
+                </span>
+              </div>
+              <p className="text-[11px] text-text-muted mt-0.5 leading-tight">
+                Clinical governance, staff credentialing & system controls
+              </p>
+            </div>
           </div>
         </div>
+
         <Link
           to="/admin/login"
-          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-surface hover:bg-slate-100 text-text border border-border-strong rounded-md transition-all shadow-2xs hover:border-primary hover:text-primary"
+          className="w-full h-9 mt-1 px-4 bg-surface hover:bg-primary hover:text-white text-primary border border-primary/40 hover:border-primary font-semibold rounded-lg transition-all duration-150 flex items-center justify-center gap-2 text-xs shadow-2xs group cursor-pointer"
         >
+          <ShieldCheck size={14} className="group-hover:text-white transition-colors" />
           <span>Admin Sign In</span>
-          <span aria-hidden="true">&rarr;</span>
+          <span aria-hidden="true" className="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
         </Link>
       </div>
 

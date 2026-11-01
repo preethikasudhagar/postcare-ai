@@ -115,7 +115,7 @@ export default function AdminLoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full h-11 bg-primary text-white font-semibold rounded-lg hover:bg-primary-hover active:scale-[0.99] transition-all duration-150 disabled:opacity-60 flex items-center justify-center gap-2 text-sm shadow-xs"
+          className="w-full h-11 bg-primary text-white font-semibold rounded-lg hover:bg-primary-hover active:scale-[0.99] transition-all duration-150 disabled:opacity-60 flex items-center justify-center gap-2 text-sm shadow-xs cursor-pointer"
         >
           {loading ? (
             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -125,34 +125,6 @@ export default function AdminLoginPage() {
           Sign In to Admin Portal
         </button>
       </form>
-
-      {/* Admin Demo Shortcut */}
-      <div className="mt-6 pt-5 border-t border-border">
-        <p className="text-xs font-semibold text-text-muted mb-2.5 text-center">
-          Quick Demo Administrator
-        </p>
-        <button
-          type="button"
-          onClick={() => {
-            setEmail('admin@postcare.demo')
-            setPassword('Admin@123')
-            setError('')
-          }}
-          className="w-full flex items-center gap-2.5 p-2.5 border border-border rounded-lg hover:border-primary hover:bg-primary-tint/30 transition-all text-left group focus:outline-none focus:ring-1 focus:ring-primary"
-        >
-          <div className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0 border bg-danger-tint text-danger border-danger/20">
-            <ShieldCheck size={15} />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold text-text group-hover:text-primary transition-colors">
-              Hospital Administrator
-            </p>
-            <p className="text-[11px] text-text-muted truncate">
-              admin@postcare.demo
-            </p>
-          </div>
-        </button>
-      </div>
 
       {/* Return to standard sign in */}
       <div className="mt-6 pt-4 border-t border-border text-center">
