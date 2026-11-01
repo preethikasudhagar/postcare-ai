@@ -51,7 +51,7 @@ export default function Architecture() {
 
             {/* Tier 3: Core Subsystems Grid */}
             <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 bg-white border-2 border-border rounded-lg text-center shadow-xs">
+              <div className="p-4 bg-surface border-2 border-border rounded-lg text-center shadow-xs">
                 <div className="flex items-center justify-center gap-1.5 text-text font-bold text-xs mb-1">
                   <Database size={16} className="text-secondary" /> PostgreSQL DB
                 </div>
@@ -65,7 +65,7 @@ export default function Architecture() {
                 <p className="text-2xs text-primary/80">Random Forest multi-class inference</p>
               </div>
 
-              <div className="p-4 bg-white border-2 border-border rounded-lg text-center shadow-xs">
+              <div className="p-4 bg-surface border-2 border-border rounded-lg text-center shadow-xs">
                 <div className="flex items-center justify-center gap-1.5 text-text font-bold text-xs mb-1">
                   <Bell size={16} className="text-warning" /> Alert Subsystem
                 </div>

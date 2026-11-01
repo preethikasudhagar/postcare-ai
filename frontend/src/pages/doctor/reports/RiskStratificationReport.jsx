@@ -84,9 +84,9 @@ export default function RiskStratificationReport() {
 
   const dist = data?.distribution || { low: 0, medium: 0, high: 0, total: 0 }
   const riskDonutData = [
-    { name: 'Low Risk', value: dist.low || 0, color: '#22A05A' },
-    { name: 'Medium Risk', value: dist.medium || 0, color: '#F2A311' },
-    { name: 'High Risk', value: dist.high || 0, color: '#DC3B3B' },
+    { name: 'Low Risk', value: dist.low || 0, color: '#15803D' },
+    { name: 'Medium Risk', value: dist.medium || 0, color: '#92400E' },
+    { name: 'High Risk', value: dist.high || 0, color: '#B91C1C' },
   ]
 
   return (
@@ -111,7 +111,7 @@ export default function RiskStratificationReport() {
               type="button"
               onClick={handlePrint}
               aria-label="Print Risk Stratification Report"
-              className="h-9 px-3.5 border border-border-strong text-xs font-medium rounded-lg text-text bg-white hover:bg-surface-muted focus-visible:ring-2 focus-visible:ring-primary flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+              className="h-9 px-3.5 border-[1.5px] border-primary text-xs font-medium rounded-lg text-primary bg-surface hover:bg-primary-tint focus-visible:ring-2 focus-visible:ring-primary flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
             >
               <Printer size={14} /> Print Report
             </button>
@@ -119,7 +119,7 @@ export default function RiskStratificationReport() {
               type="button"
               onClick={handleExportPDF}
               aria-label="Export Risk Stratification Report as PDF"
-              className="h-9 px-4 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary-hover focus-visible:ring-2 focus-visible:ring-primary flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+              className="h-9 px-4 bg-secondary text-text text-xs font-semibold rounded-lg hover:bg-secondary-hover focus-visible:ring-2 focus-visible:ring-primary flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
             >
               <Download size={14} /> Export PDF
             </button>
@@ -137,7 +137,7 @@ export default function RiskStratificationReport() {
           <button
             type="button"
             onClick={fetchReport}
-            className="px-3 py-1 bg-white border border-danger/40 rounded text-xs font-semibold hover:bg-danger-tint transition-colors flex items-center gap-1"
+            className="px-3 py-1 bg-surface border border-danger/40 rounded text-xs font-semibold hover:bg-danger-tint transition-colors flex items-center gap-1"
           >
             <RefreshCw size={12} /> Retry
           </button>
@@ -218,7 +218,7 @@ export default function RiskStratificationReport() {
                   <div
                     key={alert.id}
                     onClick={() => setInspectRecord(alert)}
-                    className="p-3 bg-white border border-danger/30 rounded-lg flex items-center justify-between text-xs hover:shadow-xs transition-shadow cursor-pointer group"
+                    className="p-3 bg-surface border border-danger/30 rounded-lg flex items-center justify-between text-xs hover:shadow-xs transition-shadow cursor-pointer group"
                   >
                     <div>
                       <div className="font-bold text-text group-hover:text-danger transition-colors">{alert.patient_name}</div>
@@ -309,7 +309,7 @@ export default function RiskStratificationReport() {
                         onClick={() => setSelectedRiskTab(tab.key)}
                         className={`px-2.5 py-1 rounded-md font-medium transition-colors ${
                           selectedRiskTab === tab.key
-                            ? 'bg-white text-text font-bold shadow-xs'
+                            ? 'bg-surface text-text font-bold shadow-xs'
                             : 'text-text-muted hover:text-text'
                         }`}
                       >
@@ -394,7 +394,7 @@ export default function RiskStratificationReport() {
                               type="button"
                               onClick={() => setInspectRecord(p)}
                               aria-label={`Inspect prediction for ${p.patient_name}`}
-                              className="px-2.5 py-1 text-xs border border-border text-primary font-semibold rounded hover:bg-primary-tint hover:border-primary/40 transition-colors inline-flex items-center gap-1 cursor-pointer"
+                              className="px-2.5 py-1 text-xs font-semibold text-primary bg-primary-tint rounded hover:bg-primary-hover hover:text-white transition-colors inline-flex items-center gap-1 cursor-pointer"
                             >
                               <Eye size={12} /> Inspect
                             </button>
@@ -435,7 +435,7 @@ export default function RiskStratificationReport() {
               <h4 className="font-bold text-text mb-1.5 uppercase text-2xs tracking-wider text-text-secondary">
                 Patient & Assessment Details
               </h4>
-              <div className="grid grid-cols-2 gap-2 p-3 bg-white border border-border rounded-lg text-text">
+              <div className="grid grid-cols-2 gap-2 p-3 bg-surface border border-border rounded-lg text-text">
                 <div>
                   <span className="text-text-muted">Patient:</span> <span className="font-medium">{inspectRecord.patient_name}</span>
                 </div>
@@ -486,7 +486,7 @@ export default function RiskStratificationReport() {
                 <h4 className="font-bold text-text mb-1 uppercase text-2xs tracking-wider text-text-secondary">
                   Attending Physician Notes
                 </h4>
-                <div className="p-3 bg-white border border-border rounded-lg text-text-secondary italic">
+                <div className="p-3 bg-surface border border-border rounded-lg text-text-secondary italic">
                   "{inspectRecord.doctor_review_notes}"
                 </div>
               </div>

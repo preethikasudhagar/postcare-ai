@@ -5,6 +5,7 @@ const cn = (...a) => twMerge(clsx(...a))
 
 // Re-export components from other UI modules
 export { default as Button } from './Button.jsx'
+export { default as Logo } from './Logo.jsx'
 export { Card, CardHeader, CardBody, CardFooter, StatCard } from './Card.jsx'
 export { Modal, ConfirmDialog, Drawer } from './Modal.jsx'
 export { Input, Textarea, Select, Checkbox, Switch, Slider } from './FormFields.jsx'
@@ -30,7 +31,7 @@ export function SkeletonText({ lines = 3, className }) {
 
 export function SkeletonCard() {
   return (
-    <div className="bg-white border border-border rounded-[10px] p-5 space-y-3" aria-hidden="true">
+    <div className="bg-surface border border-border rounded-[10px] p-5 space-y-3" aria-hidden="true">
       <div className="flex items-center gap-3">
         <div className="skeleton w-10 h-10 rounded-[8px]" />
         <div className="flex-1 space-y-2">
@@ -82,7 +83,7 @@ export function ErrorState({ title = 'Something went wrong', description, onRetr
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
       <div className="w-16 h-16 rounded-full bg-danger-tint flex items-center justify-center mb-4">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C62828" strokeWidth="1.5">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#B91C1C" strokeWidth="1.5">
           <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
       </div>
@@ -185,20 +186,20 @@ export function Stepper({ steps, currentStep, onStepClick }) {
               <div className={cn(
                 'w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold border-2 transition-all',
                 isCompleted ? 'bg-primary border-primary text-white group-hover:bg-primary-hover group-hover:scale-105' :
-                isCurrent ? 'border-primary text-primary bg-white ring-2 ring-primary/20 shadow-xs' :
-                'border-border text-text-muted bg-white group-hover:border-border-strong'
+                isCurrent ? 'border-primary text-primary bg-surface ring-2 ring-primary ring-offset-1 ring-offset-bg shadow-xs' :
+                'border-[#B8A9E0] text-[#55607A] bg-surface group-hover:border-primary'
               )}>
                 {isCompleted ? '✓' : i + 1}
               </div>
               <span className={cn(
                 'text-2xs mt-1.5 font-medium whitespace-nowrap transition-colors',
-                isCurrent ? 'text-primary font-semibold' : 'text-text-muted group-hover:text-text'
+                isCurrent ? 'text-primary font-semibold' : 'text-[#55607A] group-hover:text-text'
               )}>
                 {step.label}
               </span>
             </button>
             {i < steps.length - 1 && (
-              <div className={cn('flex-1 min-w-[20px] h-0.5 mb-5 mx-1 transition-colors', isCompleted ? 'bg-primary' : 'bg-border')} />
+              <div className={cn('flex-1 min-w-[20px] h-0.5 mb-5 mx-1 transition-colors', isCompleted ? 'bg-primary' : 'bg-[#DDD0F7]')} />
             )}
           </React.Fragment>
         )

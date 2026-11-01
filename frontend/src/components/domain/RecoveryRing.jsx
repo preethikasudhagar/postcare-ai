@@ -14,11 +14,11 @@ export default function RecoveryRing({ value = 78, size = 120, showCategory = tr
   let bgTint = 'text-success'
 
   if (value < 50) {
-    color = '#C62828'
+    color = '#B91C1C'
     category = 'High attention'
     bgTint = 'text-danger'
   } else if (value < 80) {
-    color = '#B45309'
+    color = '#92400E'
     category = 'Needs monitoring'
     bgTint = 'text-warning'
   }
@@ -31,7 +31,7 @@ export default function RecoveryRing({ value = 78, size = 120, showCategory = tr
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="#E2E8F0"
+            stroke="#D3C8EE"
             strokeWidth={strokeWidth}
             fill="transparent"
           />

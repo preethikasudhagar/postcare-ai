@@ -131,7 +131,7 @@ export default function DoctorAlerts() {
                 type="button"
                 onClick={handleResolveAll}
                 disabled={resolvingAll || loading}
-                className="inline-flex items-center gap-1.5 h-9 px-3.5 border border-border-strong text-xs font-semibold rounded-sm text-text bg-white hover:bg-surface-muted transition-colors shadow-xs disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 h-9 px-3.5 border border-border-strong text-xs font-semibold rounded-sm text-text bg-surface hover:bg-surface-muted transition-colors shadow-xs disabled:opacity-50"
               >
                 <CheckCheck size={14} className="text-primary" /> Mark All Acknowledged
               </button>
@@ -140,7 +140,7 @@ export default function DoctorAlerts() {
               type="button"
               onClick={fetchAlerts}
               disabled={loading}
-              className="inline-flex items-center gap-1.5 h-9 px-3.5 border border-border-strong text-xs font-medium rounded-sm text-text bg-white hover:bg-surface-muted transition-colors shadow-xs disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 h-9 px-3.5 border border-border-strong text-xs font-medium rounded-sm text-text bg-surface hover:bg-surface-muted transition-colors shadow-xs disabled:opacity-50"
             >
               <RefreshCw size={13} className={loading ? 'animate-spin text-primary' : 'text-text-muted'} /> Refresh
             </button>
@@ -180,7 +180,7 @@ export default function DoctorAlerts() {
       </div>
 
       {/* Controls & Filter Bar */}
-      <div className="bg-white border border-border rounded-lg p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
+      <div className="bg-surface border border-border rounded-lg p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
         {/* Search */}
         <div className="relative w-full sm:max-w-xs">
           <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted" />
@@ -189,7 +189,7 @@ export default function DoctorAlerts() {
             placeholder="Search alerts by patient or keyword..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-border rounded focus:outline-none focus:border-primary text-text placeholder:text-text-muted"
+            className="w-full pl-8 pr-3 py-1.5 text-xs bg-surface border border-border rounded focus:outline-none focus:border-primary text-text placeholder:text-text-muted"
           />
         </div>
 
@@ -244,7 +244,7 @@ export default function DoctorAlerts() {
 
       {/* Loading State */}
       {loading && (
-        <div className="py-20 flex flex-col items-center justify-center text-xs text-text-muted gap-2.5 bg-white border border-border rounded-lg shadow-xs">
+        <div className="py-20 flex flex-col items-center justify-center text-xs text-text-muted gap-2.5 bg-surface border border-border rounded-lg shadow-xs">
           <Loader2 size={24} className="animate-spin text-primary" />
           <span>Loading clinical alerts queue...</span>
         </div>
@@ -252,7 +252,7 @@ export default function DoctorAlerts() {
 
       {/* Error State */}
       {!loading && error && (
-        <div className="py-14 px-6 flex flex-col items-center justify-center text-center bg-white border border-border rounded-lg shadow-xs">
+        <div className="py-14 px-6 flex flex-col items-center justify-center text-center bg-surface border border-border rounded-lg shadow-xs">
           <div className="w-10 h-10 rounded-full bg-danger-tint flex items-center justify-center text-danger mb-2">
             <AlertCircle size={22} />
           </div>
@@ -270,7 +270,7 @@ export default function DoctorAlerts() {
 
       {/* Empty State */}
       {!loading && !error && filtered.length === 0 && (
-        <div className="py-20 px-6 text-center bg-white border border-border rounded-lg shadow-xs">
+        <div className="py-20 px-6 text-center bg-surface border border-border rounded-lg shadow-xs">
           <div className="w-12 h-12 rounded-full bg-success-tint flex items-center justify-center text-success mx-auto mb-3">
             <CheckCircle2 size={26} />
           </div>
@@ -307,7 +307,7 @@ export default function DoctorAlerts() {
             return (
               <div
                 key={alert.id}
-                className={`p-5 bg-white border rounded-[10px] shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-all ${
+                className={`p-5 bg-surface border rounded-[10px] shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-all ${
                   isResolved
                     ? 'opacity-75 border-border bg-surface-muted/20'
                     : isCritical

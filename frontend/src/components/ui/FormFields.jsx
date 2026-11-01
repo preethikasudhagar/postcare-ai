@@ -42,10 +42,10 @@ export function Input({ label, name, type = 'text', placeholder, value, onChange
           required={required}
           autoComplete={autoComplete}
           className={cn(
-            'w-full h-10 px-3 text-sm bg-white border rounded-sm text-text placeholder-text-muted',
+            'w-full h-10 px-3 text-sm bg-surface border rounded-sm text-text placeholder:text-placeholder',
             'transition-colors duration-150',
-            'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-0 focus:border-primary',
-            error ? 'border-danger bg-danger-tint' : 'border-border-strong hover:border-primary',
+            'focus:outline-none focus:ring-2 focus:ring-primary-hover focus:ring-offset-0 focus:border-primary-hover',
+            error ? 'border-danger bg-danger-tint' : 'border-border hover:border-primary-hover',
             disabled && 'bg-surface-muted text-text-muted cursor-not-allowed',
             isPassword && 'pr-10',
             className
@@ -70,9 +70,9 @@ export function Textarea({ label, name, placeholder, value, onChange, onBlur, er
         id={name} name={name} placeholder={placeholder} value={value}
         onChange={onChange} onBlur={onBlur} disabled={disabled} required={required} rows={rows}
         className={cn(
-          'w-full px-3 py-2 text-sm bg-white border rounded-sm text-text placeholder-text-muted resize-y',
-          'focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors',
-          error ? 'border-danger bg-danger-tint' : 'border-border-strong hover:border-primary',
+          'w-full px-3 py-2 text-sm bg-surface border rounded-sm text-text placeholder:text-placeholder resize-y',
+          'focus:outline-none focus:ring-2 focus:ring-primary-hover focus:border-primary-hover transition-colors',
+          error ? 'border-danger bg-danger-tint' : 'border-border hover:border-primary-hover',
           disabled && 'bg-surface-muted cursor-not-allowed',
           className
         )}
@@ -89,9 +89,9 @@ export function Select({ label, name, options = [], value, onChange, onBlur, err
         id={name} name={name} value={value} onChange={onChange} onBlur={onBlur}
         disabled={disabled} required={required}
         className={cn(
-          'w-full h-10 px-3 text-sm bg-white border rounded-sm text-text appearance-none',
-          'focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors',
-          error ? 'border-danger' : 'border-border-strong hover:border-primary',
+          'w-full h-10 px-3 text-sm bg-surface border rounded-sm text-text appearance-none',
+          'focus:outline-none focus:ring-2 focus:ring-primary-hover focus:border-primary-hover transition-colors',
+          error ? 'border-danger' : 'border-border hover:border-primary-hover',
           disabled && 'bg-surface-muted cursor-not-allowed',
           className
         )}
@@ -122,7 +122,7 @@ export function Switch({ checked, onChange, label, disabled }) {
       <div className={cn('relative w-10 h-6 rounded-full transition-colors duration-200',
         checked ? 'bg-primary' : 'bg-border-strong', disabled && 'opacity-50')}
         onClick={() => !disabled && onChange(!checked)}>
-        <div className={cn('absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200',
+        <div className={cn('absolute top-1 left-1 w-4 h-4 bg-surface rounded-full shadow transition-transform duration-200',
           checked && 'translate-x-4')} />
       </div>
       {label && <span className="text-sm text-text">{label}</span>}

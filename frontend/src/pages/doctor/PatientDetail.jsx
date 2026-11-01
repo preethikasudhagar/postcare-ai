@@ -12,6 +12,7 @@ import {
   FileText, Activity, Brain, Pill, Calendar, MessageSquare,
   User, ShieldAlert, Plus, CheckCircle, Clock, Thermometer, Send, AlertCircle
 } from 'lucide-react'
+import { formatDate, formatRelativeDate } from '../../utils/dateUtils'
 
 export default function PatientDetail() {
   const { id } = useParams()
@@ -19,7 +20,7 @@ export default function PatientDetail() {
   const [noteDrawerOpen, setNoteDrawerOpen] = useState(false)
   const [clinicalNote, setClinicalNote] = useState('')
   const [savedNotes, setSavedNotes] = useState([
-    { id: 1, author: 'Dr. Rajesh Varma', date: '14 Sep 2026 04:30 PM', text: 'Reviewed Day 10 check-in. Incision clean, no edema. Advised continuation of active quadriceps exercises.' }
+    { id: 1, author: 'Dr. Rajesh Varma', date: `${formatRelativeDate(-4, 'DD MMM YYYY')} 04:30 PM`, text: 'Reviewed Day 10 check-in. Incision clean, no edema. Advised continuation of active quadriceps exercises.' }
   ])
 
   // Backend API states
@@ -96,7 +97,7 @@ export default function PatientDetail() {
   return (
     <div className="space-y-6 w-full max-w-full min-w-0">
       {/* Patient Header Identity Card */}
-      <div className="bg-white border border-border rounded-lg p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xs min-w-0">
+      <div className="bg-surface border border-border rounded-lg p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xs min-w-0">
         <div className="flex items-center gap-4 min-w-0">
           <Avatar name={patientName} size="lg" />
           <div className="min-w-0">
@@ -108,7 +109,7 @@ export default function PatientDetail() {
               UHID: <strong>{patientUHID}</strong> · 54 Yrs · {patientGender} · O+ · Procedure: <strong className="text-text">{patientProcedure}</strong>
             </p>
             <p className="text-2xs text-text-secondary mt-0.5 truncate">
-              Surgery Date: 04 Sep 2026 · Post-Op Day 14 · Primary Surgeon: Dr. Rajesh Varma
+              Surgery Date: {patientData?.surgery_date ? formatDate(patientData.surgery_date, 'DD MMM YYYY') : formatRelativeDate(-14, 'DD MMM YYYY')} · Post-Op Day 14 · Primary Surgeon: Dr. Rajesh Varma
             </p>
           </div>
         </div>
@@ -122,7 +123,7 @@ export default function PatientDetail() {
           </button>
           <Link
             to="/doctor/messages"
-            className="inline-flex items-center gap-1.5 h-9 px-3.5 border border-border-strong text-xs font-medium rounded-sm text-text bg-white hover:bg-surface-muted transition-colors"
+            className="inline-flex items-center gap-1.5 h-9 px-3.5 border border-border-strong text-xs font-medium rounded-sm text-text bg-surface hover:bg-surface-muted transition-colors"
           >
             <MessageSquare size={14} /> Message Patient
           </Link>
@@ -186,7 +187,7 @@ export default function PatientDetail() {
                     </div>
                   </div>
                   <div className="mt-4 p-3 bg-primary-tint/40 border border-primary/20 rounded text-xs text-primary">
-                    <strong>Surgeon Guidance:</strong> Patient recovery trajectory is on target. Staple removal scheduled for 24 September.
+                    <strong>Surgeon Guidance:</strong> Patient recovery trajectory is on target. Staple removal scheduled for {formatRelativeDate(3, 'DD MMMM')}.
                   </div>
                 </CardBody>
               </Card>
@@ -217,7 +218,7 @@ export default function PatientDetail() {
                       : [{ day: 'D1', score: 6 }, { day: 'D3', score: 5 }, { day: 'D5', score: 4 }, { day: 'D7', score: 3 }, { day: 'D9', score: 2 }, { day: 'D14', score: 1 }]
                   }
                   dataKey="score"
-                  color="#DC3B3B"
+                  color="#5B21B6"
                   bands={false}
                 />
               </CardBody>
@@ -233,7 +234,7 @@ export default function PatientDetail() {
                       : [{ day: 'D1', score: 36.8 }, { day: 'D3', score: 37.0 }, { day: 'D5', score: 36.9 }, { day: 'D7', score: 36.7 }, { day: 'D9', score: 36.6 }, { day: 'D14', score: 36.5 }]
                   }
                   dataKey="score"
-                  color="#18A7B5"
+                  color="#5B21B6"
                   bands={false}
                 />
               </CardBody>
@@ -287,7 +288,7 @@ export default function PatientDetail() {
 
           <div className="space-y-3">
             {savedNotes.map((n) => (
-              <div key={n.id} className="p-4 bg-white border border-border rounded-lg shadow-xs space-y-1">
+              <div key={n.id} className="p-4 bg-surface border border-border rounded-lg shadow-xs space-y-1">
                 <div className="flex justify-between text-xs">
                   <strong className="text-text font-semibold">{n.author}</strong>
                   <span className="text-text-muted">{n.date}</span>

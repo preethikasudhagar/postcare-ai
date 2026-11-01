@@ -6,8 +6,8 @@ import { Loader2 } from 'lucide-react'
 const cn = (...args) => twMerge(clsx(...args))
 
 const variants = {
-  primary: 'bg-primary text-white hover:bg-primary-hover border border-transparent',
-  secondary: 'bg-white text-text border border-border-strong hover:bg-surface-muted',
+  primary: 'bg-secondary text-text hover:bg-secondary-hover border border-transparent shadow-xs',
+  secondary: 'bg-surface text-primary border-[1.5px] border-primary hover:bg-primary-tint',
   ghost: 'bg-transparent text-text-secondary border border-transparent hover:bg-surface-muted hover:text-text',
   danger: 'bg-danger text-white hover:bg-danger-hover border border-transparent',
 }

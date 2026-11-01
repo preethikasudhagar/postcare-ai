@@ -8,29 +8,10 @@ import {
   Bell, Search, LogOut, Menu, X, Brain, Network, Shield, Home, CheckCheck, Info,
   HeartHandshake
 } from 'lucide-react'
-import { ErrorBoundary } from '../components/ui/index.jsx'
+import { ErrorBoundary, Logo } from '../components/ui/index.jsx'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 const cn = (...a) => twMerge(clsx(...a))
-
-function Logo({ compact = false }) {
-  return (
-    <div className={cn('flex items-center gap-2', compact && 'justify-center')}>
-      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-        <rect width="32" height="32" rx="8" fill="#5B21B6" />
-        <path d="M16 6v20M6 16h20" stroke="white" strokeWidth="3" strokeLinecap="round" />
-        <path d="M22 10 C26 10 28 13 28 16" stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round" />
-        <circle cx="28" cy="14" r="2" fill="#F59E0B" />
-      </svg>
-      {!compact && (
-        <div>
-          <div className="text-sm font-bold text-text leading-none">PostCare AI</div>
-          <div className="text-2xs text-text-muted leading-none mt-0.5">Recovery Management</div>
-        </div>
-      )}
-    </div>
-  )
-}
 
 function getNavItems(role) {
   const common = { dashboard: { icon: LayoutDashboard, label: 'Dashboard' } }
@@ -167,17 +148,18 @@ export default function AppShell() {
 
   const Sidebar = ({ mobile = false }) => (
     <aside className={cn(
-      'flex flex-col bg-white border-r border-border h-full transition-all duration-200',
+      'flex flex-col bg-surface border-r border-border h-full transition-all duration-200',
       mobile ? 'w-64' : collapsed ? 'w-18' : 'w-sidebar'
     )}>
       {/* Logo */}
       <div className="flex items-center justify-between p-4 border-b border-border">
-        <Link to="/" className="flex items-center gap-2 min-w-0">
-          <Logo compact={collapsed && !mobile} />
+        <Link to="/" className="flex items-center gap-2 min-w-0" aria-label="PostCare AI Home">
+          <Logo compact={collapsed && !mobile} size="sm" subtitle={collapsed && !mobile ? undefined : "Recovery Management"} />
         </Link>
         {!mobile && (
           <button onClick={() => setCollapsed(c => !c)}
-            className="p-1 rounded text-text-muted hover:text-text hover:bg-surface-muted ml-1">
+            className="p-1 rounded text-text-muted hover:text-text hover:bg-surface-muted ml-1"
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
             {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
           </button>
         )}
@@ -199,7 +181,7 @@ export default function AppShell() {
                   'relative overflow-hidden',
                   isActive
                     ? 'bg-primary-tint text-primary before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[3px] before:bg-primary'
-                    : 'text-text-secondary hover:bg-surface-muted hover:text-text'
+                    : 'text-text hover:bg-bg hover:text-text'
                 )}
               >
                 <item.icon size={18} strokeWidth={1.75} className="flex-shrink-0" />
@@ -239,17 +221,22 @@ export default function AppShell() {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top bar */}
-        <header className="h-topbar bg-white border-b border-border flex items-center px-4 md:px-6 gap-4 flex-shrink-0 sticky top-0 z-30">
-          <button className="md:hidden p-2 text-text-muted hover:text-text" onClick={() => setMobileOpen(true)}>
-            <Menu size={20} />
-          </button>
+        <header className="h-topbar bg-surface border-b border-border flex items-center px-4 md:px-6 gap-3 sm:gap-4 flex-shrink-0 sticky top-0 z-30">
+          <div className="flex items-center gap-2 md:hidden">
+            <button className="p-2 -ml-2 text-text-muted hover:text-text" onClick={() => setMobileOpen(true)} aria-label="Open navigation menu">
+              <Menu size={20} />
+            </button>
+            <Link to="/" className="flex items-center" aria-label="PostCare AI Home">
+              <Logo compact size="xs" />
+            </Link>
+          </div>
           <div className="flex-1 max-w-sm">
             <div className="relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
               <input
                 placeholder="Search here..."
                 aria-label="Search here"
-                className="w-full h-9 pl-8 pr-3 text-xs bg-surface-muted border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors text-text"
+                className="w-full h-9 pl-8 pr-3 text-xs bg-bg border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors text-text placeholder:text-placeholder"
               />
             </div>
           </div>
@@ -276,7 +263,7 @@ export default function AppShell() {
 
               {/* Notification Dropdown Popover */}
               {notifOpen && (
-                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-border rounded-xl shadow-lg z-50 overflow-hidden animate-fadeIn">
+                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-surface border border-border rounded-xl shadow-lg z-50 overflow-hidden animate-fadeIn">
                   <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface-muted/40">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-bold text-text">Clinical Notifications</span>

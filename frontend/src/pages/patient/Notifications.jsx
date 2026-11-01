@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import api from '../../services/api'
 import { PageHeader, Card, CardBody } from '../../components/ui/index.jsx'
 import { Bell, CheckCheck, AlertTriangle, Pill, Calendar, Activity, Info } from 'lucide-react'
+import { formatDate, formatRelativeDate } from '../../utils/dateUtils'
 
 export default function Notifications() {
   const [filter, setFilter] = useState('all')
@@ -37,7 +38,7 @@ export default function Notifications() {
             id: 3,
             type: 'followup_reminder',
             title: 'Upcoming Appointment Confirmed',
-            message: 'Your Staple Removal consultation with Dr. Rajesh Varma is confirmed for 24 Sep @ 10:30 AM.',
+            message: `Your Staple Removal consultation with Dr. Rajesh Varma is confirmed for ${formatRelativeDate(3, 'DD MMM YYYY')} @ 10:30 AM.`,
             created_at: new Date(Date.now() - 86400000).toISOString(),
             is_read: true,
           }
@@ -80,7 +81,7 @@ export default function Notifications() {
         action={
           <button
             onClick={markAllRead}
-            className="inline-flex items-center gap-1.5 h-9 px-3.5 border border-border-strong text-xs font-medium rounded-lg text-text bg-white hover:bg-surface-muted transition-colors shadow-xs"
+            className="inline-flex items-center gap-1.5 h-9 px-3.5 border border-border-strong text-xs font-medium rounded-lg text-text bg-surface hover:bg-surface-muted transition-colors shadow-xs"
           >
             <CheckCheck size={14} /> Mark all as read
           </button>
@@ -118,7 +119,7 @@ export default function Notifications() {
             <div
               key={item.id}
               onClick={() => !item.is_read && markRead(item.id)}
-              className={`p-4 bg-white border rounded-xl flex items-start gap-3.5 transition-shadow hover:shadow-xs cursor-pointer ${
+              className={`p-4 bg-surface border rounded-xl flex items-start gap-3.5 transition-shadow hover:shadow-xs cursor-pointer ${
                 !item.is_read ? 'border-primary/40 bg-primary-tint/10' : 'border-border'
               }`}
             >
@@ -153,7 +154,7 @@ export default function Notifications() {
                     {item.title}
                   </h4>
                   <span className="text-2xs text-text-muted flex-shrink-0">
-                    {new Date(item.created_at || Date.now()).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    {formatDate(item.created_at || new Date(), 'DD MMM YYYY, hh:mm A')}
                   </span>
                 </div>
                 <p className="text-xs text-text-secondary mt-0.5">{item.message}</p>

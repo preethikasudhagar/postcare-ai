@@ -191,7 +191,7 @@ export default function RecoveryPage() {
         action={
           <button
             onClick={() => setDrawerOpen(true)}
-            className="inline-flex items-center gap-1.5 h-9 px-3.5 border border-border-strong text-xs font-medium rounded-sm text-text bg-white hover:bg-surface-muted transition-colors shadow-xs cursor-pointer"
+            className="inline-flex items-center gap-1.5 h-9 px-3.5 border border-border-strong text-xs font-medium rounded-sm text-text bg-surface hover:bg-surface-muted transition-colors shadow-xs cursor-pointer"
           >
             <HelpCircle size={14} className="text-primary" /> Score Breakdown
           </button>
@@ -199,7 +199,7 @@ export default function RecoveryPage() {
       />
 
       {/* Hero Overview */}
-      <div className="bg-white border border-border rounded-lg p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xs">
+      <div className="bg-surface border border-border rounded-lg p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xs">
         <div className="flex items-center gap-6">
           <RecoveryRing value={latestScore ?? 85} size={130} />
           <div>
@@ -244,7 +244,7 @@ export default function RecoveryPage() {
               ticks={[0, 2, 4, 6, 8, 10]}
               name="Pain Level"
               unit="/10"
-              color="#DC3B3B"
+              color="#5B21B6"
               bands={false}
               loading={loading}
               error={error}
@@ -267,7 +267,7 @@ export default function RecoveryPage() {
               ticks={[35, 36, 37, 38, 39, 40, 41]}
               name="Temperature"
               unit="°C"
-              color="#18A7B5"
+              color="#5B21B6"
               bands={false}
               loading={loading}
               error={error}

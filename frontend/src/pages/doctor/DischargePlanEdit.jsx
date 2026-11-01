@@ -4,6 +4,7 @@ import { PageHeader, Card, CardHeader, CardBody, Stepper, ConfirmDialog } from '
 import { ArrowLeft, ArrowRight, Save, Check, Plus, Trash2, AlertCircle, FileCheck, CheckCircle } from 'lucide-react'
 import api from '../../services/api'
 import { toast } from 'sonner'
+import { formatRelativeDate } from '../../utils/dateUtils'
 
 export default function DischargePlanEdit() {
   const navigate = useNavigate()
@@ -27,8 +28,8 @@ export default function DischargePlanEdit() {
     // Section 1
     patientId: '',
     surgeryType: 'Total Knee Arthroplasty (L)',
-    surgeryDate: '2026-09-04',
-    dischargeDate: '2026-09-06',
+    surgeryDate: formatRelativeDate(-14, 'YYYY-MM-DD'),
+    dischargeDate: formatRelativeDate(-12, 'YYYY-MM-DD'),
     diagnosis: 'Severe Grade IV Tricompartmental Osteoarthritis of left knee.',
 
     // Section 2
@@ -48,7 +49,7 @@ export default function DischargePlanEdit() {
     dietInstructions: 'High protein recovery diet (eggs, lentils, lean protein). Minimum 2.5 liters of water daily.',
 
     // Section 5
-    followUpDate: '2026-09-18',
+    followUpDate: formatRelativeDate(3, 'YYYY-MM-DD'),
     followUpTime: '10:00',
     department: 'Orthopedic Surgery OPD',
     followUpPurpose: 'Post-Op Day 14 Staple Removal and Joint Range of Motion Evaluation',
@@ -212,7 +213,7 @@ export default function DischargePlanEdit() {
           {/* STEP 1: Patient & Surgery Information */}
           {step === 0 && (
             <div className="space-y-4 text-xs">
-              <div className="p-3 bg-surface-muted rounded-lg border border-border">
+              <div className="p-3 bg-bg rounded-lg border border-border border-l-4 border-l-primary">
                 <h4 className="font-bold text-text mb-1">Section 1: Patient Demographics & Surgical Particulars</h4>
                 <p className="text-2xs text-text-muted">Select patient record and verify procedure dates.</p>
               </div>
@@ -326,7 +327,7 @@ export default function DischargePlanEdit() {
           {/* STEP 2: Post-Operative Instructions */}
           {step === 1 && (
             <div className="space-y-4 text-xs">
-              <div className="p-3 bg-surface-muted rounded-lg border border-border">
+              <div className="p-3 bg-bg rounded-lg border border-border border-l-4 border-l-primary">
                 <h4 className="font-bold text-text mb-1">Section 2: Post-Operative Instructions & Red Flags</h4>
                 <p className="text-2xs text-text-muted">Define mandatory care instructions and acute escalation triggers.</p>
               </div>
@@ -390,7 +391,7 @@ export default function DischargePlanEdit() {
           {/* STEP 3: Medication Plan */}
           {step === 2 && (
             <div className="space-y-4 text-xs">
-              <div className="p-3 bg-surface-muted rounded-lg border border-border">
+              <div className="p-3 bg-bg rounded-lg border border-border border-l-4 border-l-primary">
                 <h4 className="font-bold text-text mb-1">Section 3: Discharge Medication Regimen</h4>
                 <p className="text-2xs text-text-muted">Prescribe at least one mandatory discharge medication with clear dosage and frequency.</p>
               </div>
@@ -516,7 +517,7 @@ export default function DischargePlanEdit() {
           {/* STEP 4: Activity / Diet / Wound Care */}
           {step === 3 && (
             <div className="space-y-4 text-xs">
-              <div className="p-3 bg-surface-muted rounded-lg border border-border">
+              <div className="p-3 bg-bg rounded-lg border border-border border-l-4 border-l-primary">
                 <h4 className="font-bold text-text mb-1">Section 4: Activity, Diet & Wound Care Protocol</h4>
                 <p className="text-2xs text-text-muted">Specify wound maintenance rules and weight-bearing/mobility milestones.</p>
               </div>
@@ -578,7 +579,7 @@ export default function DischargePlanEdit() {
           {/* STEP 5: Follow-Up Plan */}
           {step === 4 && (
             <div className="space-y-4 text-xs">
-              <div className="p-3 bg-surface-muted rounded-lg border border-border">
+              <div className="p-3 bg-bg rounded-lg border border-border border-l-4 border-l-primary">
                 <h4 className="font-bold text-text mb-1">Section 5: Post-Operative Follow-Up Consultation</h4>
                 <p className="text-2xs text-text-muted">Schedule the initial mandatory clinic review and specify provider location.</p>
               </div>
@@ -684,21 +685,21 @@ export default function DischargePlanEdit() {
 
               {/* Review summary cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-surface-muted rounded-lg border border-border space-y-2">
-                  <h5 className="font-bold text-text border-b border-border pb-1">1. Patient & Surgical Particulars</h5>
+                <div className="p-4 bg-surface rounded-lg border border-border space-y-2">
+                  <h5 className="font-bold text-text border-b-2 border-primary pb-1">1. Patient & Surgical Particulars</h5>
                   <p><span className="text-text-muted">Procedure:</span> <strong className="text-text">{formData.surgeryType}</strong></p>
                   <p><span className="text-text-muted">Surgery Date:</span> {formData.surgeryDate} | <span className="text-text-muted">Discharge:</span> {formData.dischargeDate}</p>
                   <p><span className="text-text-muted">Diagnosis:</span> {formData.diagnosis}</p>
                 </div>
 
-                <div className="p-4 bg-surface-muted rounded-lg border border-border space-y-2">
-                  <h5 className="font-bold text-text border-b border-border pb-1">2. Instructions & Red Flags</h5>
+                <div className="p-4 bg-surface rounded-lg border border-border space-y-2">
+                  <h5 className="font-bold text-text border-b-2 border-primary pb-1">2. Instructions & Red Flags</h5>
                   <p><span className="text-text-muted">Protocol:</span> {formData.generalInstructions}</p>
                   <p className="text-danger font-medium"><span className="text-text-muted">Red Flags:</span> {formData.warningSigns}</p>
                 </div>
 
-                <div className="p-4 bg-surface-muted rounded-lg border border-border space-y-2">
-                  <h5 className="font-bold text-text border-b border-border pb-1">3. Medication Regimen ({formData.medications.length} items)</h5>
+                <div className="p-4 bg-surface rounded-lg border border-border space-y-2">
+                  <h5 className="font-bold text-text border-b-2 border-primary pb-1">3. Medication Regimen ({formData.medications.length} items)</h5>
                   <ul className="list-disc list-inside space-y-1 text-text-secondary">
                     {formData.medications.map((m, i) => (
                       <li key={i}><strong>{m.medicine_name}</strong> — {m.dosage} ({m.frequency} for {m.duration_days}d)</li>
@@ -706,8 +707,8 @@ export default function DischargePlanEdit() {
                   </ul>
                 </div>
 
-                <div className="p-4 bg-surface-muted rounded-lg border border-border space-y-2">
-                  <h5 className="font-bold text-text border-b border-border pb-1">4. Wound & Follow-Up</h5>
+                <div className="p-4 bg-surface rounded-lg border border-border space-y-2">
+                  <h5 className="font-bold text-text border-b-2 border-primary pb-1">4. Wound & Follow-Up</h5>
                   <p><span className="text-text-muted">Wound Care:</span> {formData.woundCare}</p>
                   <p><span className="text-text-muted">Activity:</span> {formData.activityRestrictions}</p>
                   <p><span className="text-text-muted">Follow-Up:</span> <strong>{formData.followUpDate} at {formData.followUpTime}</strong> ({formData.department})</p>
@@ -731,7 +732,7 @@ export default function DischargePlanEdit() {
               <button
                 type="button"
                 onClick={handleNext}
-                className="h-9 px-5 bg-primary text-white text-xs font-semibold rounded hover:bg-primary-hover shadow-xs transition-colors flex items-center gap-1.5"
+                className="h-9 px-5 bg-secondary text-text text-xs font-semibold rounded hover:bg-secondary-hover shadow-xs transition-colors flex items-center gap-1.5"
               >
                 Next Step <ArrowRight size={14} />
               </button>
@@ -740,7 +741,7 @@ export default function DischargePlanEdit() {
                 type="button"
                 disabled={loading}
                 onClick={() => setPublishModal(true)}
-                className="h-10 px-6 bg-success text-white text-xs font-bold rounded-lg hover:bg-success-hover shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50"
+                className="h-10 px-6 bg-secondary text-text text-xs font-bold rounded-lg hover:bg-secondary-hover shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50"
               >
                 <FileCheck size={16} /> Publish & Authorize Discharge Plan
               </button>

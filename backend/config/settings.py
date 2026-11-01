@@ -154,7 +154,15 @@ if _cors_origins_env:
     CORS_ALLOW_ALL_ORIGINS = False
 else:
     CORS_ALLOW_ALL_ORIGINS = DEBUG          # True only in local dev
-    CORS_ALLOWED_ORIGINS = []
+    CORS_ALLOWED_ORIGINS = ['https://postcare-ai.vercel.app']
+
+if 'https://postcare-ai.vercel.app' not in CORS_ALLOWED_ORIGINS:
+    CORS_ALLOWED_ORIGINS.append('https://postcare-ai.vercel.app')
+
+# Permit preview deployments on Vercel
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https:\/\/([a-zA-Z0-9-]+\.)*vercel\.app$",
+]
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -176,7 +184,10 @@ _csrf_env = os.getenv('CSRF_TRUSTED_ORIGINS', '')
 if _csrf_env:
     CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_env.split(',') if o.strip()]
 else:
-    CSRF_TRUSTED_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173']
+    CSRF_TRUSTED_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://postcare-ai.vercel.app']
+
+if 'https://postcare-ai.vercel.app' not in CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS.append('https://postcare-ai.vercel.app')
 
 # Use secure cookies in production.
 SESSION_COOKIE_SECURE = not DEBUG

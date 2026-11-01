@@ -132,9 +132,9 @@ export default function DoctorReports() {
 
   const riskDistribution = overview?.risk_distribution || { low: 0, medium: 0, high: 0, total: 0 }
   const riskDonutData = [
-    { name: 'Low Risk', value: riskDistribution.low || 0, color: '#22A05A' },
-    { name: 'Medium Risk', value: riskDistribution.medium || 0, color: '#F2A311' },
-    { name: 'High Risk', value: riskDistribution.high || 0, color: '#DC3B3B' },
+    { name: 'Low Risk', value: riskDistribution.low || 0, color: '#15803D' },
+    { name: 'Medium Risk', value: riskDistribution.medium || 0, color: '#92400E' },
+    { name: 'High Risk', value: riskDistribution.high || 0, color: '#B91C1C' },
   ]
 
   return (
@@ -147,7 +147,7 @@ export default function DoctorReports() {
               type="button"
               onClick={handlePrint}
               aria-label="Print Overview Report"
-              className="h-9 px-3.5 border border-border-strong text-xs font-medium rounded-lg text-text bg-white hover:bg-surface-muted focus-visible:ring-2 focus-visible:ring-primary flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+              className="h-9 px-3.5 border-[1.5px] border-primary text-xs font-medium rounded-lg text-primary bg-surface hover:bg-primary-tint focus-visible:ring-2 focus-visible:ring-primary flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
             >
               <Printer size={14} /> Print Overview
             </button>
@@ -155,7 +155,7 @@ export default function DoctorReports() {
               type="button"
               onClick={handleExportPDF}
               aria-label="Export Overview Report as PDF"
-              className="h-9 px-4 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary-hover focus-visible:ring-2 focus-visible:ring-primary flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+              className="h-9 px-4 bg-secondary text-text text-xs font-semibold rounded-lg hover:bg-secondary-hover focus-visible:ring-2 focus-visible:ring-primary flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
             >
               <Download size={14} /> Export PDF
             </button>
@@ -173,7 +173,7 @@ export default function DoctorReports() {
           <button
             type="button"
             onClick={fetchOverview}
-            className="px-3 py-1 bg-white border border-danger/40 rounded text-xs font-semibold hover:bg-danger-tint transition-colors flex items-center gap-1"
+            className="px-3 py-1 bg-surface border border-danger/40 rounded text-xs font-semibold hover:bg-danger-tint transition-colors flex items-center gap-1"
           >
             <RefreshCw size={12} /> Retry
           </button>
@@ -191,7 +191,7 @@ export default function DoctorReports() {
               key={rc.id}
               to={rc.to}
               aria-label={`Open ${rc.title}`}
-              className={`p-4 bg-white border border-border rounded-xl shadow-xs ${rc.borderColor} hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none transition-all flex flex-col justify-between group cursor-pointer`}
+              className={`p-4 bg-surface border border-border rounded-xl shadow-xs ${rc.borderColor} hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none transition-all flex flex-col justify-between group cursor-pointer`}
             >
               <div>
                 <div className="flex items-center justify-between mb-3">

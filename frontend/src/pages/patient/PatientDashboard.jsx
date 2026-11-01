@@ -8,6 +8,7 @@ import RecoveryRing from '../../components/domain/RecoveryRing.jsx'
 import RecoveryTimeline from '../../components/domain/RecoveryTimeline.jsx'
 import LineTrend from '../../charts/LineTrend.jsx'
 import { Activity, ShieldAlert, Calendar, CheckSquare, Clock, ArrowRight, Pill, Bell, Info } from 'lucide-react'
+import { formatDate, formatRelativeDate } from '../../utils/dateUtils'
 
 export default function PatientDashboard() {
   const { user } = useAuth()
@@ -83,7 +84,7 @@ export default function PatientDashboard() {
         action={
           <Link
             to="/patient/check-in"
-            className="inline-flex items-center gap-2 h-9 px-3.5 bg-primary text-white text-xs font-semibold rounded hover:bg-primary-hover shadow-xs transition-colors"
+            className="inline-flex items-center gap-2 h-9 px-3.5 bg-secondary text-text text-xs font-semibold rounded hover:bg-secondary-hover shadow-xs transition-colors"
           >
             <Activity size={15} /> Submit Today's Check-in
           </Link>
@@ -112,7 +113,7 @@ export default function PatientDashboard() {
         />
         <StatCard
           label="Next Follow-Up"
-          value={nextFollowUp?.appointment_date || "24 Sep"}
+          value={nextFollowUp?.appointment_date ? formatDate(nextFollowUp.appointment_date, 'DD MMM YYYY') : formatRelativeDate(3, 'DD MMM YYYY')}
           trend={nextFollowUp ? `${nextFollowUp.appointment_time?.slice(0, 5) || '10:30'} · ${nextFollowUp.department || 'Outpatient'}` : "10:30 AM · Ortho"}
           icon={Calendar}
           iconBg="bg-secondary-tint"
@@ -139,7 +140,7 @@ export default function PatientDashboard() {
               title="Today's Status"
               action={
                 <span className="text-xs text-text-muted">
-                  {latestCheckin ? `Recorded ${latestCheckin.date}` : "Today"}
+                  {latestCheckin ? `Recorded ${formatDate(latestCheckin.date, 'DD MMM YYYY')}` : "Today"}
                 </span>
               }
             />
@@ -236,7 +237,9 @@ export default function PatientDashboard() {
               <div className="p-3 bg-secondary-tint/40 border border-secondary/20 rounded-lg">
                 <div className="flex items-center gap-2 mb-1">
                   <Calendar size={14} className="text-secondary" />
-                  <span className="text-xs font-semibold text-secondary">24 September 2026 · 10:30 AM</span>
+                  <span className="text-xs font-semibold text-secondary">
+                    {nextFollowUp?.appointment_date ? formatDate(nextFollowUp.appointment_date, 'DD MMMM YYYY') : formatRelativeDate(3, 'DD MMMM YYYY')} · {nextFollowUp?.appointment_time ? nextFollowUp.appointment_time.slice(0, 5) : '10:30 AM'}
+                  </span>
                 </div>
                 <p className="text-xs font-medium text-text">Dr. Rajesh Varma</p>
                 <p className="text-2xs text-text-muted">Dept of Orthopedic Surgery · Room 304</p>

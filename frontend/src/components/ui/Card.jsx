@@ -6,7 +6,7 @@ const cn = (...a) => twMerge(clsx(...a))
 export function Card({ children, className, interactive = false, alert = false }) {
   return (
     <div className={cn(
-      'bg-white border border-border rounded-[10px] shadow-xs',
+      'bg-surface border border-border rounded-[10px] shadow-xs',
       interactive && 'cursor-pointer hover:shadow-sm transition-shadow duration-150',
       alert && 'border-l-4 border-l-danger',
       className
@@ -43,7 +43,7 @@ export function CardFooter({ children, className }) {
 export function StatCard({ label, value, icon: Icon, iconBg = 'bg-primary-tint', iconColor = 'text-primary', trend, trendUp, loading = false, className }) {
   if (loading) {
     return (
-      <div className={cn('bg-white border border-border rounded-[10px] shadow-xs p-5', className)}>
+      <div className={cn('bg-surface border border-border rounded-[10px] shadow-xs p-5', className)}>
         <div className="flex items-start justify-between">
           <div className="skeleton h-10 w-10 rounded-[8px]" />
           <div className="skeleton h-4 w-16 rounded mt-1" />
@@ -54,7 +54,7 @@ export function StatCard({ label, value, icon: Icon, iconBg = 'bg-primary-tint',
     )
   }
   return (
-    <div className={cn('bg-white border border-border rounded-[10px] shadow-xs p-5', className)}>
+    <div className={cn('bg-surface border border-border rounded-[10px] shadow-xs p-5', className)}>
       <div className="flex items-start justify-between">
         <div className={cn('w-10 h-10 rounded-[8px] flex items-center justify-center', iconBg)}>
           {Icon && <Icon size={20} className={iconColor} strokeWidth={1.75} />}

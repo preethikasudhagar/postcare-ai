@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { PageHeader, Card, CardHeader, CardBody, Avatar } from '../../components/ui/index.jsx'
 import { RiskBadge } from '../../components/ui/Badge.jsx'
 import { User, Phone, Mail, MapPin, Calendar, Heart, ShieldAlert, Edit2, Check, Lock } from 'lucide-react'
+import { formatRelativeDate } from '../../utils/dateUtils'
 
 export default function PatientProfile() {
   const [editing, setEditing] = useState(false)
@@ -121,11 +122,11 @@ export default function PatientProfile() {
                 </div>
                 <div className="flex justify-between py-1 border-b border-border">
                   <span className="text-text-muted">Surgery Date:</span>
-                  <strong className="text-text">04 Sep 2026</strong>
+                  <strong className="text-text">{formatRelativeDate(-14, 'DD MMM YYYY')}</strong>
                 </div>
                 <div className="flex justify-between py-1 border-b border-border">
                   <span className="text-text-muted">Discharge Date:</span>
-                  <strong className="text-text">06 Sep 2026</strong>
+                  <strong className="text-text">{formatRelativeDate(-12, 'DD MMM YYYY')}</strong>
                 </div>
                 <div className="flex justify-between py-1">
                   <span className="text-text-muted">Primary Surgeon:</span>

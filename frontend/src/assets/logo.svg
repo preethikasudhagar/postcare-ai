@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 160" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="hCaregiverLight" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#7138D8" />
+      <stop offset="100%" stop-color="#5421A8" />
+    </linearGradient>
+    <linearGradient id="hPatientLight" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#A78BFA" />
+      <stop offset="50%" stop-color="#8B5CF6" />
+      <stop offset="100%" stop-color="#7138D8" />
+    </linearGradient>
+    <linearGradient id="hBadgeLight" x1="10%" y1="0%" x2="90%" y2="100%">
+      <stop offset="0%" stop-color="#7138D8" />
+      <stop offset="100%" stop-color="#5421A8" />
+    </linearGradient>
+    <linearGradient id="hSwooshLight" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#10B981" />
+      <stop offset="45%" stop-color="#22C55E" />
+      <stop offset="100%" stop-color="#16A34A" />
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(10, 10) scale(0.5)">
+    <circle cx="116" cy="66" r="36" fill="url(#hCaregiverLight)" />
+    <circle cx="203" cy="88" r="31" fill="url(#hPatientLight)" />
+    <path d="M 152 135 C 168 122 188 122 208 122 C 246 122 272 150 274 202 C 242 206 198 202 176 192 C 164 168 155 148 152 135 Z" fill="url(#hPatientLight)" />
+    <path d="M 8 205 C 8 146 50 110 116 110 C 148 110 172 124 186 146 C 148 160 86 186 8 205 Z" fill="#FFFFFF" opacity="0.15" />
+    <path d="M 10 203 C 10 148 50 112 116 112 C 146 112 170 126 184 147 C 146 161 86 186 10 203 Z" fill="url(#hCaregiverLight)" />
+    <path d="M 8 214 C 42 188 94 188 146 206 C 196 224 244 218 274 194 C 260 228 206 244 150 232 C 94 220 44 232 8 214 Z" fill="url(#hSwooshLight)" />
+    <circle cx="178" cy="172" r="52" fill="#FFFFFF" />
+    <circle cx="178" cy="172" r="46" fill="url(#hBadgeLight)" />
+    <rect x="170" y="146" width="16" height="52" rx="4" fill="#FFFFFF" />
+    <rect x="152" y="164" width="52" height="16" rx="4" fill="#FFFFFF" />
+  </g>
+
+  <g transform="translate(170, 104)">
+    <text x="0" y="0" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="64" font-weight="700" letter-spacing="-1.5" fill="#1E1B4B">PostCare</text>
+    <text x="282" y="0" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="64" font-weight="700" letter-spacing="-0.5" fill="#7138D8">AI</text>
+  </g>
+</svg>

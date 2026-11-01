@@ -248,13 +248,13 @@ export default function WoundUpload({
                   <button 
                     type="button"
                     disabled={isMissingPatientProfile}
-                    className="px-4 py-2 bg-white border border-border text-xs font-semibold text-text rounded shadow-sm hover:bg-surface-muted disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-surface border border-border text-xs font-semibold text-text rounded shadow-sm hover:bg-surface-muted disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Browse Files
                   </button>
                 </div>
               ) : (
-                <div className="border border-border rounded-lg overflow-hidden bg-white shadow-xs">
+                <div className="border border-border rounded-lg overflow-hidden bg-surface shadow-xs">
                   <div className="p-3 bg-surface-muted border-b border-border flex items-center justify-between">
                     <span className="text-xs font-bold text-text flex items-center gap-2">
                       <ImageIcon size={14} className="text-primary" /> Image Preview
@@ -338,7 +338,7 @@ export default function WoundUpload({
             ) : (
               <div className="space-y-4">
                 {images.map(img => (
-                  <div key={img.id} className="flex flex-col sm:flex-row gap-4 p-3 border border-border rounded-lg hover:shadow-xs transition-shadow bg-white relative">
+                  <div key={img.id} className="flex flex-col sm:flex-row gap-4 p-3 border border-border rounded-lg hover:shadow-xs transition-shadow bg-surface relative">
                     {/* Thumbnail with Error Handling and Lightbox */}
                     <div className="w-full sm:w-28 h-20 bg-surface-muted rounded overflow-hidden flex-shrink-0 border border-border flex items-center justify-center relative group">
                       {brokenImages[img.id] ? (
@@ -419,7 +419,7 @@ export default function WoundUpload({
                           ) : (
                             <span className={cn(
                               "px-2 py-0.5 text-[10px] font-bold uppercase rounded border",
-                              img.doctor_review ? 'bg-success-tint border-success/30 text-success' : 'bg-surface-muted border-border text-text-muted'
+                              img.doctor_review ? 'bg-success-tint border-success/30 text-success' : 'bg-warning-tint border border-amber-300 text-warning'
                             )}>
                               {img.doctor_review ? 'Dr. Reviewed' : 'Physician Review: Pending'}
                             </span>
@@ -489,14 +489,14 @@ export default function WoundUpload({
                           </div>
 
                           {img.assessment_reason && (
-                            <div className="bg-white/80 rounded p-2.5 border border-amber-400/40 text-amber-950">
+                            <div className="bg-surface rounded p-2.5 border border-amber-400/40 text-amber-950">
                               <span className="font-bold block text-[11px] mb-1 text-amber-900">Reason for Classification:</span>
                               <p className="text-[11px] leading-relaxed text-amber-950 font-normal">{img.assessment_reason}</p>
                             </div>
                           )}
 
                           {img.raw_probabilities && (
-                            <div className="bg-white/60 rounded p-2.5 border border-amber-300/50">
+                            <div className="bg-surface rounded p-2.5 border border-amber-300/50">
                               <div className="flex items-center justify-between text-[11px] font-semibold text-amber-900 mb-1.5">
                                 <span>Actual Model Raw Output:</span>
                                 <span className="font-mono text-[10px] px-1.5 py-0.5 bg-amber-100 rounded text-amber-800">
@@ -537,7 +537,7 @@ export default function WoundUpload({
                             </div>
                           </div>
                           {img.assessment_reason && (
-                            <div className="bg-white rounded p-2 border border-border text-[11px] text-text">
+                            <div className="bg-surface rounded p-2 border border-border text-[11px] text-text">
                               <span className="font-semibold block text-text-muted mb-0.5">Reason:</span>
                               <p>{img.assessment_reason}</p>
                             </div>
@@ -564,7 +564,7 @@ export default function WoundUpload({
                             </div>
                           </div>
                           {img.assessment_reason && (
-                            <div className="bg-white rounded p-2 border border-warning/30 text-[11px] text-text">
+                            <div className="bg-surface rounded p-2 border border-warning/30 text-[11px] text-text">
                               <span className="font-semibold block text-warning mb-0.5">Reason:</span>
                               <p>{img.assessment_reason}</p>
                             </div>
@@ -591,7 +591,7 @@ export default function WoundUpload({
                             </div>
                           </div>
                           {img.assessment_reason && (
-                            <div className="bg-white rounded p-2 border border-danger/30 text-[11px] text-text">
+                            <div className="bg-surface rounded p-2 border border-danger/30 text-[11px] text-text">
                               <span className="font-semibold block text-danger mb-0.5">Reason:</span>
                               <p>{img.assessment_reason}</p>
                             </div>

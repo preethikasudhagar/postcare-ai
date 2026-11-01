@@ -3,9 +3,9 @@ import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts'
 
 export default function RiskDonut({
   data = [
-    { name: 'Low Risk', value: 94, color: '#22A05A' },
-    { name: 'Medium Risk', value: 27, color: '#F2A311' },
-    { name: 'High Risk', value: 7, color: '#DC3B3B' },
+    { name: 'Low Risk', value: 94, color: '#15803D' },
+    { name: 'Medium Risk', value: 27, color: '#92400E' },
+    { name: 'High Risk', value: 7, color: '#B91C1C' },
   ],
   total,
   height = 220
@@ -39,7 +39,7 @@ export default function RiskDonut({
                 <Cell
                   key={`cell-${index}`}
                   fill={entry.color}
-                  stroke="#FFFFFF"
+                  stroke="#F6F2FF"
                   strokeWidth={2}
                   className="transition-all duration-150 cursor-pointer"
                   style={{
@@ -56,13 +56,13 @@ export default function RiskDonut({
                   const d = payload[0].payload
                   const pct = Math.round(((Number(d.value) || 0) / activeTotal) * 100)
                   return (
-                    <div className="bg-slate-900 text-white shadow-xl rounded-lg px-3 py-2 text-xs z-50 pointer-events-none border border-slate-700 animate-fadeIn">
+                    <div className="bg-surface text-text shadow-xl rounded-lg px-3 py-2 text-xs z-50 pointer-events-none border border-border animate-fadeIn">
                       <div className="flex items-center gap-2 font-bold mb-0.5">
                         <span className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
                         <span>{d.name}</span>
                       </div>
-                      <p className="text-slate-300 text-2xs">
-                        <strong className="text-white tabular-nums">{d.value}</strong> patients ({pct}%)
+                      <p className="text-text-secondary text-2xs">
+                        <strong className="text-text tabular-nums">{d.value}</strong> patients ({pct}%)
                       </p>
                     </div>
                   )

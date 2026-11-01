@@ -4,6 +4,7 @@ import api from '../../services/api'
 import { PageHeader, Card, CardBody, CardHeader } from '../../components/ui/index.jsx'
 import { RiskBadge } from '../../components/ui/Badge.jsx'
 import { Bell, CheckCheck, AlertTriangle, Pill, Calendar, Activity, Info, ShieldAlert, ArrowRight, Check } from 'lucide-react'
+import { formatDate } from '../../utils/dateUtils'
 
 export default function DoctorNotifications() {
   const [notifications, setNotifications] = useState([])
@@ -58,7 +59,7 @@ export default function DoctorNotifications() {
           unreadCount > 0 && (
             <button
               onClick={markAllRead}
-              className="inline-flex items-center gap-1.5 h-10 px-4 bg-white border border-border-strong text-xs font-semibold rounded-lg text-text hover:bg-surface-muted transition-colors shadow-xs"
+              className="inline-flex items-center gap-1.5 h-10 px-4 bg-surface border border-border-strong text-xs font-semibold rounded-lg text-text hover:bg-surface-muted transition-colors shadow-xs"
             >
               <CheckCheck size={15} /> Mark All as Read
             </button>
@@ -68,7 +69,7 @@ export default function DoctorNotifications() {
 
       {/* Summary KPI Badges */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-4 bg-white border border-border rounded-xl shadow-xs flex items-center justify-between">
+        <div className="p-4 bg-surface border border-border rounded-xl shadow-xs flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold text-text-muted">Total Notifications</p>
             <p className="text-2xl font-bold text-text mt-0.5">{notifications.length}</p>
@@ -78,7 +79,7 @@ export default function DoctorNotifications() {
           </div>
         </div>
 
-        <div className="p-4 bg-white border border-border rounded-xl shadow-xs flex items-center justify-between">
+        <div className="p-4 bg-surface border border-border rounded-xl shadow-xs flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold text-text-muted">Unread Active</p>
             <p className="text-2xl font-bold text-danger mt-0.5">{unreadCount}</p>
@@ -88,7 +89,7 @@ export default function DoctorNotifications() {
           </div>
         </div>
 
-        <div className="p-4 bg-white border border-border rounded-xl shadow-xs flex items-center justify-between">
+        <div className="p-4 bg-surface border border-border rounded-xl shadow-xs flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold text-text-muted">High-Risk Escalations</p>
             <p className="text-2xl font-bold text-danger mt-0.5">{highRiskCount}</p>
@@ -123,11 +124,11 @@ export default function DoctorNotifications() {
       {/* Notification Stream */}
       <div className="space-y-3">
         {loading ? (
-          <div className="p-8 text-center text-xs text-text-muted bg-white border border-border rounded-xl">
+          <div className="p-8 text-center text-xs text-text-muted bg-surface border border-border rounded-xl">
             Loading notification feed...
           </div>
         ) : filtered.length === 0 ? (
-          <div className="p-12 text-center bg-white border border-border rounded-xl">
+          <div className="p-12 text-center bg-surface border border-border rounded-xl">
             <div className="w-12 h-12 rounded-full bg-success-tint text-success flex items-center justify-center mx-auto mb-3">
               <Check size={24} />
             </div>
@@ -144,7 +145,7 @@ export default function DoctorNotifications() {
             return (
               <div
                 key={item.id}
-                className={`p-5 bg-white border rounded-xl shadow-xs transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
+                className={`p-5 bg-surface border rounded-xl shadow-xs transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
                   !item.is_read
                     ? isHighRisk
                       ? 'border-l-4 border-l-danger border-danger/30 bg-danger-tint/10'
@@ -201,7 +202,7 @@ export default function DoctorNotifications() {
                     </p>
 
                     <div className="flex items-center gap-4 mt-2 text-[11px] text-text-muted">
-                      <span>{new Date(item.created_at || Date.now()).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</span>
+                      <span>{formatDate(item.created_at || new Date(), 'DD MMM YYYY, hh:mm A')}</span>
                       {item.related_patient && (
                         <Link
                           to={`/doctor/patients/${item.related_patient}`}

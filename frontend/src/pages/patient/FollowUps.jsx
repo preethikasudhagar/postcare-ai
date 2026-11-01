@@ -3,6 +3,7 @@ import { PageHeader, Card, CardBody, StatCard, Modal } from '../../components/ui
 import { StatusBadge } from '../../components/ui/Badge.jsx'
 import { Calendar, Clock, MapPin, User, CheckCircle2, AlertCircle, CheckCircle, RefreshCw } from 'lucide-react'
 import api from '../../services/api'
+import { formatDate, formatRelativeDate } from '../../utils/dateUtils'
 
 // Clinic OPD standard consultation slots
 const CLINIC_TIME_SLOTS = [
@@ -24,20 +25,7 @@ const CLINIC_TIME_SLOTS = [
 
 function formatDateDisplay(dateStr) {
   if (!dateStr) return ''
-  try {
-    const parts = String(dateStr).split('-')
-    if (parts.length === 3) {
-      const year = parseInt(parts[0], 10)
-      const month = parseInt(parts[1], 10) - 1
-      const day = parseInt(parts[2], 10)
-      const d = new Date(year, month, day)
-      return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-    }
-    const d = new Date(dateStr)
-    return isNaN(d.getTime()) ? dateStr : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-  } catch {
-    return dateStr
-  }
+  return formatDate(dateStr, 'DD MMM YYYY')
 }
 
 function formatTimeDisplay(timeStr) {
@@ -77,8 +65,8 @@ const DEFAULT_APPOINTMENTS = [
     purpose: 'Clinical evaluation of surgical incision healing, removal of orthopedic staples, and gait assessment.',
     doctor: 'Dr. Rajesh Varma',
     dept: 'Department of Orthopedic Surgery',
-    date: '24 Sep 2026',
-    raw_date: '2026-09-24',
+    date: formatRelativeDate(3, 'DD MMM YYYY'),
+    raw_date: formatRelativeDate(3, 'YYYY-MM-DD'),
     time: '10:30 AM',
     raw_time: '10:30:00',
     location: 'OPD Block B · Room 304',
@@ -94,8 +82,8 @@ const DEFAULT_APPOINTMENTS = [
     purpose: 'Goniometric knee flexion measurement, quadriceps strengthening progression, and active load monitoring.',
     doctor: 'Dr. Ananya Iyer (PT)',
     dept: 'Rehabilitation & Physical Therapy',
-    date: '02 Oct 2026',
-    raw_date: '2026-10-02',
+    date: formatRelativeDate(10, 'DD MMM YYYY'),
+    raw_date: formatRelativeDate(10, 'YYYY-MM-DD'),
     time: '02:00 PM',
     raw_time: '14:00:00',
     location: 'Physio Gym · Ground Floor',
@@ -111,8 +99,8 @@ const DEFAULT_APPOINTMENTS = [
     purpose: 'Initial review of early recovery milestones, pain control, and DVT prophylaxis adherence.',
     doctor: 'Dr. Rajesh Varma',
     dept: 'Orthopedics Telehealth',
-    date: '10 Sep 2026',
-    raw_date: '2026-09-10',
+    date: formatRelativeDate(-7, 'DD MMM YYYY'),
+    raw_date: formatRelativeDate(-7, 'YYYY-MM-DD'),
     time: '11:00 AM',
     raw_time: '11:00:00',
     location: 'Video Consultation',
@@ -519,7 +507,7 @@ export default function FollowUps() {
                   if (serverError) setServerError('')
                 }}
                 required
-                className={`w-full h-10 px-3 text-sm bg-white border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all ${
+                className={`w-full h-10 px-3 text-sm bg-surface border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all ${
                   validationErrors.date ? 'border-danger focus:ring-danger' : 'border-border-strong'
                 }`}
               />
@@ -546,7 +534,7 @@ export default function FollowUps() {
                   if (serverError) setServerError('')
                 }}
                 required
-                className={`w-full h-10 px-3 text-sm bg-white border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all cursor-pointer ${
+                className={`w-full h-10 px-3 text-sm bg-surface border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all cursor-pointer ${
                   validationErrors.time ? 'border-danger focus:ring-danger' : 'border-border-strong'
                 }`}
               >
@@ -575,7 +563,7 @@ export default function FollowUps() {
                 value={formReason}
                 onChange={(e) => setFormReason(e.target.value)}
                 placeholder="Let your doctor know the reason (e.g., transport availability, work conflict, caregiver assistance)..."
-                className="w-full p-3 text-sm bg-white border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted/60"
+                className="w-full p-3 text-sm bg-surface border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted/60"
               />
             </div>
 

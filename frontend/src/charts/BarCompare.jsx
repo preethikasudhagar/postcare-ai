@@ -65,14 +65,14 @@ export default function BarCompare({
     <div className="w-full min-h-[180px]">
       <ResponsiveContainer width="100%" height={height} minWidth={0}>
         <BarChart data={data} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E8EDF4" />
-          <XAxis dataKey="name" stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} />
-          <YAxis stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} domain={[0, 100]} />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#D3C8EE" />
+          <XAxis dataKey="name" stroke="#55607A" fontSize={12} tickLine={false} axisLine={false} />
+          <YAxis stroke="#55607A" fontSize={12} tickLine={false} axisLine={false} domain={[0, 100]} />
           <Tooltip
             content={({ active, payload, label }) => {
               if (active && payload && payload.length) {
                 return (
-                  <div className="bg-white border border-border shadow-lg rounded-[8px] p-2 text-xs">
+                  <div className="bg-surface border border-border shadow-lg rounded-[8px] p-2 text-xs">
                     <p className="font-semibold text-text">{label}</p>
                     <p className="text-primary font-bold tabular-nums">
                       {payload[0].value} {unit}

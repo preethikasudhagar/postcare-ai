@@ -5,6 +5,7 @@ import RecoveryRing from '../../components/domain/RecoveryRing.jsx'
 import RecoveryTimeline from '../../components/domain/RecoveryTimeline.jsx'
 import WoundUpload from '../../components/domain/WoundUpload.jsx'
 import { Heart, Activity, Calendar, Pill, Phone } from 'lucide-react'
+import { formatRelativeDate } from '../../utils/dateUtils'
 
 export default function CaregiverDashboard() {
   return (
@@ -49,7 +50,7 @@ export default function CaregiverDashboard() {
         />
         <StatCard
           label="Next Appointment"
-          value="24 Sep"
+          value={formatRelativeDate(3, 'DD MMM YYYY')}
           trend="10:30 AM · Orthopedics"
           icon={Calendar}
           iconBg="bg-secondary-tint"

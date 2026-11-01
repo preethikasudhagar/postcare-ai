@@ -62,7 +62,7 @@ export default function LoginPage() {
             required
             placeholder="name@example.com"
             autoComplete="email"
-            className="w-full h-11 px-3.5 text-sm bg-white border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted/60"
+            className="w-full h-11 px-3.5 text-sm bg-surface border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted/60"
           />
         </div>
 
@@ -78,7 +78,7 @@ export default function LoginPage() {
               required
               placeholder="Enter your password"
               autoComplete="current-password"
-              className="w-full h-11 px-3.5 pr-11 text-sm bg-white border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted/60"
+              className="w-full h-11 px-3.5 pr-11 text-sm bg-surface border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted/60"
             />
             <button
               type="button"
@@ -132,7 +132,7 @@ export default function LoginPage() {
         </div>
         <Link
           to="/admin/login"
-          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-white hover:bg-slate-100 text-text border border-border-strong rounded-md transition-all shadow-2xs hover:border-primary hover:text-primary"
+          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-surface hover:bg-slate-100 text-text border border-border-strong rounded-md transition-all shadow-2xs hover:border-primary hover:text-primary"
         >
           <span>Admin Sign In</span>
           <span aria-hidden="true">&rarr;</span>

@@ -3,23 +3,11 @@ import { PageHeader, Card, CardBody, StatCard, Modal } from '../../components/ui
 import { StatusBadge } from '../../components/ui/Badge.jsx'
 import { Calendar, Clock, CheckCircle, AlertTriangle, User, RefreshCw, Check, X, ShieldAlert } from 'lucide-react'
 import api from '../../services/api'
+import { formatDate, formatRelativeDate } from '../../utils/dateUtils'
 
 function formatDateDisplay(dateStr) {
   if (!dateStr) return ''
-  try {
-    const parts = String(dateStr).split('-')
-    if (parts.length === 3) {
-      const year = parseInt(parts[0], 10)
-      const month = parseInt(parts[1], 10) - 1
-      const day = parseInt(parts[2], 10)
-      const d = new Date(year, month, day)
-      return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-    }
-    const d = new Date(dateStr)
-    return isNaN(d.getTime()) ? dateStr : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-  } catch {
-    return dateStr
-  }
+  return formatDate(dateStr, 'DD MMM YYYY')
 }
 
 function formatTimeDisplay(timeStr) {
@@ -44,11 +32,11 @@ function formatTimeDisplay(timeStr) {
 }
 
 const DEFAULT_DOCTOR_APPOINTMENTS = [
-  { id: 1, patient: 'Ramesh Patel', uhid: 'P-107', time: '10:00 AM', date: 'Today', type: 'Staple Removal', status: 'completed' },
-  { id: 2, patient: 'Deepa Krishnan', uhid: 'P-105', time: '11:30 AM', date: 'Today', type: 'Incision Inspection', status: 'upcoming' },
-  { id: 3, patient: 'Sanjay Deshmukh', uhid: 'P-112', time: '02:00 PM', date: 'Today', type: 'Pain Medication Adjustment', status: 'upcoming' },
-  { id: 4, patient: 'Rahul Kumar', uhid: 'P-102', time: '10:30 AM', date: '24 Sep 2026', type: 'Post-Op Day 20 Review', status: 'upcoming' },
-  { id: 5, patient: 'Vikram Mehta', uhid: 'P-101', time: '04:00 PM', date: '25 Sep 2026', type: 'Cardiac Suture Check', status: 'upcoming' },
+  { id: 1, patient: 'Ramesh Patel', uhid: 'P-107', time: '10:00 AM', date: formatRelativeDate(0, 'DD MMM YYYY'), type: 'Staple Removal', status: 'completed' },
+  { id: 2, patient: 'Deepa Krishnan', uhid: 'P-105', time: '11:30 AM', date: formatRelativeDate(0, 'DD MMM YYYY'), type: 'Incision Inspection', status: 'upcoming' },
+  { id: 3, patient: 'Sanjay Deshmukh', uhid: 'P-112', time: '02:00 PM', date: formatRelativeDate(0, 'DD MMM YYYY'), type: 'Pain Medication Adjustment', status: 'upcoming' },
+  { id: 4, patient: 'Rahul Kumar', uhid: 'P-102', time: '10:30 AM', date: formatRelativeDate(3, 'DD MMM YYYY'), type: 'Post-Op Day 20 Review', status: 'upcoming' },
+  { id: 5, patient: 'Vikram Mehta', uhid: 'P-101', time: '04:00 PM', date: formatRelativeDate(4, 'DD MMM YYYY'), type: 'Cardiac Suture Check', status: 'upcoming' },
 ]
 
 export default function DoctorFollowUps() {
@@ -397,7 +385,7 @@ export default function DoctorFollowUps() {
                 value={reviewNote}
                 onChange={(e) => setReviewNote(e.target.value)}
                 placeholder="Add a remark for the patient or clinic staff..."
-                className="w-full p-2.5 text-xs bg-white border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted/60"
+                className="w-full p-2.5 text-xs bg-surface border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted/60"
               />
             </div>
 

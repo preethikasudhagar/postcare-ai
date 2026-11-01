@@ -33,6 +33,7 @@ const DoctorDashboard    = lazy(() => import('./pages/doctor/DoctorDashboard'))
 const PatientList        = lazy(() => import('./pages/doctor/PatientList'))
 const PatientDetail      = lazy(() => import('./pages/doctor/PatientDetail'))
 const DischargePlans     = lazy(() => import('./pages/doctor/DischargePlans'))
+const DischargePlanDetail = lazy(() => import('./pages/doctor/DischargePlanDetail'))
 const DischargePlanEdit  = lazy(() => import('./pages/doctor/DischargePlanEdit'))
 const DoctorFollowUps    = lazy(() => import('./pages/doctor/FollowUps'))
 const RiskPredictions    = lazy(() => import('./pages/doctor/RiskPredictions'))
@@ -111,7 +112,7 @@ export default function App() {
           {/* Patient routes */}
           <Route path="/patient/dashboard"     element={<ProtectedRoute roles={['patient']}><PatientDashboard /></ProtectedRoute>} />
           <Route path="/patient/profile"       element={<ProtectedRoute roles={['patient']}><PatientProfile /></ProtectedRoute>} />
-          <Route path="/patient/discharge-plan" element={<ProtectedRoute roles={['patient']}><DischargePlan /></ProtectedRoute>} />
+          <Route path="/patient/discharge-plan" element={<ProtectedRoute roles={['patient', 'caregiver', 'doctor', 'admin']}><DischargePlan /></ProtectedRoute>} />
           <Route path="/patient/medications"   element={<ProtectedRoute roles={['patient']}><Medications /></ProtectedRoute>} />
           <Route path="/patient/recovery"      element={<ProtectedRoute roles={['patient']}><RecoveryPage /></ProtectedRoute>} />
           <Route path="/patient/check-in"      element={<ProtectedRoute roles={['patient']}><RecoveryCheckIn /></ProtectedRoute>} />
@@ -123,9 +124,10 @@ export default function App() {
           <Route path="/doctor/dashboard"      element={<ProtectedRoute roles={['doctor']}><DoctorDashboard /></ProtectedRoute>} />
           <Route path="/doctor/patients"       element={<ProtectedRoute roles={['doctor']}><PatientList /></ProtectedRoute>} />
           <Route path="/doctor/patients/:id"   element={<ProtectedRoute roles={['doctor']}><PatientDetail /></ProtectedRoute>} />
-          <Route path="/doctor/discharge-plans"    element={<ProtectedRoute roles={['doctor']}><DischargePlans /></ProtectedRoute>} />
-          <Route path="/doctor/discharge-plans/new" element={<ProtectedRoute roles={['doctor']}><DischargePlanEdit /></ProtectedRoute>} />
-          <Route path="/doctor/discharge-plans/:id/edit" element={<ProtectedRoute roles={['doctor']}><DischargePlanEdit /></ProtectedRoute>} />
+          <Route path="/doctor/discharge-plans"    element={<ProtectedRoute roles={['doctor', 'admin']}><DischargePlans /></ProtectedRoute>} />
+          <Route path="/doctor/discharge-plans/new" element={<ProtectedRoute roles={['doctor', 'admin']}><DischargePlanEdit /></ProtectedRoute>} />
+          <Route path="/doctor/discharge-plans/:id" element={<ProtectedRoute roles={['doctor', 'admin']}><DischargePlanDetail /></ProtectedRoute>} />
+          <Route path="/doctor/discharge-plans/:id/edit" element={<ProtectedRoute roles={['doctor', 'admin']}><DischargePlanEdit /></ProtectedRoute>} />
           <Route path="/doctor/follow-ups"     element={<ProtectedRoute roles={['doctor']}><DoctorFollowUps /></ProtectedRoute>} />
           <Route path="/doctor/risk-predictions" element={<ProtectedRoute roles={['doctor']}><RiskPredictions /></ProtectedRoute>} />
           <Route path="/doctor/alerts"         element={<ProtectedRoute roles={['doctor']}><DoctorAlerts /></ProtectedRoute>} />

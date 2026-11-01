@@ -71,19 +71,19 @@ export default function LineTrend({
     <div className="w-full min-h-[220px]">
       <ResponsiveContainer width="100%" height={height} minWidth={0}>
         <LineChart data={data} margin={{ top: 12, right: 16, left: -12, bottom: 4 }}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E8EDF4" />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#D3C8EE" />
           <XAxis
             dataKey={xAxisKey}
-            stroke="#64748B"
+            stroke="#55607A"
             fontSize={11}
             tickLine={false}
-            axisLine={{ stroke: '#E2E8F0' }}
+            axisLine={{ stroke: '#D3C8EE' }}
             dy={4}
             minTickGap={16}
             padding={{ left: 16, right: 16 }}
           />
           <YAxis
-            stroke="#64748B"
+            stroke="#55607A"
             fontSize={11}
             tickLine={false}
             axisLine={false}
@@ -95,12 +95,10 @@ export default function LineTrend({
 
           {bands && (
             <>
-              {/* Green zone: Good recovery progress (80–100) */}
-              <ReferenceArea y1={80} y2={100} fill="#15803D" fillOpacity={0.06} />
-              {/* Amber zone: Moderate concern / monitoring (50–80) */}
-              <ReferenceArea y1={50} y2={80} fill="#B45309" fillOpacity={0.05} />
-              {/* Red zone: High risk / clinical attention needed (0–50) */}
-              <ReferenceArea y1={0} y2={50} fill="#C62828" fillOpacity={0.05} />
+              {/* Target / Reference Threshold Bands in Gold */}
+              <ReferenceArea y1={80} y2={100} fill="#F59E0B" fillOpacity={0.12} />
+              <ReferenceArea y1={50} y2={80} fill="#F59E0B" fillOpacity={0.06} />
+              <ReferenceArea y1={0} y2={50} fill="#F59E0B" fillOpacity={0.02} />
             </>
           )}
 
@@ -110,7 +108,7 @@ export default function LineTrend({
                 const item = payload[0]
                 const extra = item.payload || {}
                 return (
-                  <div className="bg-white border border-border shadow-lg rounded-lg p-2.5 text-xs z-50">
+                  <div className="bg-surface border border-border shadow-lg rounded-lg p-2.5 text-xs z-50">
                     <p className="font-semibold text-text mb-1">
                       {extra.fullDate || label}
                     </p>
@@ -146,8 +144,8 @@ export default function LineTrend({
             dataKey={dataKey}
             stroke={color}
             strokeWidth={2.5}
-            dot={{ r: 4.5, fill: color, stroke: '#FFFFFF', strokeWidth: 1.5 }}
-            activeDot={{ r: 6.5, fill: color, stroke: '#FFFFFF', strokeWidth: 2 }}
+            dot={{ r: 4.5, fill: color, stroke: '#F6F2FF', strokeWidth: 1.5 }}
+            activeDot={{ r: 6.5, fill: color, stroke: '#F6F2FF', strokeWidth: 2 }}
             isAnimationActive={false}
           />
         </LineChart>

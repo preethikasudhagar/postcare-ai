@@ -6,7 +6,7 @@ const cn = (...a) => twMerge(clsx(...a))
 
 const riskConfig = {
   low:    { label: 'Low risk',    bg: 'bg-success-tint', text: 'text-success', Icon: CheckCircle },
-  medium: { label: 'Medium risk', bg: 'bg-warning-tint', text: 'text-warning', Icon: AlertTriangle },
+  medium: { label: 'Medium risk', bg: 'bg-warning-tint border border-amber-300', text: 'text-warning', Icon: AlertTriangle },
   high:   { label: 'High risk',   bg: 'bg-danger-tint',  text: 'text-danger',  Icon: AlertCircle },
 }
 

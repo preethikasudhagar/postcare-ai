@@ -178,6 +178,7 @@ class Command(BaseCommand):
         )
 
         # 10. Notifications for Multi-Role Clinical Workflow
+        fu_date_str = (date.today() + timedelta(days=5)).strftime('%d %b %Y')
         notifications_data = [
             # Doctor Notifications
             {
@@ -191,7 +192,7 @@ class Command(BaseCommand):
             {
                 'recipient': doctor_user,
                 'title': 'Upcoming Consultation: Rahul Sharma',
-                'message': 'Post-op review scheduled on 24 Sep @ 10:30 AM (Staple Removal & Incision Review).',
+                'message': f'Post-op review scheduled on {fu_date_str} @ 10:30 AM (Staple Removal & Incision Review).',
                 'type': 'followup_reminder',
                 'related_patient': patient_profile,
                 'is_read': False,
@@ -232,7 +233,7 @@ class Command(BaseCommand):
             {
                 'recipient': patient_user,
                 'title': 'Appointment Confirmed with Dr. Rajesh Varma',
-                'message': 'Your follow-up visit on 24 Sep at 10:30 AM has been confirmed by the clinic.',
+                'message': f'Your follow-up visit on {fu_date_str} at 10:30 AM has been confirmed by the clinic.',
                 'type': 'followup_reminder',
                 'related_patient': patient_profile,
                 'is_read': True,

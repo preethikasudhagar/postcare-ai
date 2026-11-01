@@ -4,6 +4,7 @@ import { StatusBadge } from '../../components/ui/Badge.jsx'
 import { Plus, Search, Filter, ShieldCheck, Check, X, AlertCircle, Link2, UserCheck, AlertTriangle, ShieldAlert } from 'lucide-react'
 import api from '../../services/api'
 import { toast } from 'sonner'
+import { formatDate } from '../../utils/dateUtils'
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([])
@@ -177,7 +178,7 @@ export default function AdminUsers() {
           <div className="flex items-center gap-2">
             <button 
               onClick={() => openLinkModal(null)}
-              className="h-9 px-3.5 bg-white border border-border text-text hover:bg-surface-muted text-xs font-semibold rounded transition-colors flex items-center gap-1.5 shadow-xs"
+              className="h-9 px-3.5 bg-surface border border-border text-text hover:bg-surface-muted text-xs font-semibold rounded transition-colors flex items-center gap-1.5 shadow-xs"
               title="Link or reassign patient records to user accounts"
             >
               <Link2 size={14} className="text-primary" /> Link Patient Profile
@@ -277,7 +278,7 @@ export default function AdminUsers() {
                         </span>
                       </td>
                       <td className="p-3 text-text-muted">
-                        {u.date_joined ? new Date(u.date_joined).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+                        {u.date_joined ? formatDate(u.date_joined, 'DD MMM YYYY') : 'N/A'}
                       </td>
                       <td className="p-3 text-right">
                         <div className="flex items-center justify-end gap-1.5">

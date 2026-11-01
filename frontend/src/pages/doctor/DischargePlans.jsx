@@ -1,21 +1,57 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import api from '../../services/api'
 import { PageHeader, Card, CardBody } from '../../components/ui/index.jsx'
 import { StatusBadge } from '../../components/ui/Badge.jsx'
-import { FileText, Plus, Search, Printer, Edit3 } from 'lucide-react'
+import { FileText, Plus, Search, Printer, Edit3, Loader2 } from 'lucide-react'
+import { formatDate, formatRelativeDate } from '../../utils/dateUtils'
+
+const DEFAULT_DEMO_PLANS = [
+  { id: 1, reference: 'DP-801', patient: 'Rahul Kumar', uhid: 'P-102', surgery: 'Total Knee Arthroplasty (L)', date: formatRelativeDate(-12, 'DD MMM YYYY'), version: 1.2, status: 'published' },
+  { id: 2, reference: 'DP-802', patient: 'Vikram Mehta', uhid: 'P-101', surgery: 'Cardiac Bypass (CABG)', date: formatRelativeDate(-9, 'DD MMM YYYY'), version: 1.0, status: 'published' },
+  { id: 3, reference: 'DP-803', patient: 'Anil Sengupta', uhid: 'P-104', surgery: 'Spinal Lumbar Fusion', date: formatRelativeDate(-11, 'DD MMM YYYY'), version: 1.1, status: 'published' },
+  { id: 4, reference: 'DP-804', patient: 'Meera Nambiar', uhid: 'P-109', surgery: 'Cholecystectomy', date: formatRelativeDate(0, 'DD MMM YYYY'), version: 0.9, status: 'draft' },
+]
 
 export default function DischargePlans() {
-  const [plans, setPlans] = useState([
-    { id: 'DP-801', patient: 'Rahul Kumar', uhid: 'P-102', surgery: 'Total Knee Arthroplasty (L)', date: '06 Sep 2026', version: 1.2, status: 'published' },
-    { id: 'DP-802', patient: 'Vikram Mehta', uhid: 'P-101', surgery: 'Cardiac Bypass (CABG)', date: '08 Sep 2026', version: 1.0, status: 'published' },
-    { id: 'DP-803', patient: 'Anil Sengupta', uhid: 'P-104', surgery: 'Spinal Lumbar Fusion', date: '06 Sep 2026', version: 1.1, status: 'published' },
-    { id: 'DP-804', patient: 'Meera Nambiar', uhid: 'P-109', surgery: 'Cholecystectomy', date: 'Today', version: 0.9, status: 'draft' },
-  ])
+  const [plans, setPlans] = useState(DEFAULT_DEMO_PLANS)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let isMounted = true
+    async function fetchPlans() {
+      try {
+        const res = await api.get('/discharge-plans/')
+        const list = Array.isArray(res.data) ? res.data : res.data?.results || []
+        if (isMounted && list.length > 0) {
+          // Format plans from backend
+          const formatted = list.map((p) => ({
+            id: p.id,
+            reference: p.plan_reference || `DP-${p.id}`,
+            patient: p.patient_name || `Patient #${p.patient}`,
+            uhid: p.patient_uhid || 'P-101',
+            surgery: p.surgery_type || 'Post-Op Care',
+            date: p.discharge_date ? formatDate(p.discharge_date, 'DD MMM YYYY') : 'N/A',
+            version: p.version || 1.0,
+            status: p.status || 'published',
+          }))
+          setPlans(formatted)
+        }
+      } catch (err) {
+        // Retain default demo plans on error
+      } finally {
+        if (isMounted) setLoading(false)
+      }
+    }
+    fetchPlans()
+    return () => { isMounted = false }
+  }, [])
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Discharge Plans"
+        subtitle="Manage and review authorized clinical post-operative discharge protocols"
         action={
           <Link
             to="/doctor/discharge-plans/new"
@@ -44,7 +80,9 @@ export default function DischargePlans() {
               <tbody className="divide-y divide-border text-text">
                 {plans.map((p) => (
                   <tr key={p.id} className="hover:bg-surface-muted/60 transition-colors">
-                    <td className="p-3 font-semibold text-primary">{p.id}</td>
+                    <td className="p-3 font-semibold text-primary">
+                      {p.reference || `DP-${p.id}`}
+                    </td>
                     <td className="p-3">
                       <strong className="block text-text">{p.patient}</strong>
                       <span className="text-2xs text-text-muted">{p.uhid}</span>
@@ -55,7 +93,7 @@ export default function DischargePlans() {
                     <td className="p-3"><StatusBadge status={p.status} /></td>
                     <td className="p-3 text-right space-x-2">
                       <Link
-                        to="/patient/discharge-plan"
+                        to={`/doctor/discharge-plans/${p.id}`}
                         className="inline-block px-2.5 py-1 text-xs font-medium text-text border border-border rounded hover:bg-surface-muted transition-colors"
                       >
                         View

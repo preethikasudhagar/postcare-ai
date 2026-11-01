@@ -1,4 +1,5 @@
 import { jsPDF } from 'jspdf'
+import { formatDate } from './dateUtils'
 
 /**
  * Generates and downloads a clean, professional clinical PDF report.
@@ -29,20 +30,30 @@ export function exportReportToPDF({
   const pageHeight = doc.internal.pageSize.getHeight()
   const margin = 36
   const contentWidth = pageWidth - margin * 2
-  let y = margin
 
-  // Primary Brand Colors
-  const primaryColor = [29, 95, 209] // #1D5FD1
-  const darkText = [15, 27, 45]     // #0F1B2D
-  const mutedText = [100, 116, 139] // #64748B
-  const lightBg = [241, 245, 249]   // #F1F5F9
-  const borderLight = [226, 232, 240]
+  // Palette Tokens (Strict: No Pure White Anywhere)
+  const primaryColor = [91, 33, 182]    // #5B21B6 (Deep Purple)
+  const darkText = [15, 23, 42]         // #0F172A
+  const mutedText = [85, 96, 122]       // #55607A
+  const pageBg = [237, 230, 250]        // #EDE6FA (Lavender page tint)
+  const surfaceBg = [246, 242, 255]     // #F6F2FF (Lilac surface)
+  const tableHeaderBg = [221, 208, 247] // #DDD0F7
+  const borderLight = [211, 200, 238]   // #D3C8EE
+
+  const fillPageBackground = () => {
+    doc.setFillColor(...pageBg)
+    doc.rect(0, 0, pageWidth, pageHeight, 'F')
+  }
+
+  // Draw initial page background tint
+  fillPageBackground()
+  let y = margin
 
   // Header Banner
   doc.setFillColor(...primaryColor)
   doc.rect(margin, y, contentWidth, 40, 'F')
 
-  doc.setTextColor(255, 255, 255)
+  doc.setTextColor(255, 255, 255) // White text allowed only on purple
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(14)
   doc.text('POSTCARE AI  |  CLINICAL RECOVERY MANAGEMENT', margin + 14, y + 25)
@@ -59,10 +70,7 @@ export function exportReportToPDF({
   doc.setTextColor(...mutedText)
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
-  const dateStr = new Date().toLocaleString('en-US', {
-    dateStyle: 'medium',
-    timeStyle: 'short'
-  })
+  const dateStr = formatDate(new Date(), 'DD MMM YYYY, hh:mm A')
   doc.text(`Generated: ${dateStr}   |   ${subtitle}`, margin, y)
 
   y += 20
@@ -82,7 +90,7 @@ export function exportReportToPDF({
       const x = margin + idx * (colWidth + 8)
 
       // Card Background
-      doc.setFillColor(...lightBg)
+      doc.setFillColor(...surfaceBg)
       doc.setDrawColor(...borderLight)
       doc.roundedRect(x, y, colWidth, cardHeight, 4, 4, 'FD')
 
@@ -122,11 +130,11 @@ export function exportReportToPDF({
     const rowH = 20
 
     // Header Row
-    doc.setFillColor(...lightBg)
+    doc.setFillColor(...tableHeaderBg)
     doc.rect(margin, y, contentWidth, rowH, 'F')
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(8)
-    doc.setTextColor(...darkText)
+    doc.setTextColor(...primaryColor)
 
     tableHeaders.forEach((h, i) => {
       doc.text(String(h), margin + i * colW + 6, y + 13)
@@ -141,16 +149,17 @@ export function exportReportToPDF({
       // Check page break
       if (y + rowH > pageHeight - margin - 30) {
         // Add footer to current page
-        renderFooter(doc, pageWidth, pageHeight, margin, mutedText)
+        renderFooter(doc, pageWidth, pageHeight, margin, mutedText, borderLight)
         doc.addPage()
+        fillPageBackground()
         y = margin + 20
 
         // Reprint table header on new page
-        doc.setFillColor(...lightBg)
+        doc.setFillColor(...tableHeaderBg)
         doc.rect(margin, y, contentWidth, rowH, 'F')
         doc.setFont('helvetica', 'bold')
         doc.setFontSize(8)
-        doc.setTextColor(...darkText)
+        doc.setTextColor(...primaryColor)
         tableHeaders.forEach((h, i) => {
           doc.text(String(h), margin + i * colW + 6, y + 13)
         })
@@ -159,11 +168,9 @@ export function exportReportToPDF({
         doc.setFontSize(7.5)
       }
 
-      // Alternating row background
-      if (rIdx % 2 === 1) {
-        doc.setFillColor(248, 250, 252)
-        doc.rect(margin, y, contentWidth, rowH, 'F')
-      }
+      // Alternating row background (surface vs lavender)
+      doc.setFillColor(...(rIdx % 2 === 1 ? pageBg : surfaceBg))
+      doc.rect(margin, y, contentWidth, rowH, 'F')
 
       // Border bottom
       doc.setDrawColor(...borderLight)
@@ -172,7 +179,6 @@ export function exportReportToPDF({
       doc.setTextColor(...darkText)
       row.forEach((cell, cIdx) => {
         const textVal = cell !== null && cell !== undefined ? String(cell) : '—'
-        // Truncate text if it would overflow column width
         const maxLen = Math.floor(colW / 4.8)
         const displayVal = textVal.length > maxLen ? textVal.substring(0, maxLen - 2) + '…' : textVal
         doc.text(displayVal, margin + cIdx * colW + 6, y + 13)
@@ -189,16 +195,16 @@ export function exportReportToPDF({
   }
 
   // Render footer on the last page
-  renderFooter(doc, pageWidth, pageHeight, margin, mutedText)
+  renderFooter(doc, pageWidth, pageHeight, margin, mutedText, borderLight)
 
   // Download PDF
   const safeFilename = filename.toLowerCase().replace(/[^a-z0-9_-]/g, '_')
   doc.save(`${safeFilename}_${new Date().toISOString().slice(0, 10)}.pdf`)
 }
 
-function renderFooter(doc, pageWidth, pageHeight, margin, mutedText) {
+function renderFooter(doc, pageWidth, pageHeight, margin, mutedText, borderLight) {
   const footerY = pageHeight - margin + 14
-  doc.setDrawColor(226, 232, 240)
+  doc.setDrawColor(...borderLight)
   doc.line(margin, footerY - 14, pageWidth - margin, footerY - 14)
 
   doc.setFont('helvetica', 'normal')

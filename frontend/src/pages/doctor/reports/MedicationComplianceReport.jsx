@@ -101,7 +101,7 @@ export default function MedicationComplianceReport() {
               type="button"
               onClick={handlePrint}
               aria-label="Print Medication Compliance Report"
-              className="h-9 px-3.5 border border-border-strong text-xs font-medium rounded-lg text-text bg-white hover:bg-surface-muted focus-visible:ring-2 focus-visible:ring-primary flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+              className="h-9 px-3.5 border-[1.5px] border-primary text-xs font-medium rounded-lg text-primary bg-surface hover:bg-primary-tint focus-visible:ring-2 focus-visible:ring-primary flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
             >
               <Printer size={14} /> Print Report
             </button>
@@ -109,7 +109,7 @@ export default function MedicationComplianceReport() {
               type="button"
               onClick={handleExportPDF}
               aria-label="Export Medication Compliance Report as PDF"
-              className="h-9 px-4 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary-hover focus-visible:ring-2 focus-visible:ring-primary flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+              className="h-9 px-4 bg-secondary text-text text-xs font-semibold rounded-lg hover:bg-secondary-hover focus-visible:ring-2 focus-visible:ring-primary flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
             >
               <Download size={14} /> Export PDF
             </button>
@@ -127,7 +127,7 @@ export default function MedicationComplianceReport() {
           <button
             type="button"
             onClick={fetchReport}
-            className="px-3 py-1 bg-white border border-danger/40 rounded text-xs font-semibold hover:bg-danger-tint transition-colors flex items-center gap-1"
+            className="px-3 py-1 bg-surface border border-danger/40 rounded text-xs font-semibold hover:bg-danger-tint transition-colors flex items-center gap-1"
           >
             <RefreshCw size={12} /> Retry
           </button>

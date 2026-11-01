@@ -10,6 +10,7 @@ import {
   Users, AlertTriangle, Calendar, Activity, ArrowRight, ShieldAlert,
   Bell, CheckCheck, Pill, Info, ChevronRight
 } from 'lucide-react'
+import { formatDate } from '../../utils/dateUtils'
 
 export default function DoctorDashboard() {
   const { user } = useAuth()
@@ -87,7 +88,7 @@ export default function DoctorDashboard() {
           <div className="flex items-center gap-2.5">
             <Link
               to="/doctor/notifications"
-              className="inline-flex items-center gap-1.5 h-9 px-3 bg-white border border-border text-text text-xs font-medium rounded hover:bg-surface-muted transition-colors shadow-xs"
+              className="inline-flex items-center gap-1.5 h-9 px-3 bg-surface border border-border text-text text-xs font-medium rounded hover:bg-surface-muted transition-colors shadow-xs"
             >
               <Bell size={14} className={unreadNotifs.length > 0 ? "text-danger" : "text-text-muted"} />
               Notifications
@@ -99,7 +100,7 @@ export default function DoctorDashboard() {
             </Link>
             <Link
               to="/doctor/discharge-plans/new"
-              className="inline-flex items-center gap-1.5 h-9 px-3.5 bg-primary text-white text-xs font-semibold rounded hover:bg-primary-hover shadow-xs transition-colors"
+              className="inline-flex items-center gap-1.5 h-9 px-3.5 bg-secondary text-text text-xs font-semibold rounded hover:bg-secondary-hover shadow-xs transition-colors"
             >
               + Create Discharge Plan
             </Link>
@@ -164,7 +165,7 @@ export default function DoctorDashboard() {
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={() => markNotifRead(unreadHighRisk[0]?.id)}
-              className="h-8 px-3 text-xs font-semibold bg-white border border-danger/30 text-danger rounded hover:bg-danger-tint transition-colors"
+              className="h-8 px-3 text-xs font-semibold bg-surface border border-danger/30 text-danger rounded hover:bg-danger-tint transition-colors"
             >
               Acknowledge
             </button>
@@ -193,7 +194,7 @@ export default function DoctorDashboard() {
             <CardBody>
               <div className="border border-border rounded-lg overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-surface-muted text-text-secondary border-b border-border font-medium">
+                  <thead className="bg-[#DDD0F7] text-primary border-b border-border font-bold">
                     <tr>
                       <th className="p-3">Patient</th>
                       <th className="p-3">Procedure</th>
@@ -205,7 +206,7 @@ export default function DoctorDashboard() {
                   </thead>
                   <tbody className="divide-y divide-border text-text">
                     {highRiskPatients.map((p) => (
-                      <tr key={p.id} className="hover:bg-surface-muted/50 transition-colors">
+                      <tr key={p.id} className="hover:bg-bg bg-surface transition-colors">
                         <td className="p-3">
                           <strong className="block text-text">{p.name}</strong>
                           <span className="text-2xs text-text-muted">{p.id}</span>
@@ -240,9 +241,9 @@ export default function DoctorDashboard() {
             <CardBody>
               <RiskDonut
                 data={[
-                  { name: 'Low Risk', value: reportStats?.risk_distribution?.low ?? 94, color: '#22A05A' },
-                  { name: 'Medium Risk', value: reportStats?.risk_distribution?.medium ?? 27, color: '#F2A311' },
-                  { name: 'High Risk', value: reportStats?.risk_distribution?.high ?? 7, color: '#DC3B3B' },
+                  { name: 'Low Risk', value: reportStats?.risk_distribution?.low ?? 94, color: '#15803D' },
+                  { name: 'Medium Risk', value: reportStats?.risk_distribution?.medium ?? 27, color: '#92400E' },
+                  { name: 'High Risk', value: reportStats?.risk_distribution?.high ?? 7, color: '#B91C1C' },
                 ]}
                 total={reportStats?.total_active_patients ?? (patients.length > 0 ? patients.length + 127 : 128)}
               />
@@ -378,13 +379,13 @@ export default function DoctorDashboard() {
 
                     <div className="flex items-center gap-3 flex-shrink-0 self-end sm:self-center">
                       <span className="text-[11px] text-text-muted whitespace-nowrap">
-                        {new Date(n.created_at || Date.now()).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        {formatDate(n.created_at || new Date(), 'DD MMM YYYY, hh:mm A')}
                       </span>
                       {!n.is_read && (
                         <button
                           type="button"
                           onClick={() => markNotifRead(n.id)}
-                          className="px-2.5 py-1 text-xs font-semibold text-primary bg-white border border-border rounded hover:bg-surface-muted transition-colors cursor-pointer"
+                          className="px-2.5 py-1 text-xs font-semibold text-primary bg-surface border border-border rounded hover:bg-surface-muted transition-colors cursor-pointer"
                         >
                           Mark Read
                         </button>

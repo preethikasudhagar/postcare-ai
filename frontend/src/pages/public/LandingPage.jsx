@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Logo } from '../../components/ui/index.jsx'
 import {
   FileText, Activity, Brain, Pill, Calendar, Bell,
   Shield, Lock, Server, Database, ChevronRight, Menu, X,
@@ -20,17 +21,11 @@ function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border">
+    <nav className="sticky top-0 z-50 bg-surface/95 backdrop-blur border-b border-border">
       <div className="max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between h-16">
-        <div className="flex items-center gap-3">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <rect width="32" height="32" rx="8" fill="#5B21B6" />
-            <path d="M16 6v20M6 16h20" stroke="white" strokeWidth="3" strokeLinecap="round" />
-            <path d="M22 10 C26 10 28 13 28 16" stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round" />
-            <circle cx="28" cy="14" r="2" fill="#F59E0B" />
-          </svg>
-          <span className="text-base font-bold text-text">PostCare AI</span>
-        </div>
+        <Link to="/" className="flex items-center gap-2 group focus:outline-none focus:ring-2 focus:ring-primary rounded-lg p-1" aria-label="PostCare AI Home">
+          <Logo size="sm" />
+        </Link>
         <div className="hidden md:flex items-center gap-6">
           {[
             { label: 'Features', id: 'features' },
@@ -56,7 +51,7 @@ function Navbar() {
         </button>
       </div>
       {open && (
-        <div className="md:hidden border-t border-border bg-white px-4 py-4 space-y-2">
+        <div className="md:hidden border-t border-border bg-surface px-4 py-4 space-y-2">
           {[
             { label: 'Features', id: 'features' },
             { label: 'How It Works', id: 'how-it-works' },
@@ -108,7 +103,7 @@ const roles = [
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-surface">
       <Navbar />
 
       {/* Hero */}
@@ -136,7 +131,7 @@ export default function LandingPage() {
 
           {/* Product preview */}
           <div className="bg-bg rounded-lg border border-border p-4 shadow-sm">
-            <div className="bg-white rounded border border-border p-4 mb-3">
+            <div className="bg-surface rounded border border-border p-4 mb-3">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-medium text-text">Recovery Risk Overview</span>
                 <span className="text-2xs text-text-muted">Today</span>
@@ -144,7 +139,7 @@ export default function LandingPage() {
               <div className="flex items-center gap-4">
                 <div className="relative w-20 h-20">
                   <svg viewBox="0 0 36 36" className="w-20 h-20 -rotate-90">
-                    <circle cx="18" cy="18" r="15.9" fill="none" stroke="#E2E8F0" strokeWidth="3.2" />
+                    <circle cx="18" cy="18" r="15.9" fill="none" stroke="#D3C8EE" strokeWidth="3.2" />
                     <circle cx="18" cy="18" r="15.9" fill="none" stroke="#5B21B6" strokeWidth="3.2"
                       strokeDasharray="60 100" strokeLinecap="round" />
                   </svg>
@@ -172,7 +167,7 @@ export default function LandingPage() {
                 <button className="text-xs text-white bg-danger px-2 py-1 rounded-sm">Review</button>
               </div>
             </div>
-            <div className="bg-white border border-border rounded p-3">
+            <div className="bg-surface border border-border rounded p-3">
               <p className="text-xs font-medium text-text mb-2">Recovery Timeline (13 days)</p>
               <div className="flex items-center gap-0.5">
                 {['low','low','low','medium','low','high','medium','low','low','low','medium','low','low'].map((r,i) => (
@@ -194,7 +189,7 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map(f => (
-              <div key={f.title} className="bg-white border border-border rounded-[10px] p-5 shadow-xs hover:shadow-sm transition-shadow">
+              <div key={f.title} className="bg-surface border border-border rounded-[10px] p-5 shadow-xs hover:shadow-sm transition-shadow">
                 <div className="w-10 h-10 bg-primary-tint rounded-[8px] flex items-center justify-center mb-3">
                   <f.icon size={20} className="text-primary" strokeWidth={1.75} />
                 </div>
@@ -248,12 +243,12 @@ export default function LandingPage() {
                 <p className="text-xs text-warning font-medium">Decision-support information only. Not a medical diagnosis.</p>
               </div>
             </div>
-            <div className="bg-white border border-border rounded-[10px] p-6 shadow-xs">
+            <div className="bg-surface border border-border rounded-[10px] p-6 shadow-xs">
               <p className="text-xs font-medium text-text-muted mb-4">ML Pipeline</p>
               {['Recovery data collected','Data preprocessing','Feature extraction','Random Forest Classifier','Risk classification output'].map((step, i, arr) => (
                 <div key={step}>
                   <div className={`flex items-center gap-3 p-3 rounded ${i === 3 ? 'bg-primary text-white' : 'bg-surface-muted'}`}>
-                    <span className={`text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${i===3?'bg-white text-primary':'bg-white text-text-muted'}`}>{i+1}</span>
+                    <span className={`text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${i===3?'bg-surface text-primary':'bg-surface text-text-muted'}`}>{i+1}</span>
                     <span className={`text-sm font-medium ${i===3?'text-white':'text-text'}`}>{step}</span>
                   </div>
                   {i < arr.length - 1 && <div className="ml-5 w-0.5 h-3 bg-border mx-auto" />}
@@ -302,7 +297,7 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {roles.map(r => (
-              <div key={r.title} className="bg-white border border-border rounded-[10px] p-5 shadow-xs">
+              <div key={r.title} className="bg-surface border border-border rounded-[10px] p-5 shadow-xs">
                 <div className={`w-10 h-10 rounded-[8px] flex items-center justify-center mb-3 ${r.color}`}>
                   <r.icon size={20} strokeWidth={1.75} />
                 </div>
@@ -321,7 +316,7 @@ export default function LandingPage() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-20 bg-white border-t border-border">
+      <section id="about" className="py-20 bg-surface border-t border-border">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary-tint text-primary text-xs font-semibold rounded-full mb-3">
@@ -364,7 +359,7 @@ export default function LandingPage() {
         <div className="max-w-2xl mx-auto text-center px-4">
           <h2 className="text-3xl font-bold mb-4">Ready to explore PostCare AI?</h2>
           <p className="text-white/80 mb-8">Sign in with a demo account to explore all features instantly.</p>
-          <Link to="/login" className="inline-flex items-center gap-2 h-11 px-8 bg-white text-primary font-semibold rounded-sm hover:bg-surface-muted transition-colors">
+          <Link to="/login" className="inline-flex items-center gap-2 h-11 px-8 bg-surface text-primary font-semibold rounded-sm hover:bg-surface-muted transition-colors">
             Try demo accounts <ArrowRight size={16} />
           </Link>
         </div>
@@ -374,10 +369,9 @@ export default function LandingPage() {
       <footer className="bg-text text-white py-10">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="rgba(255,255,255,0.15)"/><path d="M16 6v20M6 16h20" stroke="white" strokeWidth="3" strokeLinecap="round"/></svg>
-              <span className="font-bold">PostCare AI</span>
-            </div>
+            <Link to="/" className="flex items-center gap-2 group focus:outline-none focus:ring-2 focus:ring-white rounded-lg p-1" aria-label="PostCare AI Home">
+              <Logo size="sm" theme="dark" />
+            </Link>
             <div className="flex gap-6">
               {[
                 { label: 'Features', href: '#features' },

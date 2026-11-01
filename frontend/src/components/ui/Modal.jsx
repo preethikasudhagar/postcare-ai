@@ -35,7 +35,7 @@ export function Modal({ isOpen, onClose, title, subtitle, children, footer, size
         aria-modal="true"
         aria-labelledby="modal-title"
         className={cn(
-          'relative bg-white rounded-lg shadow-lg w-full animate-slideUp focus:outline-none',
+          'relative bg-surface border border-border rounded-lg shadow-lg w-full animate-slideUp focus:outline-none',
           sizes[size]
         )}
       >
@@ -98,7 +98,7 @@ export function Drawer({ isOpen, onClose, title, children, footer, side = 'right
     <div className="fixed inset-0 z-50 flex">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       <div className={cn(
-        'relative ml-auto bg-white shadow-lg flex flex-col animate-slideUp max-h-screen',
+        'relative ml-auto bg-surface border-l border-border shadow-lg flex flex-col animate-slideUp max-h-screen',
         widths[size]
       )}>
         <div className="flex items-center justify-between p-5 border-b border-border">

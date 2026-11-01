@@ -4,6 +4,7 @@ import api from '../../services/api'
 import { PageHeader, Card, CardBody } from '../../components/ui/index.jsx'
 import { RiskBadge, StatusBadge } from '../../components/ui/Badge.jsx'
 import { Search, Filter, User } from 'lucide-react'
+import { formatDate, formatRelativeDate } from '../../utils/dateUtils'
 
 /**
  * Static demo patients used as fallback when the API returns no patients
@@ -13,14 +14,14 @@ import { Search, Filter, User } from 'lucide-react'
  * API and show the empty / no-data state in PatientDetail.
  */
 const STATIC_PATIENTS = [
-  { id: 'P-101', name: 'Vikram Mehta',    age: 62, gender: 'M', surgery: 'Cardiac Bypass (CABG)',            date: '08 Sep 2026', day: 11, risk: 'high',   score: 38, status: 'Active' },
-  { id: 'P-102', name: 'Rahul Kumar',     age: 54, gender: 'M', surgery: 'Total Knee Arthroplasty (L)',     date: '04 Sep 2026', day: 14, risk: 'low',    score: 88, status: 'Active' },
-  { id: 'P-103', name: 'Priya Sharma',    age: 48, gender: 'F', surgery: 'Laparoscopic Cholecystectomy',    date: '11 Sep 2026', day:  8, risk: 'low',    score: 92, status: 'Active' },
-  { id: 'P-104', name: 'Anil Sengupta',   age: 59, gender: 'M', surgery: 'Spinal Lumbar Fusion (L4-L5)',   date: '06 Sep 2026', day: 13, risk: 'high',   score: 42, status: 'Active' },
-  { id: 'P-105', name: 'Deepa Krishnan',  age: 67, gender: 'F', surgery: 'Total Hip Replacement (R)',      date: '02 Sep 2026', day: 17, risk: 'medium', score: 68, status: 'Active' },
-  { id: 'P-106', name: 'Amit Verma',      age: 39, gender: 'M', surgery: 'ACL Reconstruction',             date: '12 Sep 2026', day:  7, risk: 'low',    score: 84, status: 'Active' },
-  { id: 'P-107', name: 'Ramesh Patel',    age: 71, gender: 'M', surgery: 'Total Knee Arthroplasty (R)',    date: '05 Sep 2026', day: 14, risk: 'medium', score: 72, status: 'Active' },
-  { id: 'P-108', name: 'Sunita Rao',      age: 45, gender: 'F', surgery: 'Appendectomy',                   date: '13 Sep 2026', day:  6, risk: 'high',   score: 45, status: 'Active' },
+  { id: 'P-101', name: 'Vikram Mehta',    age: 62, gender: 'M', surgery: 'Cardiac Bypass (CABG)',            date: formatRelativeDate(-11, 'DD MMM YYYY'), day: 11, risk: 'high',   score: 38, status: 'Active' },
+  { id: 'P-102', name: 'Rahul Kumar',     age: 54, gender: 'M', surgery: 'Total Knee Arthroplasty (L)',     date: formatRelativeDate(-14, 'DD MMM YYYY'), day: 14, risk: 'low',    score: 88, status: 'Active' },
+  { id: 'P-103', name: 'Priya Sharma',    age: 48, gender: 'F', surgery: 'Laparoscopic Cholecystectomy',    date: formatRelativeDate(-8, 'DD MMM YYYY'),  day:  8, risk: 'low',    score: 92, status: 'Active' },
+  { id: 'P-104', name: 'Anil Sengupta',   age: 59, gender: 'M', surgery: 'Spinal Lumbar Fusion (L4-L5)',   date: formatRelativeDate(-13, 'DD MMM YYYY'), day: 13, risk: 'high',   score: 42, status: 'Active' },
+  { id: 'P-105', name: 'Deepa Krishnan',  age: 67, gender: 'F', surgery: 'Total Hip Replacement (R)',      date: formatRelativeDate(-17, 'DD MMM YYYY'), day: 17, risk: 'medium', score: 68, status: 'Active' },
+  { id: 'P-106', name: 'Amit Verma',      age: 39, gender: 'M', surgery: 'ACL Reconstruction',             date: formatRelativeDate(-7, 'DD MMM YYYY'),  day:  7, risk: 'low',    score: 84, status: 'Active' },
+  { id: 'P-107', name: 'Ramesh Patel',    age: 71, gender: 'M', surgery: 'Total Knee Arthroplasty (R)',    date: formatRelativeDate(-14, 'DD MMM YYYY'), day: 14, risk: 'medium', score: 72, status: 'Active' },
+  { id: 'P-108', name: 'Sunita Rao',      age: 45, gender: 'F', surgery: 'Appendectomy',                   date: formatRelativeDate(-6, 'DD MMM YYYY'),  day:  6, risk: 'high',   score: 45, status: 'Active' },
 ]
 
 /**
@@ -67,7 +68,7 @@ function normaliseApiPatient(p) {
     gender: p.gender === 'M' ? 'M' : p.gender === 'F' ? 'F' : p.gender || '—',
     surgery: p.surgery_type || '—',
     date:   p.surgery_date
-      ? new Date(p.surgery_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+      ? formatDate(p.surgery_date, 'DD MMM YYYY')
       : '—',
     day:    computePostOpDay(p.surgery_date) ?? '—',
     risk:   'low',    // risk comes from the latest check-in; default to low for now
@@ -115,7 +116,7 @@ export default function PatientList() {
       <PageHeader title="Patient Directory" />
 
       {/* Filter and Search Bar */}
-      <div className="bg-white border border-border rounded-[10px] p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
+      <div className="bg-surface border border-border rounded-[10px] p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
         <div className="relative w-full sm:w-80">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
           <input
@@ -131,7 +132,7 @@ export default function PatientList() {
           <select
             value={riskFilter}
             onChange={(e) => setRiskFilter(e.target.value)}
-            className="h-9 px-3 text-xs border border-border rounded bg-white text-text focus:outline-none focus:ring-1 focus:ring-primary"
+            className="h-9 px-3 text-xs border border-border rounded bg-surface text-text focus:outline-none focus:ring-1 focus:ring-primary"
           >
             <option value="all">All Risk Categories</option>
             <option value="high">High Risk (Attention)</option>

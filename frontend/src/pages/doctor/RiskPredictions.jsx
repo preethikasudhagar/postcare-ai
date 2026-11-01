@@ -126,9 +126,9 @@ export default function RiskPredictions() {
             type="button"
             onClick={fetchPredictions}
             disabled={loading}
-            className="inline-flex items-center gap-1.5 h-9 px-3.5 border border-border-strong text-xs font-medium rounded-sm text-text bg-white hover:bg-surface-muted transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-1.5 h-9 px-3.5 bg-secondary text-text text-xs font-semibold rounded-sm hover:bg-secondary-hover transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
           >
-            <RefreshCw size={13} className={loading ? 'animate-spin text-primary' : 'text-text-muted'} /> Refresh
+            <RefreshCw size={13} className={loading ? 'animate-spin text-primary' : 'text-text'} /> Refresh
           </button>
         }
       />
@@ -177,7 +177,7 @@ export default function RiskPredictions() {
                   placeholder="Search by patient name, UHID, or surgery..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-border rounded focus:outline-none focus:border-primary text-text placeholder:text-text-muted"
+                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-surface border border-border rounded focus:outline-none focus:ring-2 focus:ring-primary-hover focus:border-primary-hover text-text placeholder:text-placeholder"
                 />
               </div>
               {searchQuery && (
@@ -196,7 +196,7 @@ export default function RiskPredictions() {
               <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="text-xs py-1.5 px-2.5 border border-border rounded bg-white text-text font-medium focus:outline-none focus:border-primary shadow-xs"
+                className="text-xs py-1.5 px-2.5 border border-border rounded bg-surface text-text font-medium focus:outline-none focus:ring-2 focus:ring-primary-hover focus:border-primary-hover shadow-xs"
               >
                 <option value="all">All Risk Levels ({totalCount})</option>
                 <option value="high">High Risk ({highRiskCount})</option>
@@ -262,7 +262,7 @@ export default function RiskPredictions() {
           {!loading && !error && filtered.length > 0 && (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-surface-muted text-text-secondary border-b border-border font-semibold">
+                <thead className="bg-[#DDD0F7] text-primary border-b border-border font-bold">
                   <tr>
                     <th className="p-3.5">ID</th>
                     <th className="p-3.5">Patient Details</th>
@@ -297,11 +297,11 @@ export default function RiskPredictions() {
                     return (
                       <tr
                         key={p.id}
-                        className={`hover:bg-surface-muted/60 transition-colors ${
-                          risk === 'high' ? 'bg-danger-tint/20' : ''
+                        className={`hover:bg-bg transition-colors ${
+                          risk === 'high' ? 'bg-danger-tint/20' : 'bg-surface'
                         }`}
                       >
-                        <td className="p-3.5 font-mono text-2xs text-text-muted whitespace-nowrap">
+                        <td className="p-3.5 font-mono text-2xs text-[#55607A] whitespace-nowrap">
                           #RP-{String(p.id).padStart(4, '0')}
                         </td>
                         <td className="p-3.5">

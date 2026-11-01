@@ -4,26 +4,28 @@
 
 @layer base {
   :root {
-    --bg: #F8FAFC;
-    --surface: #FFFFFF;
-    --surface-muted: #F1F5F9;
-    --border: #E2E8F0;
-    --border-strong: #CBD5E1;
+    --bg: #EDE6FA;
+    --surface: #F6F2FF;
+    --surface-muted: #EDE6FA;
+    --table-header: #DDD0F7;
+    --border: #D3C8EE;
+    --border-strong: #B8A9E0;
     --text: #0F172A;
-    --text-secondary: #475569;
-    --text-muted: #64748B;
+    --text-secondary: #55607A;
+    --text-muted: #55607A;
+    --placeholder: #7C7A99;
     --primary: #5B21B6;
-    --primary-hover: #4C1D95;
-    --primary-tint: #F3E8FF;
+    --primary-hover: #6D28D9;
+    --primary-tint: #EDE9FE;
     --secondary: #F59E0B;
     --secondary-hover: #D97706;
     --secondary-tint: #FEF3C7;
     --success: #15803D;
-    --success-tint: #E7F6EC;
-    --warning: #B45309;
+    --success-tint: #DCFCE7;
+    --warning: #92400E;
     --warning-tint: #FEF3C7;
-    --danger: #C62828;
-    --danger-tint: #FDECEC;
+    --danger: #B91C1C;
+    --danger-tint: #FEE2E2;
     --sidebar-width: 248px;
     --topbar-height: 64px;
   }
@@ -59,7 +61,7 @@
 
   /* Focus ring */
   :focus-visible {
-    outline: 2px solid var(--primary);
+    outline: 2px solid var(--primary-hover);
     outline-offset: 2px;
     border-radius: 4px;
   }
@@ -67,27 +69,88 @@
   /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+
+  /* Form Fields */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select {
+    background-color: var(--surface);
+    border-color: var(--border);
+    color: var(--text);
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--placeholder);
+  }
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: var(--primary-hover);
+  }
 }
 
 @layer components {
   .skeleton {
-    background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
+    background: linear-gradient(90deg, #D3C8EE 25%, #EDE6FA 50%, #D3C8EE 75%);
     background-size: 200% 100%;
     animation: shimmer 1.4s ease infinite;
     border-radius: 6px;
   }
 
   .card {
-    background: white;
+    background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 10px;
-    box-shadow: 0 1px 2px rgba(15,27,45,0.04);
+    box-shadow: 0 1px 2px rgba(91, 33, 182, 0.05);
   }
 
   .btn-primary {
-    @apply bg-primary text-white font-medium rounded-sm transition-all duration-150 hover:bg-primary-hover active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+    @apply bg-secondary text-text font-medium rounded-sm transition-all duration-150 hover:bg-secondary-hover active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply bg-surface text-primary border-[1.5px] border-primary font-medium rounded-sm transition-all duration-150 hover:bg-primary-tint active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-primary;
+  }
+
+  /* Global Table Styling: header row #DDD0F7 with #5B21B6 bold text, rows #F6F2FF, alternate rows and hover #EDE6FA, dividers #D3C8EE */
+  table thead, thead tr {
+    background-color: var(--table-header) !important;
+  }
+  table thead th {
+    background-color: var(--table-header) !important;
+    color: var(--primary) !important;
+    font-weight: 700 !important;
+    border-bottom: 1px solid var(--border) !important;
+  }
+  table tbody tr {
+    background-color: var(--surface);
+    transition: background-color 150ms ease;
+  }
+  table tbody tr:nth-child(even) {
+    background-color: var(--bg);
+  }
+  table tbody tr:hover {
+    background-color: var(--bg) !important;
+  }
+  table td, table th {
+    border-color: var(--border);
+  }
+
+  /* Toast Notification */
+  [data-sonner-toast] {
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: 0 12px 32px rgba(91, 33, 182, 0.14) !important;
+    color: var(--text) !important;
+  }
+}
+
+@layer utilities {
+  /* Prevent pure white backgrounds anywhere in cards, sidebar, top bar, modals, inputs, dropdowns, table rows */
+  .bg-white {
+    background-color: var(--surface) !important;
   }
 }
 
@@ -119,10 +182,18 @@
 
 @media print {
   .no-print, nav, aside, header, .sidebar, .topbar, button { display: none !important; }
-  body { background: white !important; color: #0F1B2D !important; }
+  body {
+    background: #EDE6FA !important;
+    color: #0F172A !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
   #main-content, main, .overflow-y-auto { overflow: visible !important; height: auto !important; max-height: none !important; }
-  .print-content { max-width: 100%; margin: 0; padding: 20px; }
-  .card { box-shadow: none !important; border: 1px solid #CBD5E1 !important; page-break-inside: avoid; }
+  .print-content { max-width: 100%; margin: 0; padding: 20px; background: #EDE6FA !important; }
+  .card { box-shadow: none !important; background: #F6F2FF !important; border: 1px solid #D3C8EE !important; page-break-inside: avoid; }
   table { page-break-inside: auto; }
+  table thead, thead tr, thead th { background: #DDD0F7 !important; color: #5B21B6 !important; font-weight: 700 !important; }
   tr { page-break-inside: avoid; page-break-after: auto; }
+  tbody tr { background: #F6F2FF !important; }
+  tbody tr:nth-child(even) { background: #EDE6FA !important; }
 }

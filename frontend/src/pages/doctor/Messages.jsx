@@ -225,16 +225,16 @@ export default function DoctorMessages() {
       )}
 
       {/* Main Two-Column Card Container */}
-      <div className="w-full flex-1 bg-white border border-border rounded-xl shadow-xs overflow-hidden flex flex-col md:flex-row min-h-[540px] h-[calc(100vh-210px)]">
+      <div className="w-full flex-1 bg-surface border border-border rounded-xl shadow-xs overflow-hidden flex flex-col md:flex-row min-h-[540px] h-[calc(100vh-210px)]">
         
         {/* Left Contacts Pane (approx 30-32% on desktop, full on mobile when active) */}
         <div
-          className={`w-full md:w-[32%] lg:w-[30%] min-w-[280px] max-w-full md:max-w-[360px] border-r border-border flex flex-col bg-white h-full flex-shrink-0 ${
+          className={`w-full md:w-[32%] lg:w-[30%] min-w-[280px] max-w-full md:max-w-[360px] border-r border-border flex flex-col bg-surface h-full flex-shrink-0 ${
             showMobileChat ? 'hidden md:flex' : 'flex'
           }`}
         >
           {/* Search Box */}
-          <div className="p-3 border-b border-border bg-white flex-shrink-0">
+          <div className="p-3 border-b border-border bg-surface flex-shrink-0">
             <div className="relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
               <input
@@ -313,7 +313,7 @@ export default function DoctorMessages() {
           }`}
         >
           {/* Section A: Conversation Header (Pinned Top) */}
-          <div className="flex-shrink-0 p-3.5 bg-white border-b border-border flex items-center justify-between shadow-xs z-10">
+          <div className="flex-shrink-0 p-3.5 bg-surface border-b border-border flex items-center justify-between shadow-xs z-10">
             <div className="flex items-center gap-2.5 min-w-0">
               {/* Mobile Back Button */}
               <button
@@ -402,7 +402,7 @@ export default function DoctorMessages() {
                       className={`max-w-[85%] sm:max-w-[75%] md:max-w-[70%] p-3 rounded-xl text-xs leading-relaxed shadow-xs break-words ${
                         isMe
                           ? 'bg-primary text-white rounded-br-none'
-                          : 'bg-white text-text border border-border rounded-bl-none'
+                          : 'bg-surface text-text border border-border rounded-bl-none'
                       }`}
                     >
                       {m.content}
@@ -435,7 +435,7 @@ export default function DoctorMessages() {
           {/* Section C: Message Composer (Anchored Bottom) */}
           <form
             onSubmit={handleSend}
-            className="flex-shrink-0 p-3 md:p-4 bg-white border-t border-border flex items-end gap-2.5 z-10"
+            className="flex-shrink-0 p-3 md:p-4 bg-surface border-t border-border flex items-end gap-2.5 z-10"
           >
             <div className="flex-1 relative min-w-0">
               <textarea

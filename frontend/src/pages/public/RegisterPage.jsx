@@ -104,7 +104,7 @@ export default function RegisterPage() {
               onChange={set('first_name')}
               required
               placeholder="Jane"
-              className="w-full h-11 px-3.5 text-sm bg-white border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted/60"
+              className="w-full h-11 px-3.5 text-sm bg-surface border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted/60"
             />
           </div>
           <div>
@@ -116,7 +116,7 @@ export default function RegisterPage() {
               onChange={set('last_name')}
               required
               placeholder="Doe"
-              className="w-full h-11 px-3.5 text-sm bg-white border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted/60"
+              className="w-full h-11 px-3.5 text-sm bg-surface border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted/60"
             />
           </div>
         </div>
@@ -131,7 +131,7 @@ export default function RegisterPage() {
             onChange={set('email')}
             required
             placeholder="jane.doe@example.com"
-            className="w-full h-11 px-3.5 text-sm bg-white border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted/60"
+            className="w-full h-11 px-3.5 text-sm bg-surface border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted/60"
           />
         </div>
 
@@ -142,7 +142,7 @@ export default function RegisterPage() {
           <select
             value={form.role}
             onChange={set('role')}
-            className="w-full h-11 px-3 text-sm bg-white border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all text-text cursor-pointer"
+            className="w-full h-11 px-3 text-sm bg-surface border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all text-text cursor-pointer"
           >
             <option value="patient">Patient (Recovering from surgery)</option>
             <option value="caregiver">Caregiver (Family member / Guardian)</option>
@@ -159,7 +159,7 @@ export default function RegisterPage() {
             onChange={set('password')}
             required
             placeholder="Create a secure password"
-            className="w-full h-11 px-3.5 text-sm bg-white border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted/60"
+            className="w-full h-11 px-3.5 text-sm bg-surface border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted/60"
           />
           <PasswordStrength password={form.password} />
         </div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Calendar, CheckCircle2, AlertTriangle, AlertCircle, Activity, Thermometer, ShieldAlert } from 'lucide-react'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { formatRelativeDate } from '../../utils/dateUtils'
 
 const cn = (...a) => twMerge(clsx(...a))
 
@@ -68,20 +69,20 @@ export default function RecoveryTimeline({
   // Default mock fallback shown ONLY when data is null/undefined (no fetch attempted yet)
   // An empty array [] means fetch succeeded but no check-ins exist → show empty state, not mock
   const defaultFallbackData = [
-    { day: 1, date: '06 Sep', score: 85, risk: 'low', pain: 2, temp: 36.6 },
-    { day: 2, date: '07 Sep', score: 82, risk: 'low', pain: 3, temp: 36.8 },
-    { day: 3, date: '08 Sep', score: 80, risk: 'low', pain: 3, temp: 36.7 },
-    { day: 4, date: '09 Sep', score: 75, risk: 'medium', pain: 5, temp: 37.4 },
-    { day: 5, date: '10 Sep', score: 70, risk: 'medium', pain: 6, temp: 37.6 },
-    { day: 6, date: '11 Sep', score: 48, risk: 'high', pain: 8, temp: 38.4 },
-    { day: 7, date: '12 Sep', score: 65, risk: 'medium', pain: 5, temp: 37.3 },
-    { day: 8, date: '13 Sep', score: 72, risk: 'medium', pain: 4, temp: 37.0 },
-    { day: 9, date: '14 Sep', score: 78, risk: 'low', pain: 3, temp: 36.8 },
-    { day: 10, date: '15 Sep', score: 82, risk: 'low', pain: 2, temp: 36.6 },
-    { day: 11, date: '16 Sep', score: 85, risk: 'low', pain: 2, temp: 36.5 },
-    { day: 12, date: '17 Sep', score: 86, risk: 'low', pain: 1, temp: 36.6 },
-    { day: 13, date: '18 Sep', score: 88, risk: 'low', pain: 1, temp: 36.5 },
-    { day: 14, date: '19 Sep', isToday: true, score: 88, risk: 'low', pain: 1, temp: 36.5, followUp: true }
+    { day: 1, date: formatRelativeDate(-13, 'DD MMM'), score: 85, risk: 'low', pain: 2, temp: 36.6 },
+    { day: 2, date: formatRelativeDate(-12, 'DD MMM'), score: 82, risk: 'low', pain: 3, temp: 36.8 },
+    { day: 3, date: formatRelativeDate(-11, 'DD MMM'), score: 80, risk: 'low', pain: 3, temp: 36.7 },
+    { day: 4, date: formatRelativeDate(-10, 'DD MMM'), score: 75, risk: 'medium', pain: 5, temp: 37.4 },
+    { day: 5, date: formatRelativeDate(-9, 'DD MMM'), score: 70, risk: 'medium', pain: 6, temp: 37.6 },
+    { day: 6, date: formatRelativeDate(-8, 'DD MMM'), score: 48, risk: 'high', pain: 8, temp: 38.4 },
+    { day: 7, date: formatRelativeDate(-7, 'DD MMM'), score: 65, risk: 'medium', pain: 5, temp: 37.3 },
+    { day: 8, date: formatRelativeDate(-6, 'DD MMM'), score: 72, risk: 'medium', pain: 4, temp: 37.0 },
+    { day: 9, date: formatRelativeDate(-5, 'DD MMM'), score: 78, risk: 'low', pain: 3, temp: 36.8 },
+    { day: 10, date: formatRelativeDate(-4, 'DD MMM'), score: 82, risk: 'low', pain: 2, temp: 36.6 },
+    { day: 11, date: formatRelativeDate(-3, 'DD MMM'), score: 85, risk: 'low', pain: 2, temp: 36.5 },
+    { day: 12, date: formatRelativeDate(-2, 'DD MMM'), score: 86, risk: 'low', pain: 1, temp: 36.6 },
+    { day: 13, date: formatRelativeDate(-1, 'DD MMM'), score: 88, risk: 'low', pain: 1, temp: 36.5 },
+    { day: 14, date: formatRelativeDate(0, 'DD MMM'), isToday: true, score: 88, risk: 'low', pain: 1, temp: 36.5, followUp: true }
   ]
 
   const rawList = data === null || data === undefined ? defaultFallbackData : data
@@ -98,7 +99,7 @@ export default function RecoveryTimeline({
   const latestStatus = timelineData.length > 0 ? timelineData[timelineData.length - 1] : null
 
   return (
-    <div className="w-full max-w-full min-w-0 bg-white border border-border rounded-[10px] p-5 shadow-xs overflow-hidden">
+    <div className="w-full max-w-full min-w-0 bg-surface border border-border rounded-[10px] p-5 shadow-xs overflow-hidden">
       {/* Card Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 border-b border-border/60 pb-3.5">
         <div>

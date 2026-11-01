@@ -30,7 +30,7 @@ export default class ErrorBoundary extends React.Component {
         return this.props.fallback
       }
       return (
-        <div className="min-h-[300px] flex flex-col items-center justify-center p-8 text-center bg-white border border-border rounded-[10px] shadow-xs my-6">
+        <div className="min-h-[300px] flex flex-col items-center justify-center p-8 text-center bg-surface border border-border rounded-[10px] shadow-xs my-6">
           <div className="w-12 h-12 rounded-full bg-danger-tint text-danger flex items-center justify-center mb-3">
             <AlertCircle size={26} />
           </div>

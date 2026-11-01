@@ -181,7 +181,7 @@ export default function AdminDoctors() {
           <button
             type="button"
             onClick={fetchData}
-            className="px-3 py-1 bg-white border border-danger/40 rounded text-xs font-semibold hover:bg-danger-tint transition-colors flex items-center gap-1"
+            className="px-3 py-1 bg-surface border border-danger/40 rounded text-xs font-semibold hover:bg-danger-tint transition-colors flex items-center gap-1"
           >
             <RefreshCw size={12} /> Retry
           </button>
