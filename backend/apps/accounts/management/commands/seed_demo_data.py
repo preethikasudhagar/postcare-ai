@@ -38,7 +38,9 @@ class Command(BaseCommand):
 
         departments = {}
         for name, desc in dept_defs:
-            dept, created = Department.objects.get_or_create(name=name, defaults={'description': desc})
+            dept = Department.objects.filter(name=name).first()
+            if not dept:
+                dept = Department.objects.create(name=name, description=desc)
             departments[name] = dept
         self.stdout.write(f"  [OK] {len(departments)} Departments verified.")
 
@@ -62,43 +64,65 @@ class Command(BaseCommand):
 
         doctors = []
         for email, fn, ln, phone, lic, d_name, spec in doctor_defs:
-            u, _ = User.objects.get_or_create(
-                email=email,
-                defaults={'username': email, 'first_name': fn, 'last_name': ln, 'role': 'doctor', 'phone': phone}
-            )
-            if not u.has_usable_password():
+            u = User.objects.filter(email=email).first()
+            if not u:
+                u = User.objects.filter(username=email).first()
+            if not u:
+                u = User.objects.create(
+                    email=email,
+                    username=email,
+                    first_name=fn,
+                    last_name=ln,
+                    role='doctor',
+                    phone=phone
+                )
                 u.set_password('Doctor@123')
                 u.save()
+            else:
+                if u.role != 'doctor':
+                    u.role = 'doctor'
+                    u.save()
 
             dept = departments.get(d_name)
-            doc_prof, _ = Doctor.objects.get_or_create(
-                user=u,
-                defaults={
-                    'department': dept,
-                    'specialization': spec,
-                    'license_number': lic,
-                    'approval_status': 'approved'
-                }
-            )
-            # Ensure approval_status is approved
-            if doc_prof.approval_status != 'approved':
+            doc_prof = Doctor.objects.filter(user=u).first()
+            if not doc_prof:
+                doc_prof = Doctor.objects.create(
+                    user=u,
+                    department=dept,
+                    specialization=spec,
+                    license_number=lic,
+                    approval_status='approved'
+                )
+            else:
                 doc_prof.approval_status = 'approved'
+                if dept:
+                    doc_prof.department = dept
+                doc_prof.specialization = spec
                 doc_prof.save()
+
             doctors.append(doc_prof)
         self.stdout.write(f"  [OK] {len(doctors)} Active Approved Doctors verified.")
 
         # Ensure demo nurse exists
-        nurse_user, _ = User.objects.get_or_create(
-            email='nurse1@postcare.demo',
-            defaults={'username': 'nurse1@postcare.demo', 'first_name': 'Priya', 'last_name': 'Nair', 'role': 'nurse', 'phone': '+91 98765 43213'}
-        )
-        if not nurse_user.has_usable_password():
+        nurse_user = User.objects.filter(email='nurse1@postcare.demo').first()
+        if not nurse_user:
+            nurse_user = User.objects.create(
+                email='nurse1@postcare.demo',
+                username='nurse1@postcare.demo',
+                first_name='Priya',
+                last_name='Nair',
+                role='nurse',
+                phone='+91 98765 43213'
+            )
             nurse_user.set_password('Nurse@123')
             nurse_user.save()
-        nurse_profile, _ = Nurse.objects.get_or_create(
-            user=nurse_user,
-            defaults={'department': departments['Orthopedic Surgery'], 'license_number': 'KNC-84920-A'}
-        )
+        nurse_profile = Nurse.objects.filter(user=nurse_user).first()
+        if not nurse_profile:
+            nurse_profile = Nurse.objects.create(
+                user=nurse_user,
+                department=departments['Orthopedic Surgery'],
+                license_number='KNC-84920-A'
+            )
 
         # ------------------------------------------------------------------
         # 3. 15 Caregivers
@@ -123,14 +147,28 @@ class Command(BaseCommand):
 
         caregivers = []
         for email, fn, ln, phone, rel in caregiver_defs:
-            u, _ = User.objects.get_or_create(
-                email=email,
-                defaults={'username': email, 'first_name': fn, 'last_name': ln, 'role': 'caregiver', 'phone': phone}
-            )
-            if not u.has_usable_password():
+            u = User.objects.filter(email=email).first()
+            if not u:
+                u = User.objects.filter(username=email).first()
+            if not u:
+                u = User.objects.create(
+                    email=email,
+                    username=email,
+                    first_name=fn,
+                    last_name=ln,
+                    role='caregiver',
+                    phone=phone
+                )
                 u.set_password('Caregiver@123')
                 u.save()
-            cg_prof, _ = Caregiver.objects.get_or_create(user=u, defaults={'relationship': rel})
+            else:
+                if u.role != 'caregiver':
+                    u.role = 'caregiver'
+                    u.save()
+
+            cg_prof = Caregiver.objects.filter(user=u).first()
+            if not cg_prof:
+                cg_prof = Caregiver.objects.create(user=u, relationship=rel)
             caregivers.append(cg_prof)
         self.stdout.write(f"  [OK] {len(caregivers)} Caregivers verified.")
 
@@ -194,11 +232,18 @@ class Command(BaseCommand):
 
         patients = []
         for idx, (email, uhid, fn, ln, age, gender, bg, surg, doc_idx, surg_days_ago, disch_days_ago, diag) in enumerate(patient_specs):
-            u, _ = User.objects.get_or_create(
-                email=email,
-                defaults={'username': email, 'first_name': fn, 'last_name': ln, 'role': 'patient', 'phone': f"+91 98765 {43260 + idx}"}
-            )
-            if not u.has_usable_password():
+            u = User.objects.filter(email=email).first()
+            if not u:
+                u = User.objects.filter(username=email).first()
+            if not u:
+                u = User.objects.create(
+                    email=email,
+                    username=email,
+                    first_name=fn,
+                    last_name=ln,
+                    role='patient',
+                    phone=f"+91 98765 {43260 + idx}"
+                )
                 u.set_password('Patient@123')
                 u.save()
 
@@ -208,33 +253,35 @@ class Command(BaseCommand):
             disch_date = today - timedelta(days=disch_days_ago)
             mon_end = today + timedelta(days=20)
 
-            p, _ = Patient.objects.get_or_create(
-                patient_id=uhid,
-                defaults={
-                    'user': u,
-                    'date_of_birth': dob,
-                    'gender': gender,
-                    'blood_group': bg,
-                    'address': f"Apartment {101 + idx}, PostCare Residency, Ward {idx % 8 + 1}, Bengaluru",
-                    'emergency_contact_name': f"Family Contact of {fn}",
-                    'emergency_contact_phone': f"+91 98765 {43300 + idx}",
-                    'emergency_contact_relation': 'Relative',
-                    'surgery_type': surg,
-                    'surgery_date': surg_date,
-                    'discharge_date': disch_date,
-                    'monitoring_end_date': mon_end,
-                    'primary_doctor': doc,
-                    'is_active': True,
-                }
-            )
-            # Ensure primary doctor and dates are set
-            p.primary_doctor = doc
-            p.surgery_type = surg
-            p.surgery_date = surg_date
-            p.discharge_date = disch_date
-            p.monitoring_end_date = mon_end
-            p.is_active = True
-            p.save()
+            p = Patient.objects.filter(patient_id=uhid).first()
+            if not p:
+                p = Patient.objects.filter(user=u).first()
+            if not p:
+                p = Patient.objects.create(
+                    patient_id=uhid,
+                    user=u,
+                    date_of_birth=dob,
+                    gender=gender,
+                    blood_group=bg,
+                    address=f"Apartment {101 + idx}, PostCare Residency, Ward {idx % 8 + 1}, Bengaluru",
+                    emergency_contact_name=f"Family Contact of {fn}",
+                    emergency_contact_phone=f"+91 98765 {43300 + idx}",
+                    emergency_contact_relation='Relative',
+                    surgery_type=surg,
+                    surgery_date=surg_date,
+                    discharge_date=disch_date,
+                    monitoring_end_date=mon_end,
+                    primary_doctor=doc,
+                    is_active=True,
+                )
+            else:
+                p.primary_doctor = doc
+                p.surgery_type = surg
+                p.surgery_date = surg_date
+                p.discharge_date = disch_date
+                p.monitoring_end_date = mon_end
+                p.is_active = True
+                p.save()
 
             # Assign caregiver for first 15 patients
             if idx < len(caregivers):
@@ -250,34 +297,46 @@ class Command(BaseCommand):
         # 5. Discharge Plans for all 50 Patients
         # ------------------------------------------------------------------
         for p, diag, surg_days_ago, disch_days_ago in patients:
-            plan, _ = DischargePlan.objects.get_or_create(
-                patient=p,
-                defaults={
-                    'doctor': p.primary_doctor,
-                    'surgery_type': p.surgery_type,
-                    'surgery_date': p.surgery_date,
-                    'discharge_date': p.discharge_date,
-                    'diagnosis': diag,
-                    'wound_care_instructions': 'Keep the surgical incision dry and clean. Inspect daily for redness or excessive exudate. Report temperature over 38.0°C.',
-                    'activity_restrictions': 'Avoid strenuous weight-bearing activities for 3 weeks. Short walking periods encouraged with assistive devices if prescribed.',
-                    'diet_instructions': 'High-protein, fiber-rich balanced hydration diet to promote rapid tissue recovery and normal bowel motility.',
-                    'general_instructions': 'Take prescribed medications strictly on schedule. Attend scheduled clinical follow-up consultations.',
-                    'status': 'published',
-                    'version': 1.0,
-                    'published_at': timezone.now() - timedelta(days=disch_days_ago),
-                }
-            )
+            plan = DischargePlan.objects.filter(patient=p).first()
+            if not plan:
+                plan = DischargePlan.objects.create(
+                    patient=p,
+                    doctor=p.primary_doctor,
+                    surgery_type=p.surgery_type,
+                    surgery_date=p.surgery_date,
+                    discharge_date=p.discharge_date,
+                    diagnosis=diag,
+                    wound_care_instructions='Keep the surgical incision dry and clean. Inspect daily for redness or excessive exudate. Report temperature over 38.0°C.',
+                    activity_restrictions='Avoid strenuous weight-bearing activities for 3 weeks. Short walking periods encouraged with assistive devices if prescribed.',
+                    diet_instructions='High-protein, fiber-rich balanced hydration diet to promote rapid tissue recovery and normal bowel motility.',
+                    general_instructions='Take prescribed medications strictly on schedule. Attend scheduled clinical follow-up consultations.',
+                    status='published',
+                    version=1.0,
+                    published_at=timezone.now() - timedelta(days=disch_days_ago),
+                )
+
             # Ensure at least 2 discharge medications
-            DischargeMedication.objects.get_or_create(
-                discharge_plan=plan,
-                medicine_name='Cefuroxime Axetil',
-                defaults={'dosage': '500 mg', 'frequency': 'Twice daily', 'duration_days': 5, 'instructions': 'Take post meals'}
-            )
-            DischargeMedication.objects.get_or_create(
-                discharge_plan=plan,
-                medicine_name='Paracetamol',
-                defaults={'dosage': '650 mg', 'frequency': 'Every 8 hours as needed', 'duration_days': 7, 'instructions': 'For mild to moderate pain'}
-            )
+            dm1 = DischargeMedication.objects.filter(discharge_plan=plan, medicine_name='Cefuroxime Axetil').first()
+            if not dm1:
+                DischargeMedication.objects.create(
+                    discharge_plan=plan,
+                    medicine_name='Cefuroxime Axetil',
+                    dosage='500 mg',
+                    frequency='Twice daily',
+                    duration_days=5,
+                    instructions='Take post meals'
+                )
+
+            dm2 = DischargeMedication.objects.filter(discharge_plan=plan, medicine_name='Paracetamol').first()
+            if not dm2:
+                DischargeMedication.objects.create(
+                    discharge_plan=plan,
+                    medicine_name='Paracetamol',
+                    dosage='650 mg',
+                    frequency='Every 8 hours as needed',
+                    duration_days=7,
+                    instructions='For mild to moderate pain'
+                )
 
         self.stdout.write(f"  [OK] 50 Discharge Plans with medications verified.")
 
@@ -285,42 +344,59 @@ class Command(BaseCommand):
         # 6. Active Medications & Medication Logs
         # ------------------------------------------------------------------
         for p, _, _, _ in patients:
-            m1, _ = Medication.objects.get_or_create(
-                patient=p,
-                medicine_name='Cefuroxime Axetil 500mg',
-                defaults={'dosage': '500 mg', 'frequency': 'Twice daily', 'duration_days': 7, 'instructions': 'After meals', 'status': 'completed', 'prescribed_by': p.primary_doctor}
-            )
-            m2, _ = Medication.objects.get_or_create(
-                patient=p,
-                medicine_name='Paracetamol 650mg',
-                defaults={'dosage': '650 mg', 'frequency': 'Every 8 hours as needed', 'duration_days': 10, 'instructions': 'Post meals for pain relief', 'status': 'active', 'prescribed_by': p.primary_doctor}
-            )
-            m3, _ = Medication.objects.get_or_create(
-                patient=p,
-                medicine_name='Pantoprazole 40mg',
-                defaults={'dosage': '40 mg', 'frequency': 'Once daily before breakfast', 'duration_days': 14, 'instructions': 'Empty stomach gastroprotection', 'status': 'active', 'prescribed_by': p.primary_doctor}
-            )
+            m1 = Medication.objects.filter(patient=p, medicine_name='Cefuroxime Axetil 500mg').first()
+            if not m1:
+                m1 = Medication.objects.create(
+                    patient=p,
+                    medicine_name='Cefuroxime Axetil 500mg',
+                    dosage='500 mg',
+                    frequency='Twice daily',
+                    duration_days=7,
+                    instructions='After meals',
+                    status='completed',
+                    prescribed_by=p.primary_doctor
+                )
+
+            m2 = Medication.objects.filter(patient=p, medicine_name='Paracetamol 650mg').first()
+            if not m2:
+                m2 = Medication.objects.create(
+                    patient=p,
+                    medicine_name='Paracetamol 650mg',
+                    dosage='650 mg',
+                    frequency='Every 8 hours as needed',
+                    duration_days=10,
+                    instructions='Post meals for pain relief',
+                    status='active',
+                    prescribed_by=p.primary_doctor
+                )
+
+            m3 = Medication.objects.filter(patient=p, medicine_name='Pantoprazole 40mg').first()
+            if not m3:
+                m3 = Medication.objects.create(
+                    patient=p,
+                    medicine_name='Pantoprazole 40mg',
+                    dosage='40 mg',
+                    frequency='Once daily before breakfast',
+                    duration_days=14,
+                    instructions='Empty stomach gastroprotection',
+                    status='active',
+                    prescribed_by=p.primary_doctor
+                )
 
             # Generate last 3 days of logs for medication adherence telemetry
             for m in [m2, m3]:
                 for day_offset in range(3):
                     log_date = today - timedelta(days=day_offset)
-                    status_choice = 'taken' if (hash(p.patient_id + str(day_offset)) % 10) != 0 else 'missed'
-                    MedicationLog.objects.get_or_create(
-                        medication=m,
-                        date=log_date,
-                        defaults={'status': status_choice}
-                    )
+                    status_choice = 'taken' if (abs(hash(p.patient_id + str(day_offset))) % 10) != 0 else 'missed'
+                    log_item = MedicationLog.objects.filter(medication=m, date=log_date).first()
+                    if not log_item:
+                        MedicationLog.objects.create(medication=m, date=log_date, status=status_choice)
 
         self.stdout.write("  [OK] Active medications and adherence logs generated.")
 
         # ------------------------------------------------------------------
         # 7. Daily Recovery Check-Ins & Risk Predictions (Historical & Realistic)
         # ------------------------------------------------------------------
-        # Assign risk profiles across cohort:
-        # - High risk: 4 patients (idx 2, 4, 7, 21) -> elevated vitals, pain, symptoms
-        # - Medium risk: 10 patients (idx 5, 8, 12, 16, 24, 28, 32, 36, 42, 46) -> moderate pain/swelling
-        # - Low risk: remaining 36 patients -> smooth steady recovery trajectory
         high_risk_indices = {2, 4, 7, 21}
         med_risk_indices = {5, 8, 12, 16, 24, 28, 32, 36, 42, 46}
 
@@ -328,16 +404,12 @@ class Command(BaseCommand):
         prediction_count = 0
 
         for idx, (p, diag, surg_days_ago, disch_days_ago) in enumerate(patients):
-            # Check-in history spans from discharge up to today (up to 14 days)
             days_tracked = min(14, max(3, disch_days_ago + 1))
-            
             is_high = idx in high_risk_indices
             is_med = idx in med_risk_indices
 
             for day_idx in range(days_tracked):
                 c_date = today - timedelta(days=(days_tracked - 1 - day_idx))
-                
-                # Progressive recovery telemetry: scores improve over time
                 progress_factor = day_idx / max(1, days_tracked - 1)
 
                 if is_high:
@@ -365,41 +437,41 @@ class Command(BaseCommand):
                     risk_cat = 'low'
                     conf = 0.95
 
-                checkin, c_created = RecoveryCheckIn.objects.get_or_create(
-                    patient=p,
-                    date=c_date,
-                    defaults={
-                        'pain_level': pain,
-                        'temperature': temp,
-                        'wound_condition': wound,
-                        'symptoms': symptoms,
-                        'medication_adherence': adherence,
-                        'additional_notes': 'Daily self-reported vitals and post-op symptoms.',
-                    }
-                )
+                checkin = RecoveryCheckIn.objects.filter(patient=p, date=c_date).first()
+                if not checkin:
+                    checkin = RecoveryCheckIn.objects.create(
+                        patient=p,
+                        date=c_date,
+                        pain_level=pain,
+                        temperature=temp,
+                        wound_condition=wound,
+                        symptoms=symptoms,
+                        medication_adherence=adherence,
+                        additional_notes='Daily self-reported vitals and post-op symptoms.',
+                    )
                 checkin.calculate_score()
                 checkin.save()
                 checkin_count += 1
 
                 # Risk Prediction
-                RiskPrediction.objects.get_or_create(
-                    checkin=checkin,
-                    defaults={
-                        'patient': p,
-                        'risk_level': risk_cat,
-                        'confidence': conf,
-                        'contributing_factors': {
+                rp = RiskPrediction.objects.filter(checkin=checkin).first()
+                if not rp:
+                    RiskPrediction.objects.create(
+                        checkin=checkin,
+                        patient=p,
+                        risk_level=risk_cat,
+                        confidence=conf,
+                        contributing_factors={
                             'Pain Index': f"{pain * 10}%",
                             'Temperature': f"{temp}°C",
                             'Wound Condition': wound
                         },
-                        'recommendation_category': (
+                        recommendation_category=(
                             'Urgent attending surgeon review required. Monitor temperature.' if risk_cat == 'high'
                             else 'Perform regular incision dressing and monitor pain.' if risk_cat == 'medium'
                             else 'Steady recovery trajectory. Continue standard post-op care.'
                         )
-                    }
-                )
+                    )
                 prediction_count += 1
 
         self.stdout.write(f"  [OK] {checkin_count} Recovery Check-Ins & {prediction_count} Risk Predictions verified.")
@@ -409,37 +481,35 @@ class Command(BaseCommand):
         # ------------------------------------------------------------------
         fu_count = 0
         for idx, (p, _, _, _) in enumerate(patients):
-            # 1 Upcoming appointment (3 to 14 days in future)
             upcoming_date = today + timedelta(days=((idx % 12) + 3))
-            FollowUp.objects.get_or_create(
-                patient=p,
-                appointment_date=upcoming_date,
-                appointment_time='10:30:00',
-                defaults={
-                    'doctor': p.primary_doctor,
-                    'department': p.primary_doctor.department.name if p.primary_doctor and p.primary_doctor.department else 'Surgical Ward',
-                    'purpose': 'Post-Operative Recovery Review & Surgical Wound Evaluation',
-                    'status': 'upcoming',
-                    'notes': 'Bring previous discharge summary and medication compliance log.'
-                }
-            )
+            fu_up = FollowUp.objects.filter(patient=p, appointment_date=upcoming_date).first()
+            if not fu_up:
+                FollowUp.objects.create(
+                    patient=p,
+                    appointment_date=upcoming_date,
+                    appointment_time='10:30:00',
+                    doctor=p.primary_doctor,
+                    department=p.primary_doctor.department.name if p.primary_doctor and p.primary_doctor.department else 'Surgical Ward',
+                    purpose='Post-Operative Recovery Review & Surgical Wound Evaluation',
+                    status='upcoming',
+                    notes='Bring previous discharge summary and medication compliance log.'
+                )
             fu_count += 1
 
-            # Completed follow-up for patients with longer post-op history (even index)
             if idx % 2 == 0:
                 past_date = today - timedelta(days=((idx % 5) + 2))
-                FollowUp.objects.get_or_create(
-                    patient=p,
-                    appointment_date=past_date,
-                    appointment_time='11:15:00',
-                    defaults={
-                        'doctor': p.primary_doctor,
-                        'department': p.primary_doctor.department.name if p.primary_doctor and p.primary_doctor.department else 'Surgical Ward',
-                        'purpose': 'Post-Op Day 7 Suture / Staple Check',
-                        'status': 'completed',
-                        'notes': 'Incision clean. Good range of motion observed.'
-                    }
-                )
+                fu_past = FollowUp.objects.filter(patient=p, appointment_date=past_date).first()
+                if not fu_past:
+                    FollowUp.objects.create(
+                        patient=p,
+                        appointment_date=past_date,
+                        appointment_time='11:15:00',
+                        doctor=p.primary_doctor,
+                        department=p.primary_doctor.department.name if p.primary_doctor and p.primary_doctor.department else 'Surgical Ward',
+                        purpose='Post-Op Day 7 Suture / Staple Check',
+                        status='completed',
+                        notes='Incision clean. Good range of motion observed.'
+                    )
                 fu_count += 1
 
         self.stdout.write(f"  [OK] {fu_count} Follow-Up Appointments verified.")
@@ -448,38 +518,38 @@ class Command(BaseCommand):
         # 9. Clinical Notifications & High-Risk Alerts
         # ------------------------------------------------------------------
         notif_count = 0
-        # High Risk Alerts for Doctors
         for idx in high_risk_indices:
             p, _, _, _ = patients[idx]
             doc = p.primary_doctor
             if doc and doc.user:
-                Notification.objects.get_or_create(
-                    recipient=doc.user,
-                    title=f"CRITICAL ALERT: High Risk Detected for {p.user.get_full_name()}",
-                    defaults={
-                        'type': 'high_risk_alert',
-                        'message': f"Patient {p.user.get_full_name()} ({p.patient_id}) reported acute pain and temperature spike. Please review clinical telemetry.",
-                        'is_read': False,
-                        'related_patient': p
-                    }
-                )
+                notif_title = f"CRITICAL ALERT: High Risk Detected for {p.user.get_full_name()}"
+                notif_item = Notification.objects.filter(recipient=doc.user, title=notif_title).first()
+                if not notif_item:
+                    Notification.objects.create(
+                        recipient=doc.user,
+                        title=notif_title,
+                        type='high_risk_alert',
+                        message=f"Patient {p.user.get_full_name()} ({p.patient_id}) reported acute pain and temperature spike. Please review clinical telemetry.",
+                        is_read=False,
+                        related_patient=p
+                    )
                 notif_count += 1
 
-        # Upcoming appointment reminders for Doctors and Patients
         for idx in range(6):
             p, _, _, _ = patients[idx]
             fu = FollowUp.objects.filter(patient=p, status='upcoming').first()
             if fu and p.user:
-                Notification.objects.get_or_create(
-                    recipient=p.user,
-                    title=f"Consultation Confirmed with {fu.doctor.user.get_full_name() if fu.doctor and fu.doctor.user else 'Doctor'}",
-                    defaults={
-                        'type': 'followup_reminder',
-                        'message': f"Your follow-up appointment is scheduled on {fu.appointment_date.strftime('%d %b %Y')} at {fu.appointment_time}.",
-                        'is_read': False,
-                        'related_patient': p
-                    }
-                )
+                notif_title = f"Consultation Confirmed with {fu.doctor.user.get_full_name() if fu.doctor and fu.doctor.user else 'Doctor'}"
+                notif_item = Notification.objects.filter(recipient=p.user, title=notif_title).first()
+                if not notif_item:
+                    Notification.objects.create(
+                        recipient=p.user,
+                        title=notif_title,
+                        type='followup_reminder',
+                        message=f"Your follow-up appointment is scheduled on {fu.appointment_date.strftime('%d %b %Y')} at {fu.appointment_time}.",
+                        is_read=False,
+                        related_patient=p
+                    )
                 notif_count += 1
 
         self.stdout.write(f"  [OK] {notif_count} Clinical Notifications & High-Risk Alerts verified.")

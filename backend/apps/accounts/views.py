@@ -283,12 +283,22 @@ class AdminSeedDemoDataView(APIView):
 
     def post(self, request):
         from io import StringIO
+        import traceback
         from django.core.management import call_command
         out = StringIO()
-        call_command('seed_demo_data', stdout=out)
-        return Response({
-            'status': 'success',
-            'message': 'Demo dataset seeded successfully',
-            'output': out.getvalue()
-        }, status=status.HTTP_200_OK)
+        try:
+            call_command('seed_demo_data', stdout=out)
+            return Response({
+                'status': 'success',
+                'message': 'Demo dataset seeded successfully',
+                'output': out.getvalue()
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({
+                'status': 'error',
+                'error': str(e),
+                'traceback': traceback.format_exc(),
+                'output': out.getvalue()
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
