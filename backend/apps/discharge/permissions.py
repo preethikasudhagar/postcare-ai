@@ -40,10 +40,10 @@ class IsDischargePlanAuthorized(BasePermission):
         if user.is_staff or user.is_superuser or user.role == 'admin':
             return True
 
-        # 2. Doctor: Must be assigned to this patient or plan
+        # 2. Doctor: Must be assigned to this patient or plan and approved
         if user.role == 'doctor':
             doctor_profile = getattr(user, 'doctor_profile', None)
-            if not doctor_profile:
+            if not doctor_profile or doctor_profile.approval_status != 'approved':
                 return False
 
             is_assigned = (

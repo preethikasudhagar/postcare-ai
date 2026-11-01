@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import AuthLayout from '../../components/layout/AuthLayout'
-import { AlertCircle, CheckCircle } from 'lucide-react'
+import { AlertCircle, CheckCircle, ShieldCheck, Stethoscope } from 'lucide-react'
+import { toast } from 'sonner'
 
 function PasswordStrength({ password }) {
   const checks = [
@@ -64,6 +65,8 @@ export default function RegisterPage() {
     email: '',
     password: '',
     role: 'patient',
+    specialization: 'General Surgery',
+    license_number: '',
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -74,10 +77,31 @@ export default function RegisterPage() {
     e.preventDefault()
     setError('')
     setLoading(true)
-    const res = await register({ ...form, username: form.email })
+
+    const payload = {
+      ...form,
+      username: form.email,
+    }
+
+    if (form.role !== 'doctor') {
+      delete payload.specialization
+      delete payload.license_number
+    }
+
+    const res = await register(payload)
     setLoading(false)
+
     if (res.success) {
-      navigate('/login')
+      if (form.role === 'doctor') {
+        toast.info('Doctor account registered! Verification pending from Hospital Administration.')
+        navigate('/doctor/pending-approval')
+      } else if (form.role === 'caregiver') {
+        toast.success('Caregiver account created successfully!')
+        navigate('/caregiver/dashboard')
+      } else {
+        toast.success('Patient account created successfully!')
+        navigate('/patient/dashboard')
+      }
     } else {
       // res.error is always a clean human-readable string from AuthContext.
       setError(res.error || 'Registration failed. Please try again.')
@@ -146,8 +170,51 @@ export default function RegisterPage() {
           >
             <option value="patient">Patient (Recovering from surgery)</option>
             <option value="caregiver">Caregiver (Family member / Guardian)</option>
+            <option value="doctor">Doctor (Attending Physician / Surgeon)</option>
           </select>
         </div>
+
+        {form.role === 'doctor' && (
+          <div className="p-3.5 bg-primary-tint/40 border border-primary/20 rounded-xl space-y-3">
+            <div className="flex items-center gap-2 text-primary font-semibold text-xs">
+              <Stethoscope size={15} />
+              <span>Physician Professional Credentials</span>
+            </div>
+
+            <div>
+              <label className="block text-2xs font-semibold text-text-secondary mb-1">
+                Clinical Specialization <span className="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={form.specialization}
+                onChange={set('specialization')}
+                placeholder="e.g. Orthopedic Surgery, Cardiology, General Surgery"
+                className="w-full h-10 px-3 text-xs bg-surface border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-text placeholder:text-text-muted/60"
+              />
+            </div>
+
+            <div>
+              <label className="block text-2xs font-semibold text-text-secondary mb-1">
+                Medical License / Registration Number <span className="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={form.license_number}
+                onChange={set('license_number')}
+                placeholder="e.g. MCI-123456-D or State Council Reg No."
+                className="w-full h-10 px-3 text-xs bg-surface border border-border-strong rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-text placeholder:text-text-muted/60"
+              />
+            </div>
+
+            <div className="flex items-start gap-1.5 pt-1 text-2xs text-text-muted leading-tight">
+              <ShieldCheck size={13} className="text-primary mt-0.5 flex-shrink-0" />
+              <span>Doctor accounts require hospital administrative verification before clinical access is granted.</span>
+            </div>
+          </div>
+        )}
 
         <div>
           <label className="block text-xs font-semibold text-text mb-1.5">

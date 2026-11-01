@@ -35,7 +35,11 @@ export default function LoginPage() {
     const result = await login(email, password)
     setLoading(false)
     if (result.success) {
-      navigate(ROLE_DASHBOARDS[result.user.role] || '/patient/dashboard')
+      if (result.user.role === 'doctor' && result.user.approval_status !== 'approved') {
+        navigate('/doctor/pending-approval')
+      } else {
+        navigate(ROLE_DASHBOARDS[result.user.role] || '/patient/dashboard')
+      }
     } else {
       setError(result.error || 'Invalid credentials. Please check your email and password.')
     }

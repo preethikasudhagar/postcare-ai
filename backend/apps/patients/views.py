@@ -288,6 +288,14 @@ class DoctorDetailView(APIView):
             doctor.specialization = (request.data.get('specialization') or '').strip()
         if 'license_number' in request.data:
             doctor.license_number = (request.data.get('license_number') or '').strip()
+        if 'approval_status' in request.data:
+            status_val = (request.data.get('approval_status') or '').strip().lower()
+            if status_val in ['pending', 'approved', 'rejected']:
+                doctor.approval_status = status_val
+                if status_val == 'approved':
+                    doctor.rejection_reason = ''
+        if 'rejection_reason' in request.data:
+            doctor.rejection_reason = (request.data.get('rejection_reason') or '').strip()
         if 'department' in request.data:
             dept_id = request.data.get('department')
             if dept_id:
@@ -300,6 +308,55 @@ class DoctorDetailView(APIView):
 
         doctor.save()
         return Response(DoctorSerializer(doctor).data)
+
+
+class DoctorApproveView(APIView):
+    """
+    Approve a pending doctor account (Admin only).
+    """
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def post(self, request, pk):
+        try:
+            doctor = Doctor.objects.select_related('user').get(pk=pk)
+        except Doctor.DoesNotExist:
+            return Response({'detail': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        doctor.approval_status = 'approved'
+        doctor.rejection_reason = ''
+        doctor.save()
+
+        # Ensure associated user account is active
+        doctor.user.is_active = True
+        doctor.user.save(update_fields=['is_active'])
+
+        return Response({
+            'message': f"Dr. {doctor.user.get_full_name()} has been successfully approved.",
+            'doctor': DoctorSerializer(doctor).data
+        })
+
+
+class DoctorRejectView(APIView):
+    """
+    Reject a doctor account with an optional reason (Admin only).
+    """
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def post(self, request, pk):
+        try:
+            doctor = Doctor.objects.select_related('user').get(pk=pk)
+        except Doctor.DoesNotExist:
+            return Response({'detail': 'Doctor profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        reason = (request.data.get('reason') or '').strip()
+        doctor.approval_status = 'rejected'
+        doctor.rejection_reason = reason or 'Application credentials could not be verified by hospital administration.'
+        doctor.save()
+
+        return Response({
+            'message': f"Dr. {doctor.user.get_full_name()} registration has been rejected.",
+            'doctor': DoctorSerializer(doctor).data
+        })
 
 
 # ── Nurse Views ───────────────────────────────────────────────────────────────

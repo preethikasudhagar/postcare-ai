@@ -30,6 +30,7 @@ const PatientMessages  = lazy(() => import('./pages/patient/Messages'))
 
 // Doctor
 const DoctorDashboard    = lazy(() => import('./pages/doctor/DoctorDashboard'))
+const DoctorPendingApproval = lazy(() => import('./pages/doctor/PendingApproval'))
 const PatientList        = lazy(() => import('./pages/doctor/PatientList'))
 const PatientDetail      = lazy(() => import('./pages/doctor/PatientDetail'))
 const DischargePlans     = lazy(() => import('./pages/doctor/DischargePlans'))
@@ -86,6 +87,10 @@ function ProtectedRoute({ children, roles }) {
   const { user, isAuthenticated } = useAuth()
   if (!isAuthenticated) return <Navigate to="/login" replace />
   if (roles && !roles.includes(user?.role)) return <Navigate to="/403" replace />
+  // If doctor account is pending or rejected, block clinical access and forward to pending approval screen
+  if (user?.role === 'doctor' && user?.approval_status !== 'approved') {
+    return <Navigate to="/doctor/pending-approval" replace />
+  }
   return children
 }
 
@@ -100,6 +105,7 @@ export default function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/doctor/pending-approval" element={<DoctorPendingApproval />} />
 
         {/* Authenticated shell */}
         <Route element={

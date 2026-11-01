@@ -145,7 +145,14 @@ export function AuthProvider({ children }) {
       // api.js will NOT attach an Authorization header to this endpoint,
       // so an expired token in localStorage cannot block registration.
       const res = await api.post('/auth/register/', data)
-      return { success: true, data: res.data }
+      const { user: u, access, refresh } = res.data || {}
+      if (u && access && refresh) {
+        setUser(u)
+        localStorage.setItem('postcare_user', JSON.stringify(u))
+        localStorage.setItem('postcare_access', access)
+        localStorage.setItem('postcare_refresh', refresh)
+      }
+      return { success: true, data: res.data, user: u }
     } catch (err) {
       return {
         success: false,
@@ -154,6 +161,21 @@ export function AuthProvider({ children }) {
     } finally {
       setLoading(false)
     }
+  }, [])
+
+  // ─── REFRESH USER PROFILE ─────────────────────────────────────────────────
+  const refreshUser = useCallback(async () => {
+    try {
+      const res = await api.get('/auth/me/')
+      if (res.data) {
+        setUser(res.data)
+        localStorage.setItem('postcare_user', JSON.stringify(res.data))
+        return res.data
+      }
+    } catch {
+      // ignore
+    }
+    return null
   }, [])
 
   return (
@@ -165,6 +187,7 @@ export function AuthProvider({ children }) {
         googleLogin,
         logout,
         register,
+        refreshUser,
         isAuthenticated: !!user,
       }}
     >

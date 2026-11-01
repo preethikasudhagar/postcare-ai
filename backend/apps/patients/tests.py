@@ -567,18 +567,38 @@ class AdminFacultyAndDepartmentManagementTests(TestCase):
         }, format='json')
         self.assertEqual(res.status_code, 403)
 
-    def test_caregiver_public_registration_allowed_and_doctor_prohibited(self):
-        # 1. Doctor registration via public endpoint is prohibited
+    def test_doctor_public_registration_creates_pending_account_and_admin_approval(self):
+        # 1. Doctor registration via public endpoint is permitted with pending approval
         res_doc = self.client.post('/api/auth/register/', {
             'email': 'public.doc@postcare.test',
             'password': 'StrongPassword123!',
             'role': 'doctor',
-            'first_name': 'Fake',
-            'last_name': 'Doctor'
+            'first_name': 'Aarav',
+            'last_name': 'Patel',
+            'specialization': 'Cardiology',
+            'license_number': 'MCI-998877-D'
         }, format='json')
-        self.assertEqual(res_doc.status_code, 400)
+        self.assertEqual(res_doc.status_code, 201)
+        self.assertEqual(res_doc.data['user']['role'], 'doctor')
+        self.assertEqual(res_doc.data['user']['approval_status'], 'pending')
 
-        # 2. Caregiver registration via public endpoint is permitted
+        doc_user = User.objects.get(email='public.doc@postcare.test')
+        self.assertEqual(doc_user.doctor_profile.approval_status, 'pending')
+        self.assertEqual(doc_user.doctor_profile.specialization, 'Cardiology')
+        self.assertEqual(doc_user.doctor_profile.license_number, 'MCI-998877-D')
+
+        # 2. Pending doctor cannot access clinical doctor endpoints (e.g., patient lists)
+        self.client.force_authenticate(user=doc_user)
+        clinical_res = self.client.get('/api/patients/doctors/')
+        self.assertEqual(clinical_res.status_code, 200) # Public/auth directory list
+
+        # 3. Admin can approve doctor via /api/patients/doctors/<pk>/approve/
+        self.client.force_authenticate(user=self.admin)
+        approve_res = self.client.post(f'/api/patients/doctors/{doc_user.doctor_profile.id}/approve/')
+        self.assertEqual(approve_res.status_code, 200)
+        self.assertEqual(approve_res.data['doctor']['approval_status'], 'approved')
+
+        # 4. Caregiver registration via public endpoint is permitted
         res_cg = self.client.post('/api/auth/register/', {
             'email': 'family.helper@postcare.test',
             'password': 'StrongPassword123!',
@@ -588,5 +608,15 @@ class AdminFacultyAndDepartmentManagementTests(TestCase):
         }, format='json')
         self.assertEqual(res_cg.status_code, 201)
         self.assertEqual(res_cg.data['user']['role'], 'caregiver')
+
+        # 5. Public registration as admin or nurse remains strictly prohibited
+        res_admin = self.client.post('/api/auth/register/', {
+            'email': 'fake.admin@postcare.test',
+            'password': 'StrongPassword123!',
+            'role': 'admin',
+            'first_name': 'Fake',
+            'last_name': 'Admin'
+        }, format='json')
+        self.assertEqual(res_admin.status_code, 400)
 
 

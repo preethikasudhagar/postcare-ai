@@ -47,7 +47,8 @@ class DoctorSerializer(serializers.ModelSerializer):
         model = Doctor
         fields = [
             'id', 'user', 'full_name', 'department', 'department_name',
-            'specialization', 'license_number', 'active_patients_count', 'created_at'
+            'specialization', 'license_number', 'approval_status', 'rejection_reason',
+            'active_patients_count', 'created_at'
         ]
         read_only_fields = ['id', 'created_at', 'active_patients_count', 'department_name', 'full_name']
 

@@ -12,16 +12,24 @@ class Department(models.Model):
         return self.name
 
 class Doctor(models.Model):
+    APPROVAL_CHOICES = [
+        ('pending', 'Pending Approval'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='doctor_profile')
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
     specialization = models.CharField(max_length=100, blank=True)
     license_number = models.CharField(max_length=50, blank=True)
+    approval_status = models.CharField(max_length=20, choices=APPROVAL_CHOICES, default='approved')
+    rejection_reason = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         db_table = 'doctors'
 
     def __str__(self):
-        return f"Dr. {self.user.get_full_name()}"
+        return f"Dr. {self.user.get_full_name()} ({self.approval_status})"
 
 class Nurse(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='nurse_profile')
