@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Card, CardHeader, CardBody, ConfirmDialog, Modal } from '../ui/index.jsx'
-import { Upload, X, AlertTriangle, User, Calendar, Image as ImageIcon, Trash2, Eye, Info } from 'lucide-react'
+import { Upload, X, AlertTriangle, User, Calendar, Image as ImageIcon, Trash2, Eye, Info, CheckCircle2, Clock, ShieldCheck, Camera } from 'lucide-react'
 import api from '../../services/api'
 import { toast } from 'sonner'
 import { clsx } from 'clsx'
@@ -45,11 +45,15 @@ export default function WoundUpload({
 
   useEffect(() => {
     fetchImages()
+    const interval = setInterval(() => {
+      fetchImages(true)
+    }, 15000)
+    return () => clearInterval(interval)
     // eslint-disable-next-line
   }, [effectivePatientId])
 
-  const fetchImages = async () => {
-    setLoading(true)
+  const fetchImages = async (isSilent = false) => {
+    if (!isSilent) setLoading(true)
     try {
       const url = effectivePatientId ? `/recovery/wounds/patient/${effectivePatientId}/` : `/recovery/wounds/patient/me/`
       const res = await api.get(url)
@@ -62,7 +66,7 @@ export default function WoundUpload({
         console.error('Failed to load wound images', err)
       }
     } finally {
-      setLoading(false)
+      if (!isSilent) setLoading(false)
     }
   }
 
@@ -379,26 +383,37 @@ export default function WoundUpload({
                           </span>
                         </div>
                         
-                        <div className="flex items-center gap-2">
-                          {/* ML Assessment Status Badge */}
-                          <span className={cn(
-                            "px-2 py-0.5 text-[10px] font-bold uppercase rounded border",
-                            img.assessment_result === 'good' ? 'bg-primary-tint text-primary border-primary/30' :
-                            img.assessment_result === 'moderate' ? 'bg-warning-tint text-warning border-warning/30' :
-                            img.assessment_result === 'poor' ? 'bg-danger-tint text-danger border-danger/30' :
-                            img.assessment_result === 'uncertain' ? 'bg-amber-500/10 text-amber-700 border-amber-500/30' :
-                            img.assessment_result === 'failed' ? 'bg-danger-tint text-danger border-danger/30' :
-                            'bg-surface-muted text-text-muted border-border'
-                          )}>
-                            {img.assessment_result === 'pending' ? 'ML: Processing' :
-                             img.assessment_result === 'failed' ? 'ML: Failed' :
-                             img.assessment_result === 'unavailable' ? 'ML: UNAVAILABLE' :
-                             img.assessment_result === 'uncertain' ? 'ML: Uncertain (Review Req.)' :
-                             img.assessment_result === 'good' ? `ML: Good Class${img.confidence != null ? ` (${Math.round(img.confidence * 100)}%)` : ''}` :
-                             img.assessment_result === 'moderate' ? `ML: Moderate Class${img.confidence != null ? ` (${Math.round(img.confidence * 100)}%)` : ''}` :
-                             img.assessment_result === 'poor' ? `ML: Poor Class${img.confidence != null ? ` (${Math.round(img.confidence * 100)}%)` : ''}` :
-                             `ML: ${img.assessment_result}`}
-                          </span>
+                        <div className="flex flex-wrap items-center gap-2">
+                          {/* AI Assessment Status Badge (Explicit Processing States) */}
+                          {img.assessment_result === 'pending' ? (
+                            <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded border bg-secondary-tint text-secondary border-secondary/30 flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-ping" /> AI Analysis in Progress
+                            </span>
+                          ) : img.assessment_result === 'good' ? (
+                            <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded border bg-success-tint text-success border-success/30 flex items-center gap-1">
+                              <ShieldCheck size={11} /> AI Completed: Good Healing {img.confidence != null ? `(${Math.round(img.confidence * 100)}%)` : ''}
+                            </span>
+                          ) : img.assessment_result === 'moderate' ? (
+                            <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded border bg-warning-tint text-warning border-warning/30 flex items-center gap-1">
+                              <AlertTriangle size={11} /> AI Completed: Moderate Risk {img.confidence != null ? `(${Math.round(img.confidence * 100)}%)` : ''}
+                            </span>
+                          ) : img.assessment_result === 'poor' ? (
+                            <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded border bg-danger-tint text-danger border-danger/30 flex items-center gap-1">
+                              <AlertTriangle size={11} /> AI Completed: Complication Alert {img.confidence != null ? `(${Math.round(img.confidence * 100)}%)` : ''}
+                            </span>
+                          ) : img.assessment_result === 'uncertain' ? (
+                            <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded border bg-amber-500/10 text-amber-700 border-amber-500/30 flex items-center gap-1">
+                              <Clock size={11} /> AI Completed: Clinician Review Required
+                            </span>
+                          ) : img.assessment_result === 'failed' ? (
+                            <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded border bg-danger-tint text-danger border-danger/30">
+                              AI Analysis Failed
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded border bg-surface-muted text-text-muted border-border">
+                              AI Analysis Unavailable
+                            </span>
+                          )}
 
                           {/* Doctor Review Badge / Action */}
                           {readOnly && !img.doctor_review ? (
@@ -416,12 +431,21 @@ export default function WoundUpload({
                             >
                               Mark Reviewed
                             </button>
+                          ) : img.doctor_review_status === 'reviewed' || img.doctor_review ? (
+                            <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded border bg-success-tint border-success/30 text-success flex items-center gap-1">
+                              <CheckCircle2 size={11} /> Doctor Approved
+                            </span>
+                          ) : img.doctor_review_status === 'modified' ? (
+                            <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded border bg-primary-tint border-primary/30 text-primary flex items-center gap-1">
+                              <CheckCircle2 size={11} /> Doctor Modified
+                            </span>
+                          ) : img.doctor_review_status === 'image_requested' ? (
+                            <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded border bg-warning-tint border-amber-400 text-amber-900 flex items-center gap-1">
+                              <Camera size={11} /> New Photo Requested
+                            </span>
                           ) : (
-                            <span className={cn(
-                              "px-2 py-0.5 text-[10px] font-bold uppercase rounded border",
-                              img.doctor_review ? 'bg-success-tint border-success/30 text-success' : 'bg-warning-tint border border-amber-300 text-warning'
-                            )}>
-                              {img.doctor_review ? 'Dr. Reviewed' : 'Physician Review: Pending'}
+                            <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded border bg-warning-tint border border-amber-300 text-warning flex items-center gap-1">
+                              <Clock size={11} /> Physician Review: Pending
                             </span>
                           )}
 
@@ -448,159 +472,224 @@ export default function WoundUpload({
                           <span className="font-semibold">Note:</span> {img.remarks}
                         </p>
                       )}
-                      
-                      {/* Clinical Decision Support Status Banners (Preventing False Reassurance) */}
+                                           {/* Urgent Warning Banner */}
+                      {img.is_urgent && (
+                        <div className="mt-2.5 p-3 rounded-lg border-l-4 border-l-danger border border-danger/30 bg-danger-tint/60 text-danger space-y-1">
+                          <div className="flex items-center gap-2">
+                            <AlertTriangle size={15} className="text-danger flex-shrink-0" />
+                            <span className="font-bold text-xs uppercase tracking-wide">
+                              Urgent Clinical Attention Advised
+                            </span>
+                          </div>
+                          <p className="text-2xs text-text-secondary leading-relaxed">
+                            {img.urgent_reasons && img.urgent_reasons.length > 0 
+                              ? `Concerning post-op symptoms flagged: ${img.urgent_reasons.join('; ')}.`
+                              : 'High-acuity post-operative complication indicators detected.'}
+                            {' '}Your attending clinical team has been alerted. If experiencing heavy bleeding or severe distress, seek emergency medical care immediately.
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Doctor Requested Another Image Notice */}
+                      {img.doctor_review_status === 'image_requested' && (
+                        <div className="mt-2.5 p-3 rounded-lg border border-amber-400 bg-amber-50 text-amber-950 space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-xs flex items-center gap-1.5 text-amber-900">
+                              <AlertTriangle size={14} className="text-amber-600" /> Attending Doctor Requested a New Photograph
+                            </span>
+                            <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 bg-amber-200 text-amber-900 rounded">
+                              Re-Take Requested
+                            </span>
+                          </div>
+                          <p className="text-2xs text-amber-900 leading-relaxed">
+                            <strong>Reason:</strong> {img.image_request_reason || "Doctor requested a clearer photo under better lighting."}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-600 text-white text-xs font-semibold rounded hover:bg-amber-700 transition-colors cursor-pointer mt-1"
+                          >
+                            <Upload size={12} /> Upload New Photo Now
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Doctor-Approved Instructions Box */}
+                      {img.doctor_approved_instructions && (
+                        <div className="mt-2.5 p-3 rounded-lg border border-primary/40 bg-primary-tint/20 text-text space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-xs text-primary flex items-center gap-1.5">
+                              🩺 Doctor-Approved Instructions
+                            </span>
+                            {img.reviewed_by_name && (
+                              <span className="text-2xs text-text-muted">
+                                {img.reviewed_by_name} {img.reviewed_at ? `· ${new Date(img.reviewed_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}` : ''}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-text leading-relaxed whitespace-pre-line font-medium">
+                            {img.doctor_approved_instructions}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Doctor Comments if available */}
+                      {img.doctor_comments && (
+                        <div className="mt-2 p-2.5 rounded bg-surface-muted border border-border text-xs text-text">
+                          <span className="font-semibold block text-text-secondary text-[11px] mb-0.5">Doctor Clinical Comments:</span>
+                          <p className="text-text-secondary">{img.doctor_comments}</p>
+                        </div>
+                      )}
+
+                      {/* AI Status / Observations Banners */}
                       {img.assessment_result === 'unavailable' && (
-                        <div className="mt-2 text-2xs text-text-muted flex items-start gap-1.5 bg-surface-muted/60 p-2 rounded border border-border/50">
-                          <AlertTriangle size={13} className="text-text-muted flex-shrink-0 mt-0.5" />
-                          <span>Automated CV model is not deployed for wound images. Attending clinician review is required.</span>
+                        <div className="mt-2 text-2xs text-text-muted flex items-start gap-1.5 bg-surface-muted/60 p-2.5 rounded border border-border/50">
+                          <AlertTriangle size={13} className="text-amber-500 flex-shrink-0 mt-0.5" />
+                          <span>AI analysis is currently unavailable. Awaiting clinician review.</span>
                         </div>
                       )}
 
                       {img.assessment_result === 'pending' && (
-                        <div className="mt-2 text-2xs text-text-muted flex items-center gap-1.5 bg-surface-muted/60 p-2 rounded border border-border/50">
+                        <div className="mt-2 text-2xs text-text-muted flex items-center gap-1.5 bg-surface-muted/60 p-2.5 rounded border border-border/50">
                           <div className="w-2.5 h-2.5 border-2 border-primary border-t-transparent rounded-full animate-spin flex-shrink-0" />
-                          <span>Image uploaded successfully. Automated assessment in progress...</span>
+                          <span>Image uploaded securely. Automated wound analysis in progress...</span>
                         </div>
                       )}
 
-                      {img.assessment_result === 'failed' && (
-                        <div className="mt-2 text-2xs text-danger flex items-start gap-1.5 bg-danger-tint/60 p-2 rounded border border-danger/20">
-                          <AlertTriangle size={13} className="text-danger flex-shrink-0 mt-0.5" />
-                          <span>Image inference engine failed to process photo. Attending clinical review required.</span>
-                        </div>
-                      )}
+                      {/* Structured AI Visual Observations Grid */}
+                      {img.ai_observations && (img.ai_observations.ai_status === 'completed' || (img.assessment_result && img.assessment_result !== 'unavailable' && img.assessment_result !== 'pending')) && (
+                        <div className="mt-2.5 p-3 rounded-lg border border-border bg-surface-muted/30 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-xs text-text flex items-center gap-1.5">
+                              🤖 AI-Generated Visual Observations
+                            </span>
+                            <span className="text-[10px] text-text-muted italic">Clinical Decision Support (ExtraTrees CV Model)</span>
+                          </div>
 
-                      {img.assessment_result === 'uncertain' && (
-                        <div className="mt-2.5 text-2xs rounded-lg border border-amber-500/30 bg-amber-50/70 p-3 text-amber-950 space-y-2">
-                          <div className="flex items-start gap-2">
-                            <AlertTriangle size={15} className="text-amber-600 flex-shrink-0 mt-0.5" />
-                            <div className="flex-1">
+                          {/* Model Finding & Confidence Breakdown */}
+                          {img.raw_probabilities && (
+                            <div className="p-2.5 bg-surface rounded border border-border/60 text-2xs space-y-1.5">
                               <div className="flex items-center justify-between">
-                                <span className="font-bold text-xs text-amber-950">Assessment Status: Uncertain — Clinician Review Required</span>
-                                <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 bg-amber-500/20 text-amber-900 rounded border border-amber-500/30">
-                                  Review Required
+                                <span className="font-semibold text-text">Supported Classification Finding:</span>
+                                <span className="font-bold text-primary">
+                                  {img.assessment_result === 'good' ? 'Normal Healing' :
+                                   img.assessment_result === 'moderate' ? 'Moderate Risk (Active Monitoring)' :
+                                   img.assessment_result === 'poor' ? 'Elevated Complication Risk' :
+                                   'Uncertain (Clinician Calibration)'}
+                                  {img.confidence != null ? ` · ${Math.round(img.confidence * 100)}% Confidence` : ''}
                                 </span>
                               </div>
-                              <p className="mt-1 text-amber-900/90 leading-relaxed text-2xs">
-                                Automated screening cannot clear this image. The appearance falls outside validated closed-incision training limits and requires clinical evaluation.
-                              </p>
-                            </div>
-                          </div>
-
-                          {img.assessment_reason && (
-                            <div className="bg-surface rounded p-2.5 border border-amber-400/40 text-amber-950">
-                              <span className="font-bold block text-[11px] mb-1 text-amber-900">Reason for Classification:</span>
-                              <p className="text-[11px] leading-relaxed text-amber-950 font-normal">{img.assessment_reason}</p>
-                            </div>
-                          )}
-
-                          {img.raw_probabilities && (
-                            <div className="bg-surface rounded p-2.5 border border-amber-300/50">
-                              <div className="flex items-center justify-between text-[11px] font-semibold text-amber-900 mb-1.5">
-                                <span>Actual Model Raw Output:</span>
-                                <span className="font-mono text-[10px] px-1.5 py-0.5 bg-amber-100 rounded text-amber-800">
-                                  Argmax: {img.raw_probabilities.raw_prediction ? img.raw_probabilities.raw_prediction.toUpperCase() : 'GOOD'}
-                                </span>
-                              </div>
-                              <div className="grid grid-cols-3 gap-2 text-center font-mono text-xs">
-                                <div className="bg-amber-100/60 rounded py-1.5 px-2 border border-amber-200">
-                                  <span className="text-[10px] block text-text-muted font-sans font-medium">Good</span>
-                                  <span className="font-bold text-text">{Math.round(img.raw_probabilities.good * 100)}%</span>
+                              <div className="grid grid-cols-3 gap-1.5 text-[10px] text-center">
+                                <div className="bg-success-tint/40 p-1 rounded border border-success/20">
+                                  <span className="block text-success font-semibold">Good Healing</span>
+                                  <span className="text-text font-bold">{Math.round((img.raw_probabilities.good || 0) * 100)}%</span>
                                 </div>
-                                <div className="bg-amber-100/60 rounded py-1.5 px-2 border border-amber-200">
-                                  <span className="text-[10px] block text-text-muted font-sans font-medium">Moderate</span>
-                                  <span className="font-bold text-text">{Math.round(img.raw_probabilities.moderate * 100)}%</span>
+                                <div className="bg-warning-tint/40 p-1 rounded border border-warning/20">
+                                  <span className="block text-warning font-semibold">Moderate Risk</span>
+                                  <span className="text-text font-bold">{Math.round((img.raw_probabilities.moderate || 0) * 100)}%</span>
                                 </div>
-                                <div className="bg-amber-100/60 rounded py-1.5 px-2 border border-amber-200">
-                                  <span className="text-[10px] block text-text-muted font-sans font-medium">Poor</span>
-                                  <span className="font-bold text-text">{Math.round(img.raw_probabilities.poor * 100)}%</span>
+                                <div className="bg-danger-tint/40 p-1 rounded border border-danger/20">
+                                  <span className="block text-danger font-semibold">Poor / Complication</span>
+                                  <span className="text-text font-bold">{Math.round((img.raw_probabilities.poor || 0) * 100)}%</span>
                                 </div>
                               </div>
-                              <p className="text-[10px] text-amber-900/80 mt-1.5 italic leading-tight">
-                                Notice: The 78% Good probability reflects the uncalibrated majority-class training prior (88% Good in SurgWound closed incision dataset). It is not an assessment of healthy healing for out-of-distribution wounds.
-                              </p>
+                              {img.assessment_reason && (
+                                <p className="text-[11px] text-text-secondary leading-relaxed pt-1 border-t border-border/40">
+                                  {img.assessment_reason}
+                                </p>
+                              )}
+                            </div>
+                          )}
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-2xs">
+                            <div className="p-2 bg-surface rounded border border-border/60">
+                              <span className="font-semibold text-text block">🔴 Visible Redness:</span>
+                              <p className="text-text-muted mt-0.5">{img.ai_observations.redness?.description || 'Within expected limits.'}</p>
+                            </div>
+                            <div className="p-2 bg-surface rounded border border-border/60">
+                              <span className="font-semibold text-text block">🌊 Tissue Edema / Contour:</span>
+                              <p className="text-text-muted mt-0.5">{img.ai_observations.swelling?.description || 'Within expected limits.'}</p>
+                            </div>
+                            <div className="p-2 bg-surface rounded border border-border/60">
+                              <span className="font-semibold text-text block">📏 Margin Edges:</span>
+                              <p className="text-text-muted mt-0.5">{img.ai_observations.wound_edges?.description || 'Well approximated.'}</p>
+                            </div>
+                            <div className="p-2 bg-surface rounded border border-border/60">
+                              <span className="font-semibold text-text block">💧 Exudate / Slough:</span>
+                              <p className="text-text-muted mt-0.5">{img.ai_observations.discharge?.description || 'No purulent discharge detected.'}</p>
+                            </div>
+                          </div>
+
+                          {img.ai_observations.comparison_with_previous && img.ai_observations.comparison_with_previous.has_previous && (
+                            <div className="p-2 bg-primary-tint/20 rounded border border-primary/20 text-2xs text-text-secondary">
+                              <strong className="text-primary block">🔄 Changes vs. Previous Photo:</strong>
+                              <p className="mt-0.5">{img.ai_observations.comparison_with_previous.comparison_summary}</p>
+                            </div>
+                          )}
+
+                          {img.ai_observations.image_quality && (
+                            <div className="text-[10px] text-text-muted pt-0.5 flex items-center justify-between">
+                              <span>Image Quality: <strong className="capitalize">{img.ai_observations.image_quality.quality_flag}</strong> ({img.ai_observations.image_quality.resolution})</span>
+                              <span>{img.ai_observations.image_quality.is_acceptable ? '✓ Wound clearly visible' : '⚠ Limited visibility'}</span>
                             </div>
                           )}
                         </div>
                       )}
 
-                      {img.assessment_result === 'good' && (
-                        <div className="mt-2.5 text-2xs text-text-secondary bg-surface-muted p-3 rounded-lg border border-border space-y-2">
-                          <div className="flex items-start gap-2">
-                            <Info size={15} className="text-primary flex-shrink-0 mt-0.5" />
-                            <div className="flex-1">
-                              <span className="font-bold text-xs text-text block">Model Output: Good Class (Routine Screening)</span>
-                              <p className="text-2xs text-text-muted mt-0.5">
-                                Incision margins appear intact within normal screening parameters. Automated screening does not replace medical evaluation; physician review is required.
-                              </p>
-                            </div>
+                      {/* Structured Post-Operative Recommendations */}
+                      {img.generated_recommendations && (
+                        <div className="mt-2.5 p-3 rounded-lg border border-border bg-surface space-y-2.5 text-xs">
+                          <div className="flex items-center justify-between border-b border-border/60 pb-1.5">
+                            <span className="font-bold text-text flex items-center gap-1.5">
+                              📋 Post-Operative Care Guidance & Reminders
+                            </span>
+                            <span className="text-2xs text-primary font-semibold">
+                              {img.generated_recommendations.recovery_phase || `Day ${img.recovery_day || 1}`}
+                            </span>
                           </div>
-                          {img.assessment_reason && (
-                            <div className="bg-surface rounded p-2 border border-border text-[11px] text-text">
-                              <span className="font-semibold block text-text-muted mb-0.5">Reason:</span>
-                              <p>{img.assessment_reason}</p>
-                            </div>
-                          )}
-                          {img.raw_probabilities && (
-                            <div className="text-[10px] font-mono text-text-muted pt-1 flex gap-3">
-                              <span>P(Good): {Math.round(img.raw_probabilities.good * 100)}%</span>
-                              <span>P(Moderate): {Math.round(img.raw_probabilities.moderate * 100)}%</span>
-                              <span>P(Poor): {Math.round(img.raw_probabilities.poor * 100)}%</span>
-                            </div>
-                          )}
-                        </div>
-                      )}
 
-                      {img.assessment_result === 'moderate' && (
-                        <div className="mt-2.5 text-2xs text-warning bg-warning-tint/60 p-3 rounded-lg border border-warning/30 space-y-2">
-                          <div className="flex items-start gap-2">
-                            <AlertTriangle size={15} className="text-warning flex-shrink-0 mt-0.5" />
-                            <div className="flex-1">
-                              <span className="font-bold text-xs block">Model Output: Moderate Class — Clinician Review Required (48h)</span>
-                              <p className="text-2xs mt-0.5">
-                                Elevated indicators detected for periwound erythema, edema, or exudate. Professional clinical monitoring required.
-                              </p>
-                            </div>
-                          </div>
-                          {img.assessment_reason && (
-                            <div className="bg-surface rounded p-2 border border-warning/30 text-[11px] text-text">
-                              <span className="font-semibold block text-warning mb-0.5">Reason:</span>
-                              <p>{img.assessment_reason}</p>
+                          {/* Wound Care & Hygiene */}
+                          {img.generated_recommendations.wound_care && img.generated_recommendations.wound_care.length > 0 && (
+                            <div>
+                              <strong className="text-2xs uppercase text-text-muted block mb-1">Wound-Care & Hygiene:</strong>
+                              <ul className="list-disc list-inside text-2xs text-text-secondary space-y-0.5">
+                                {img.generated_recommendations.wound_care.map((item, i) => (
+                                  <li key={i}>{item}</li>
+                                ))}
+                                {img.generated_recommendations.hygiene && img.generated_recommendations.hygiene.slice(0, 1).map((item, i) => (
+                                  <li key={`h-${i}`}>{item}</li>
+                                ))}
+                              </ul>
                             </div>
                           )}
-                          {img.raw_probabilities && (
-                            <div className="text-[10px] font-mono pt-1 flex gap-3">
-                              <span>P(Good): {Math.round(img.raw_probabilities.good * 100)}%</span>
-                              <span>P(Moderate): {Math.round(img.raw_probabilities.moderate * 100)}%</span>
-                              <span>P(Poor): {Math.round(img.raw_probabilities.poor * 100)}%</span>
-                            </div>
-                          )}
-                        </div>
-                      )}
 
-                      {img.assessment_result === 'poor' && (
-                        <div className="mt-2.5 text-2xs text-danger bg-danger-tint/60 p-3 rounded-lg border border-danger/30 space-y-2">
-                          <div className="flex items-start gap-2">
-                            <AlertTriangle size={15} className="text-danger flex-shrink-0 mt-0.5" />
-                            <div className="flex-1">
-                              <span className="font-bold text-xs block">Model Output: Poor Class — Prompt Clinical Assessment Required</span>
-                              <p className="text-2xs mt-0.5">
-                                High-acuity features detected indicating potential surgical complication, dehiscence, or infection. Immediate clinical review advised.
-                              </p>
-                            </div>
-                          </div>
-                          {img.assessment_reason && (
-                            <div className="bg-surface rounded p-2 border border-danger/30 text-[11px] text-text">
-                              <span className="font-semibold block text-danger mb-0.5">Reason:</span>
-                              <p>{img.assessment_reason}</p>
+                          {/* Prescribed Medication Schedule Reminders */}
+                          {img.generated_recommendations.medication_reminders && (
+                            <div className="pt-1.5 border-t border-border/40">
+                              <strong className="text-2xs uppercase text-text-muted block mb-1">Prescribed Medication Adherence:</strong>
+                              <ul className="list-disc list-inside text-2xs text-text-secondary space-y-0.5">
+                                {img.generated_recommendations.medication_reminders.slice(0, 2).map((item, i) => (
+                                  <li key={i}>{item}</li>
+                                ))}
+                              </ul>
                             </div>
                           )}
-                          {img.raw_probabilities && (
-                            <div className="text-[10px] font-mono pt-1 flex gap-3">
-                              <span>P(Good): {Math.round(img.raw_probabilities.good * 100)}%</span>
-                              <span>P(Moderate): {Math.round(img.raw_probabilities.moderate * 100)}%</span>
-                              <span>P(Poor): {Math.round(img.raw_probabilities.poor * 100)}%</span>
+
+                          {/* Follow-Up Appointment Reminders */}
+                          {img.generated_recommendations.followup_reminders && img.generated_recommendations.followup_reminders.length > 0 && (
+                            <div className="pt-1.5 border-t border-border/40">
+                              <strong className="text-2xs uppercase text-text-muted block mb-1">Follow-Up Reminders:</strong>
+                              <p className="text-2xs text-text-secondary">
+                                {img.generated_recommendations.followup_reminders[0]}
+                              </p>
+                            </div>
+                          )}
+
+                          {/* When to Contact Doctor */}
+                          {img.generated_recommendations.contact_doctor && img.generated_recommendations.contact_doctor.length > 0 && (
+                            <div className="p-2 rounded bg-surface-muted text-2xs text-text-muted border border-border/50">
+                              <strong className="text-text block mb-0.5">When to Contact Doctor:</strong>
+                              <p>{img.generated_recommendations.contact_doctor[0]}</p>
                             </div>
                           )}
                         </div>

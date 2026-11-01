@@ -666,4 +666,179 @@ class RecoveryCheckInMandatoryValidationTests(TestCase):
         self.assertNotEqual(data['checkin']['patient'], self.other_patient.id)
 
 
+class AutomaticWoundWorkflowTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
 
+        # Doctor
+        self.doctor_user = User.objects.create_user(
+            email='dr.verma@postcare.test',
+            username='dr.verma@postcare.test',
+            password='TestPassword123!',
+            role='doctor',
+            first_name='Rajesh',
+            last_name='Varma'
+        )
+        from apps.patients.models import Doctor
+        self.doctor = Doctor.objects.create(
+            user=self.doctor_user,
+            approval_status='approved'
+        )
+
+        # Patient with surgery date 5 days ago
+        import datetime
+        self.patient_user = User.objects.create_user(
+            email='arun.p@postcare.test',
+            username='arun.p@postcare.test',
+            password='TestPassword123!',
+            role='patient',
+            first_name='Arun',
+            last_name='Patel'
+        )
+        self.patient = Patient.objects.create(
+            user=self.patient_user,
+            patient_id='P-AUTO-001',
+            gender='M',
+            surgery_type='Total Knee Replacement',
+            surgery_date=datetime.date.today() - datetime.timedelta(days=5),
+            primary_doctor=self.doctor
+        )
+
+        # Admin user
+        self.admin_user = User.objects.create_user(
+            email='admin@postcare.test',
+            username='admin@postcare.test',
+            password='TestPassword123!',
+            role='admin',
+            first_name='System',
+            last_name='Administrator'
+        )
+
+    def _generate_test_image(self, color=(160, 110, 110), size=(200, 200)):
+        buf = io.BytesIO()
+        img = Image.new('RGB', size, color=color)
+        img.save(buf, format='JPEG')
+        buf.seek(0)
+        return buf
+
+    def test_upload_automatically_triggers_analysis_and_recommendations(self):
+        """Uploading an image automatically calculates recovery day, analyzes wound, and generates post-op recommendations."""
+        self.client.force_authenticate(user=self.patient_user)
+        img = self._generate_test_image()
+        img.name = 'auto_wound_day5.jpg'
+
+        res = self.client.post(
+            '/api/recovery/wounds/upload/',
+            data={'image': img, 'remarks': 'Mild redness around sutures'},
+            format='multipart'
+        )
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        data = res.json()
+
+        # Verified metadata
+        self.assertEqual(data['recovery_day'], 5)
+        self.assertIn('Total Knee Replacement', data['surgery_details'])
+        self.assertEqual(data['doctor_review_status'], 'pending')
+        self.assertIn('ai_analysis_status', data)
+
+        # Verified recommendations structure
+        recs = data.get('generated_recommendations')
+        self.assertIsNotNone(recs)
+        self.assertIn('wound_care', recs)
+        self.assertIn('hygiene', recs)
+        self.assertIn('medication_reminders', recs)
+        self.assertIn('contact_doctor', recs)
+        self.assertIn('general_guidance', recs)
+
+    def test_urgent_symptom_triggers_immediate_escalation(self):
+        """Reporting fever and severe pain triggers immediate clinical urgency without waiting for AI."""
+        from apps.recovery.models import RecoveryCheckIn
+        import datetime
+        checkin = RecoveryCheckIn.objects.create(
+            patient=self.patient,
+            date=datetime.date.today(),
+            pain_level=9,
+            temperature=38.9,
+            wound_condition='pus_drainage',
+            symptoms=['Fever / Chills', 'Severe Pain / Inability to bear weight'],
+            medication_adherence='all',
+            additional_notes='Incision opened slightly and discharging yellowish fluid'
+        )
+
+        self.client.force_authenticate(user=self.patient_user)
+        img = self._generate_test_image(color=(220, 40, 40))
+        img.name = 'urgent_infection.jpg'
+
+        res = self.client.post(
+            '/api/recovery/wounds/upload/',
+            data={'image': img, 'remarks': 'Pus leaking and fever 38.9C'},
+            format='multipart'
+        )
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        data = res.json()
+
+        self.assertTrue(data['is_urgent'])
+        self.assertTrue(len(data['urgent_reasons']) > 0)
+
+        # Verify urgent notification was dispatched to primary doctor
+        from apps.notifications.models import Notification
+        notif = Notification.objects.filter(
+            recipient=self.doctor_user,
+            type='high_risk_alert'
+        ).first()
+        self.assertIsNotNone(notif)
+        self.assertIn('URGENT', notif.title)
+
+    def test_doctor_review_queue_and_action(self):
+        """Doctor can view queue, review wound assessment, add comments, approve, and patient is notified."""
+        # 1. Patient uploads
+        self.client.force_authenticate(user=self.patient_user)
+        img = self._generate_test_image()
+        img.name = 'for_dr_review.jpg'
+        upload_res = self.client.post('/api/recovery/wounds/upload/', data={'image': img}, format='multipart')
+        wound_id = upload_res.json()['id']
+
+        # 2. Doctor queries queue
+        self.client.force_authenticate(user=self.doctor_user)
+        queue_res = self.client.get('/api/recovery/wounds/doctor/queue/')
+        self.assertEqual(queue_res.status_code, status.HTTP_200_OK)
+        queue_json = queue_res.json()
+        results = queue_json.get('results', queue_json if isinstance(queue_json, list) else [])
+        queue_ids = [item['id'] for item in results]
+        self.assertIn(wound_id, queue_ids)
+
+        # 3. Doctor approves with clinical instructions
+        action_res = self.client.post(
+            f'/api/recovery/wounds/{wound_id}/doctor-action/',
+            data={
+                'action': 'approve',
+                'doctor_comments': 'Incision is granulating cleanly. Sutures intact.',
+                'doctor_approved_instructions': 'Continue dressing change every 48 hours. Keep dry.'
+            },
+            format='json'
+        )
+        self.assertEqual(action_res.status_code, status.HTTP_200_OK)
+        action_data = action_res.json().get('wound', action_res.json())
+        self.assertEqual(action_data['doctor_review_status'], 'reviewed')
+        self.assertEqual(action_data['doctor_comments'], 'Incision is granulating cleanly. Sutures intact.')
+
+        # 4. Patient queries latest wound assessment and sees doctor approval
+        self.client.force_authenticate(user=self.patient_user)
+        latest_res = self.client.get('/api/recovery/wounds/patient/me/latest/')
+        self.assertEqual(latest_res.status_code, status.HTTP_200_OK)
+        latest_data = latest_res.json()
+        self.assertEqual(latest_data['doctor_review_status'], 'reviewed')
+        self.assertEqual(latest_data['doctor_approved_instructions'], 'Continue dressing change every 48 hours. Keep dry.')
+
+    def test_admin_wound_stats_endpoint(self):
+        """Admin can access wound stats and monitoring audit without clinical alteration."""
+        self.client.force_authenticate(user=self.admin_user)
+        stats_res = self.client.get('/api/recovery/wounds/admin/stats/')
+        self.assertEqual(stats_res.status_code, status.HTTP_200_OK)
+        data = stats_res.json()
+        self.assertIn('total_uploaded', data)
+        self.assertIn('awaiting_ai_analysis', data)
+        self.assertIn('awaiting_physician_review', data)
+        self.assertIn('reviewed_cases', data)
+        self.assertIn('urgent_attention_cases', data)
+        self.assertIn('recent_audits', data)

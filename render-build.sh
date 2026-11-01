@@ -15,10 +15,11 @@ python backend/manage.py collectstatic --no-input
 
 echo "[2/4] Static files collected."
 
-# 3. Train tabular recovery risk classifier from repository training data (~2s)
+# 3. Train ML model artifacts (Tabular Risk Classifier & Computer Vision Wound Classifier)
 python ml/train_model.py
+python ml/train_wound_model.py
 
-echo "[3/4] Tabular ML model artifact generated."
+echo "[3/4] ML model artifacts (Tabular + CV Wound Model) generated."
 
 # 4. Run database migrations
 python backend/manage.py migrate --no-input || true

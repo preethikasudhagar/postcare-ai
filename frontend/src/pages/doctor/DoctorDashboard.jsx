@@ -6,11 +6,16 @@ import { PageHeader, Card, CardHeader, CardBody, StatCard } from '../../componen
 import { RiskBadge, StatusBadge } from '../../components/ui/Badge.jsx'
 import RiskDonut from '../../charts/RiskDonut.jsx'
 import LineTrend from '../../charts/LineTrend.jsx'
+import WoundReviewModal from '../../components/domain/WoundReviewModal.jsx'
 import {
   Users, AlertTriangle, Calendar, Activity, ArrowRight, ShieldAlert,
-  Bell, CheckCheck, Pill, Info, ChevronRight
+  Bell, CheckCheck, Pill, Info, ChevronRight, Camera, Stethoscope, Eye, Check
 } from 'lucide-react'
 import { formatDate } from '../../utils/dateUtils'
+import { clsx } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+const cn = (...a) => twMerge(clsx(...a))
 
 export default function DoctorDashboard() {
   const { user } = useAuth()
@@ -18,15 +23,20 @@ export default function DoctorDashboard() {
   const [patients, setPatients] = useState([])
   const [followUps, setFollowUps] = useState([])
   const [reportStats, setReportStats] = useState(null)
+  const [woundQueue, setWoundQueue] = useState([])
+  const [woundQueueStats, setWoundQueueStats] = useState({ total_in_queue: 0, urgent_count: 0, pending_count: 0 })
+  const [selectedWound, setSelectedWound] = useState(null)
+  const [woundFilter, setWoundFilter] = useState('all') // 'all' | 'pending' | 'urgent'
   const [loading, setLoading] = useState(true)
 
   const fetchDashboardData = async () => {
     try {
-      const [notifRes, patRes, repRes, fuRes] = await Promise.allSettled([
+      const [notifRes, patRes, repRes, fuRes, woundRes] = await Promise.allSettled([
         api.get('/notifications/'),
         api.get('/patients/'),
         api.get('/reports/recovery/'),
         api.get('/follow-ups/'),
+        api.get('/recovery/wounds/doctor/review-queue/'),
       ])
       if (notifRes.status === 'fulfilled' && Array.isArray(notifRes.value.data)) {
         setNotifications(notifRes.value.data)
@@ -39,6 +49,15 @@ export default function DoctorDashboard() {
       }
       if (fuRes.status === 'fulfilled' && Array.isArray(fuRes.value.data)) {
         setFollowUps(fuRes.value.data)
+      }
+      if (woundRes.status === 'fulfilled' && woundRes.value.data) {
+        const data = woundRes.value.data
+        setWoundQueue(data.results || [])
+        setWoundQueueStats({
+          total_in_queue: data.total_in_queue || 0,
+          urgent_count: data.urgent_count || 0,
+          pending_count: data.pending_count || 0
+        })
       }
     } catch (e) {
     } finally {
@@ -93,6 +112,12 @@ export default function DoctorDashboard() {
     status: fu.status || 'upcoming',
   }))
 
+  const filteredWounds = woundQueue.filter(w => {
+    if (woundFilter === 'pending') return w.doctor_review_status === 'pending'
+    if (woundFilter === 'urgent') return w.is_urgent
+    return true
+  })
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -133,6 +158,15 @@ export default function DoctorDashboard() {
           iconColor="text-primary"
         />
         <StatCard
+          label="Wound Review Queue"
+          value={`${woundQueueStats.pending_count} pending`}
+          trend={woundQueueStats.urgent_count > 0 ? `${woundQueueStats.urgent_count} urgent attention` : "Queue updated"}
+          trendUp={woundQueueStats.urgent_count === 0}
+          icon={Camera}
+          iconBg={woundQueueStats.urgent_count > 0 ? "bg-danger-tint" : "bg-primary-tint"}
+          iconColor={woundQueueStats.urgent_count > 0 ? "text-danger" : "text-primary"}
+        />
+        <StatCard
           label="High-Risk Alerts"
           value={unreadHighRisk.length > 0 ? `${unreadHighRisk.length} active` : "0 active"}
           trend={unreadHighRisk.length > 0 ? "Action required" : "All cleared"}
@@ -149,15 +183,6 @@ export default function DoctorDashboard() {
           icon={Calendar}
           iconBg="bg-secondary-tint"
           iconColor="text-secondary"
-        />
-        <StatCard
-          label="Unread Notifications"
-          value={`${unreadNotifs.length}`}
-          trend={unreadNotifs.length > 0 ? "Pending review" : "Inbox clear"}
-          trendUp={unreadNotifs.length === 0}
-          icon={Bell}
-          iconBg="bg-warning-tint"
-          iconColor="text-warning"
         />
       </div>
 
@@ -191,6 +216,178 @@ export default function DoctorDashboard() {
           </div>
         </div>
       )}
+
+      {/* Wound Image Review Section */}
+      <Card>
+        <CardHeader
+          title="Wound Image Review Queue"
+          description="Assess uploaded recovery images, review AI findings, approve post-op guidance, or request photo re-takes."
+          action={
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setWoundFilter('all')}
+                className={cn(
+                  "px-2.5 py-1 text-xs rounded font-semibold transition-colors cursor-pointer",
+                  woundFilter === 'all' ? "bg-primary text-white" : "bg-surface border border-border text-text hover:bg-surface-muted"
+                )}
+              >
+                All ({woundQueue.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setWoundFilter('pending')}
+                className={cn(
+                  "px-2.5 py-1 text-xs rounded font-semibold transition-colors cursor-pointer",
+                  woundFilter === 'pending' ? "bg-primary text-white" : "bg-surface border border-border text-text hover:bg-surface-muted"
+                )}
+              >
+                Pending ({woundQueueStats.pending_count})
+              </button>
+              <button
+                type="button"
+                onClick={() => setWoundFilter('urgent')}
+                className={cn(
+                  "px-2.5 py-1 text-xs rounded font-semibold transition-colors cursor-pointer",
+                  woundFilter === 'urgent' ? "bg-danger text-white" : "bg-surface border border-border text-danger hover:bg-danger-tint"
+                )}
+              >
+                Urgent ({woundQueueStats.urgent_count})
+              </button>
+            </div>
+          }
+        />
+        <CardBody>
+          {filteredWounds.length === 0 ? (
+            <div className="py-8 text-center text-xs text-text-muted bg-surface-muted/30 rounded border border-dashed border-border">
+              No wound images in this queue category.
+            </div>
+          ) : (
+            <div className="border border-border rounded-lg overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-[#DDD0F7] text-primary border-b border-border font-bold">
+                  <tr>
+                    <th className="p-3">Wound Photo</th>
+                    <th className="p-3">Patient</th>
+                    <th className="p-3">Upload Date / Day</th>
+                    <th className="p-3">AI Analysis Status</th>
+                    <th className="p-3">Observations Summary</th>
+                    <th className="p-3">Review Status</th>
+                    <th className="p-3 text-right">Clinical Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border text-text">
+                  {filteredWounds.map((w) => {
+                    const obs = w.ai_observations || {}
+                    return (
+                      <tr 
+                        key={w.id} 
+                        className={cn(
+                          "hover:bg-bg bg-surface transition-colors",
+                          w.is_urgent ? "bg-danger-tint/15" : ""
+                        )}
+                      >
+                        <td className="p-3">
+                          <div 
+                            onClick={() => setSelectedWound(w)}
+                            className="w-16 h-12 bg-surface-muted rounded overflow-hidden border border-border flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity relative group"
+                          >
+                            <img src={w.image} alt="Wound" className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+                              <Eye size={14} />
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-3">
+                          <div className="flex items-center gap-1.5">
+                            <strong className="text-text block">{w.patient_name || 'Patient'}</strong>
+                            {w.is_urgent && (
+                              <span className="px-1.5 py-0.2 bg-danger text-white text-[9px] font-bold rounded">
+                                URGENT
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-2xs text-text-muted block">{w.patient_uhid || w.patient_id}</span>
+                          <span className="text-2xs text-text-secondary">{w.surgery_details}</span>
+                        </td>
+                        <td className="p-3">
+                          <span className="font-semibold text-text block">
+                            Day {w.recovery_day || 1} Post-Op
+                          </span>
+                          <span className="text-2xs text-text-muted">
+                            {new Date(w.upload_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
+                          </span>
+                        </td>
+                        <td className="p-3">
+                          <span className={cn(
+                            "px-2 py-0.5 text-[10px] font-bold uppercase rounded border inline-block",
+                            w.assessment_result === 'good' ? 'bg-primary-tint text-primary border-primary/30' :
+                            w.assessment_result === 'moderate' ? 'bg-warning-tint text-warning border-warning/30' :
+                            w.assessment_result === 'poor' ? 'bg-danger-tint text-danger border-danger/30' :
+                            w.assessment_result === 'uncertain' ? 'bg-amber-500/10 text-amber-700 border-amber-500/30' :
+                            'bg-surface-muted text-text-muted border-border'
+                          )}>
+                            {w.assessment_result === 'uncertain' ? 'Uncertain (Review Req.)' :
+                             w.assessment_result === 'unavailable' ? 'AI Unavailable' :
+                             `ML: ${w.assessment_result}`}
+                          </span>
+                          {w.confidence != null && (
+                            <span className="text-2xs text-text-muted block mt-0.5">
+                              Conf: {Math.round(w.confidence * 100)}%
+                            </span>
+                          )}
+                        </td>
+                        <td className="p-3 max-w-xs">
+                          {obs.redness ? (
+                            <div className="text-2xs text-text-secondary line-clamp-2">
+                              <span>Redness: {obs.redness.level}</span> · 
+                              <span> Edges: {obs.wound_edges?.alignment || 'normal'}</span> · 
+                              <span> Exudate: {obs.discharge?.level || 'clear'}</span>
+                            </div>
+                          ) : (
+                            <span className="text-2xs text-text-muted italic">
+                              {w.assessment_result === 'unavailable' 
+                                ? 'AI analysis is currently unavailable. Awaiting clinician review.' 
+                                : 'Pending visual extraction'}
+                            </span>
+                          )}
+                          {w.remarks && (
+                            <p className="text-2xs text-text-muted mt-0.5 line-clamp-1 italic">
+                              Note: {w.remarks}
+                            </p>
+                          )}
+                        </td>
+                        <td className="p-3">
+                          <span className={cn(
+                            "px-2 py-0.5 text-[10px] font-bold uppercase rounded border inline-block",
+                            w.doctor_review ? 'bg-success-tint border-success/30 text-success' : 'bg-warning-tint border border-amber-300 text-warning'
+                          )}>
+                            {w.doctor_review_status === 'reviewed' ? 'Approved' :
+                             w.doctor_review_status === 'modified' ? 'Modified' :
+                             w.doctor_review_status === 'image_requested' ? 'Photo Requested' :
+                             w.doctor_review_status === 'escalated' ? 'Escalated' :
+                             'Pending Review'}
+                          </span>
+                        </td>
+                        <td className="p-3 text-right">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedWound(w)}
+                            className="inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold text-primary bg-primary-tint rounded hover:bg-primary hover:text-white transition-colors cursor-pointer"
+                          >
+                            <Stethoscope size={13} />
+                            Review
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardBody>
+      </Card>
 
       {/* High-Risk Patient Watchlist (7 cols) + Cohort Risk Stratification (5 cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -246,6 +443,7 @@ export default function DoctorDashboard() {
             </CardBody>
           </Card>
         </div>
+
 
         {/* Risk Distribution Donut (5 cols) */}
         <div className="lg:col-span-5">
@@ -415,6 +613,20 @@ export default function DoctorDashboard() {
           )}
         </CardBody>
       </Card>
+
+      {/* Clinical Wound Review Modal */}
+      {selectedWound && (
+        <WoundReviewModal
+          isOpen={Boolean(selectedWound)}
+          onClose={() => setSelectedWound(null)}
+          wound={selectedWound}
+          onActionComplete={() => {
+            fetchDashboardData()
+            setSelectedWound(null)
+          }}
+        />
+      )}
     </div>
   )
 }
+

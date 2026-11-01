@@ -77,20 +77,53 @@ class WoundAssessment(models.Model):
         ('failed', 'Failed'),
     ]
 
+    DOCTOR_REVIEW_STATUSES = [
+        ('pending', 'Pending Review'),
+        ('reviewed', 'Reviewed & Approved'),
+        ('modified', 'Recommendations Modified'),
+        ('image_requested', 'New Image Requested'),
+        ('escalated', 'Escalated to Clinical Lead'),
+    ]
+
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='wound_assessments')
     image = models.ImageField(upload_to='wounds/%Y/%m/%d/')
     upload_date = models.DateTimeField(auto_now_add=True)
     uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='uploaded_wounds')
+    
+    # Metadata
+    surgery_details = models.CharField(max_length=200, blank=True, default='')
+    recovery_day = models.IntegerField(null=True, blank=True)
+
+    # AI Wound Assessment
     assessment_result = models.CharField(max_length=20, choices=ASSESSMENT_RESULTS, default='pending')
     confidence = models.FloatField(null=True, blank=True)
     raw_probabilities = models.JSONField(null=True, blank=True)
     assessment_reason = models.TextField(blank=True, default='')
+    ai_observations = models.JSONField(null=True, blank=True, default=dict)
+
+    # Patient remarks and symptoms at upload
+    remarks = models.TextField(blank=True, default='')
+
+    # Clinical Recommendations & Guidance
+    generated_recommendations = models.JSONField(null=True, blank=True, default=dict)
+
+    # Urgent Warning & Escalation
+    is_urgent = models.BooleanField(default=False)
+    urgent_reasons = models.JSONField(null=True, blank=True, default=list)
+
+    # Doctor Review Workflow
     doctor_review = models.BooleanField(default=False)
-    remarks = models.TextField(blank=True)
+    doctor_review_status = models.CharField(max_length=25, choices=DOCTOR_REVIEW_STATUSES, default='pending')
+    doctor_comments = models.TextField(blank=True, default='')
+    doctor_approved_instructions = models.TextField(blank=True, default='')
+    reviewed_by = models.ForeignKey(Doctor, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviewed_wound_assessments')
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    image_request_reason = models.TextField(blank=True, default='')
     
     class Meta:
         db_table = 'wound_assessments'
         ordering = ['-upload_date']
 
     def __str__(self):
-        return f"Wound Assessment for {self.patient} at {self.upload_date}"
+        return f"Wound Assessment for {self.patient} at {self.upload_date} ({self.assessment_result})"
+

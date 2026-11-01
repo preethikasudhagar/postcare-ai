@@ -16,27 +16,53 @@ from typing import Optional, Dict, Any
 
 logger = logging.getLogger(__name__)
 
-# Base directory for ML artifacts
-ML_DIR = Path(__file__).resolve().parent.parent.parent.parent / 'ml'
-WOUND_CV_MODEL_PATHS = [
-    ML_DIR / 'wound_model.joblib',
-    ML_DIR / 'wound_classifier.pt',
-    ML_DIR / 'wound_model.onnx',
-]
+# Candidate paths for ML artifacts
+def get_wound_cv_model_path() -> Optional[Path]:
+    candidate_dirs = [
+        Path(__file__).resolve().parent.parent.parent.parent / 'ml',
+        Path.cwd() / 'ml',
+        Path.cwd().parent / 'ml',
+    ]
+    try:
+        from django.conf import settings
+        base = Path(settings.BASE_DIR)
+        candidate_dirs.extend([base.parent / 'ml', base / 'ml'])
+    except Exception:
+        pass
 
+    for d in candidate_dirs:
+        for fname in ['wound_model.joblib', 'wound_classifier.pt', 'wound_model.onnx']:
+            p = d / fname
+            if p.exists():
+                return p
+    return None
+
+ML_DIR = Path(__file__).resolve().parent.parent.parent.parent / 'ml'
 _CACHED_MODEL_PAYLOAD = None
 _CACHED_MODEL_PATH = None
 
 
-def assess_wound_image(image_path_or_file: Any, remarks: str = "") -> Dict[str, Any]:
+def assess_wound_image(
+    image_path_or_file: Any, 
+    remarks: str = "", 
+    previous_assessment: Optional[Any] = None
+) -> Dict[str, Any]:
     """
     Evaluates an uploaded wound photograph using a trained Computer Vision model if available.
+    Assesses:
+      - Image quality & wound visibility
+      - Visible redness (erythema)
+      - Swelling / edema indicators
+      - Wound-edge appearance
+      - Visible discharge / slough / exudate
+      - Longitudinal changes compared with previous uploaded images
 
     Returns:
         dict with keys:
             - 'status': 'completed' | 'unavailable' | 'failed'
-            - 'assessment_result': 'good' | 'moderate' | 'poor' | 'unavailable'
+            - 'assessment_result': 'good' | 'moderate' | 'poor' | 'uncertain' | 'unavailable' | 'failed'
             - 'confidence': float (0.0 - 1.0) or None
+            - 'ai_observations': dict with detailed clinical observation metrics
             - 'message': str
     """
     # 1. Validate image file existence and readability
@@ -49,6 +75,10 @@ def assess_wound_image(image_path_or_file: Any, remarks: str = "") -> Dict[str, 
                 'assessment_result': 'failed',
                 'confidence': None,
                 'raw_probabilities': None,
+                'ai_observations': {
+                    'status': 'failed',
+                    'message': f"Image file not found at path: {file_path}",
+                },
                 'message': f"Image file not found at path: {file_path}"
             }
     elif hasattr(image_path_or_file, 'path'):
@@ -59,33 +89,36 @@ def assess_wound_image(image_path_or_file: Any, remarks: str = "") -> Dict[str, 
                 'assessment_result': 'failed',
                 'confidence': None,
                 'raw_probabilities': None,
+                'ai_observations': {
+                    'status': 'failed',
+                    'message': "Stored image file does not exist on disk.",
+                },
                 'message': "Stored image file does not exist on disk."
             }
+    elif hasattr(image_path_or_file, 'file'):
+        file_path = image_path_or_file.file
+    else:
+        file_path = image_path_or_file
 
     # 2. Check for an existing trained Computer Vision model
-    cv_model_path: Optional[Path] = None
-    for p in WOUND_CV_MODEL_PATHS:
-        if p.exists():
-            cv_model_path = p
-            break
+    cv_model_path: Optional[Path] = get_wound_cv_model_path()
 
     if cv_model_path is None:
-        # Note: ml/model.joblib is exclusively a tabular Random Forest classifier
-        # for daily recovery check-in biometrics (pain, temp, adherence), NOT an image model.
         logger.info(
-            "No trained Computer Vision wound classification model found in %s. "
-            "Returning 'unavailable' without fabricating predictions.",
-            ML_DIR
+            "No trained Computer Vision wound classification model found. "
+            "Returning 'unavailable' without fabricating predictions."
         )
         return {
             'status': 'unavailable',
             'assessment_result': 'unavailable',
             'confidence': None,
             'raw_probabilities': None,
-            'message': (
-                "Automated image assessment model is currently unavailable. "
-                "Attending clinical review is required."
-            )
+            'ai_observations': {
+                'status': 'unavailable',
+                'message': "AI analysis is currently unavailable. Awaiting clinician review.",
+                'disclaimer': "AI decision support is currently unavailable. Attending clinician evaluation required."
+            },
+            'message': "AI analysis is currently unavailable. Awaiting clinician review."
         }
 
     # 3. Load genuine Computer Vision model and execute inference
@@ -95,10 +128,72 @@ def assess_wound_image(image_path_or_file: Any, remarks: str = "") -> Dict[str, 
         if str(ML_DIR) not in sys.path:
             sys.path.insert(0, str(ML_DIR))
 
-        from wound_features import extract_wound_features
+        from wound_features import extract_wound_features, FEATURE_NAMES
         import joblib
         import numpy as np
         from PIL import Image
+
+        # Validate that image is readable and not corrupt
+        with Image.open(file_path) as test_img:
+            test_img.verify()
+
+        # Reopen after verify
+        with Image.open(file_path) as pil_img:
+            pil_rgb = pil_img.convert("RGB")
+            w, h = pil_rgb.size
+            gray_arr = np.array(pil_rgb.convert("L"), dtype=np.float32) / 255.0
+
+        # --- A. Assess Image Quality & Visibility ---
+        mean_brightness = float(np.mean(gray_arr))
+        contrast_std = float(np.std(gray_arr))
+        
+        # Discrete Laplacian variance to assess sharpness / blur
+        if gray_arr.shape[0] > 4 and gray_arr.shape[1] > 4:
+            laplacian = (
+                -4.0 * gray_arr[1:-1, 1:-1]
+                + gray_arr[:-2, 1:-1]
+                + gray_arr[2:, 1:-1]
+                + gray_arr[1:-1, :-2]
+                + gray_arr[1:-1, 2:]
+            )
+            blur_var = float(np.var(laplacian))
+        else:
+            blur_var = 0.0
+
+        is_acceptable = True
+        quality_issues = []
+        if w < 120 or h < 120:
+            is_acceptable = False
+            quality_issues.append("Low resolution photo")
+        if mean_brightness < 0.14:
+            is_acceptable = False
+            quality_issues.append("Underexposed / too dark")
+        elif mean_brightness > 0.88:
+            is_acceptable = False
+            quality_issues.append("Overexposed / glare washed out incision details")
+        if blur_var < 0.00035:
+            is_acceptable = False
+            quality_issues.append("Blurry or out of focus")
+        if contrast_std < 0.06:
+            is_acceptable = False
+            quality_issues.append("Low tonal contrast")
+
+        if quality_issues:
+            quality_flag = 'suboptimal'
+            quality_notes = f"Image quality advisory: {', '.join(quality_issues)}. Wound may not be clearly visible. Attending clinician inspection required."
+        else:
+            quality_flag = 'good'
+            quality_notes = "Image clarity, illumination, and contrast are adequate for computer-vision feature extraction."
+
+        image_quality = {
+            'is_acceptable': is_acceptable,
+            'quality_flag': quality_flag,
+            'blur_score': round(blur_var * 10000, 2),
+            'brightness_mean': round(mean_brightness, 3),
+            'contrast_std': round(contrast_std, 3),
+            'resolution': f"{w}x{h}",
+            'quality_notes': quality_notes
+        }
 
         # Cache model payload in memory to prevent repeated disk I/O on every request
         if _CACHED_MODEL_PAYLOAD is None or _CACHED_MODEL_PATH != cv_model_path:
@@ -114,6 +209,7 @@ def assess_wound_image(image_path_or_file: Any, remarks: str = "") -> Dict[str, 
                 'assessment_result': 'failed',
                 'confidence': None,
                 'raw_probabilities': None,
+                'ai_observations': {'status': 'failed', 'message': 'Model artifact does not meet wound classification specifications.'},
                 'message': "Model artifact does not meet wound classification specifications."
             }
 
@@ -133,12 +229,7 @@ def assess_wound_image(image_path_or_file: Any, remarks: str = "") -> Dict[str, 
         margin_edge_outlier_th = float(safety_policy.get('margin_edge_outlier_th', 0.030))
         max_z_outlier_th = float(safety_policy.get('max_z_outlier_th', 3.8))
 
-        # Validate that image is readable and not corrupt
-        with Image.open(file_path) as test_img:
-            test_img.verify()
-
         # Extract genuine computer vision features
-        from wound_features import FEATURE_NAMES
         raw_feats = extract_wound_features(file_path).reshape(1, -1)
         feats_scaled = scaler.transform(raw_feats) if scaler is not None else raw_feats
 
@@ -168,15 +259,21 @@ def assess_wound_image(image_path_or_file: Any, remarks: str = "") -> Dict[str, 
         erythema_idx = FEATURE_NAMES.index("erythema_band_ratio")
         rg_diff_idx = FEATURE_NAMES.index("red_green_diff")
         margin_edge_idx = FEATURE_NAMES.index("margin_edge_contrast")
+        slough_idx = FEATURE_NAMES.index("slough_band_ratio")
+        necrotic_idx = FEATURE_NAMES.index("necrotic_band_ratio")
+        roughness_idx = FEATURE_NAMES.index("texture_roughness_mean")
+        margin_erythema_idx = FEATURE_NAMES.index("margin_erythema_contrast")
 
         erythema_val = float(raw_feats[0, erythema_idx])
         rg_diff_val = float(raw_feats[0, rg_diff_idx])
         margin_edge_val = float(raw_feats[0, margin_edge_idx])
+        slough_val = float(raw_feats[0, slough_idx])
+        necrotic_val = float(raw_feats[0, necrotic_idx])
+        roughness_val = float(raw_feats[0, roughness_idx])
+        margin_erythema_val = float(raw_feats[0, margin_erythema_idx])
         max_z_val = float(np.max(np.abs(feats_scaled[0])))
 
-        # Clinical Decision Support Safety Policy:
-        # Prevents uncalibrated, uninformative predictions (~76% base rate)
-        # from presenting false reassurance on ambiguous or inflamed wounds.
+        # Clinical Decision Support Safety Policy
         uncertainty_reason = None
         assessment_reason = ""
         if p_poor >= th_poor:
@@ -240,6 +337,170 @@ def assess_wound_image(image_path_or_file: Any, remarks: str = "") -> Dict[str, 
 
         conf_rounded = round(conf, 4) if conf is not None else None
 
+        # --- B. Assess Visible Redness (Erythema) ---
+        if erythema_val < 0.15:
+            redness_level = 'normal'
+            redness_desc = f"Normal periwound tissue coloration (erythema band index: {erythema_val:.2f}). No significant inflammatory redness detected."
+        elif erythema_val < 0.35:
+            redness_level = 'mild_to_moderate'
+            redness_desc = f"Mild to moderate periwound redness detected (erythema band index: {erythema_val:.2f}). Monitor for spreading inflammation."
+        else:
+            redness_level = 'elevated'
+            redness_desc = f"Conspicuous periwound erythema detected (erythema band index: {erythema_val:.2f} > 0.35). High inflammatory index."
+
+        redness_obs = {
+            'level': redness_level,
+            'erythema_band_ratio': round(erythema_val, 3),
+            'red_green_diff': round(rg_diff_val, 3),
+            'margin_erythema_contrast': round(margin_erythema_val, 3),
+            'description': redness_desc
+        }
+
+        # --- C. Assess Swelling / Edema Indicators ---
+        if roughness_val < 0.08:
+            swelling_level = 'minimal'
+            swelling_desc = f"Incision margins appear flat without conspicuous tissue elevation (surface roughness: {roughness_val:.3f})."
+        elif roughness_val < 0.16:
+            swelling_level = 'mild'
+            swelling_desc = f"Mild localized tissue puffiness / edema indicated along the wound bed (surface roughness: {roughness_val:.3f})."
+        else:
+            swelling_level = 'conspicuous'
+            swelling_desc = f"Conspicuous tissue swelling / bulging contour indicated along wound margin (surface roughness: {roughness_val:.3f} >= 0.16)."
+
+        swelling_obs = {
+            'level': swelling_level,
+            'roughness_index': round(roughness_val, 3),
+            'description': swelling_desc
+        }
+
+        # --- D. Assess Wound-Edge Appearance ---
+        if margin_edge_val <= 0.015:
+            edge_alignment = 'well_approximated'
+            edge_desc = f"Incision edges appear closely approximated with clean margin continuity (edge contrast: {margin_edge_val:.4f})."
+        elif margin_edge_val <= 0.030:
+            edge_alignment = 'slightly_irregular'
+            edge_desc = f"Slight margin irregularity observed along the incision border (edge contrast: {margin_edge_val:.4f})."
+        else:
+            edge_alignment = 'separated_or_gapping'
+            edge_desc = f"Elevated margin edge contrast detected ({margin_edge_val:.4f} > 0.030); potential edge separation, dehiscence, or gaping."
+
+        edge_obs = {
+            'alignment': edge_alignment,
+            'margin_edge_contrast': round(margin_edge_val, 4),
+            'description': edge_desc
+        }
+
+        # --- E. Assess Visible Discharge / Exudate ---
+        if slough_val < 0.05 and necrotic_val < 0.02:
+            discharge_level = 'none_detected'
+            discharge_desc = "No visible purulent exudate, slough, or necrotic tissue detected in the incision bed."
+        elif slough_val < 0.15:
+            discharge_level = 'trace_exudate'
+            discharge_desc = f"Trace pale/fibrinous exudate markers observed (slough band index: {slough_val:.3f}). Keep clean and dry."
+        else:
+            discharge_level = 'conspicuous_discharge'
+            discharge_desc = f"Conspicuous yellowish/creamy fluid indicators detected (slough band index: {slough_val:.3f} >= 0.15); clinical review required."
+
+        discharge_obs = {
+            'level': discharge_level,
+            'slough_band_ratio': round(slough_val, 3),
+            'necrotic_band_ratio': round(necrotic_val, 3),
+            'description': discharge_desc
+        }
+
+        # --- F. Changes Compared With Previous Uploaded Images ---
+        comparison_obs = {
+            'has_previous': False,
+            'comparison_summary': "Baseline wound photograph. Subsequent uploads will be compared against this initial assessment.",
+            'overall_trend': "baseline"
+        }
+
+        if previous_assessment is not None:
+            prev_obs = getattr(previous_assessment, 'ai_observations', None)
+            if isinstance(prev_obs, dict) and prev_obs.get('redness'):
+                prev_erythema = prev_obs.get('redness', {}).get('erythema_band_ratio', None)
+                prev_roughness = prev_obs.get('swelling', {}).get('roughness_index', None)
+                prev_edge = prev_obs.get('wound_edges', {}).get('margin_edge_contrast', None)
+                prev_slough = prev_obs.get('discharge', {}).get('slough_band_ratio', None)
+                prev_date = getattr(previous_assessment, 'upload_date', None)
+                prev_date_str = prev_date.strftime('%d %b %Y') if prev_date else 'previous check'
+
+                deltas = []
+                trend_points = 0  # positive = worsening, negative = improving
+
+                if prev_erythema is not None:
+                    d_ery = erythema_val - prev_erythema
+                    d_ery_pct = round(d_ery * 100, 1)
+                    if d_ery > 0.04:
+                        deltas.append(f"Periwound redness increased (+{d_ery_pct}%)")
+                        trend_points += 1
+                    elif d_ery < -0.04:
+                        deltas.append(f"Periwound redness decreased ({d_ery_pct}%, improving)")
+                        trend_points -= 1
+                    else:
+                        deltas.append("Periwound redness is stable")
+
+                if prev_roughness is not None:
+                    d_rough = roughness_val - prev_roughness
+                    if d_rough > 0.04:
+                        deltas.append("Tissue swelling index increased")
+                        trend_points += 1
+                    elif d_rough < -0.04:
+                        deltas.append("Tissue swelling index decreased (edema resolving)")
+                        trend_points -= 1
+                    else:
+                        deltas.append("Tissue swelling remains stable")
+
+                if prev_edge is not None:
+                    d_edge = margin_edge_val - prev_edge
+                    if d_edge > 0.015:
+                        deltas.append("Margin contrast elevated compared to prior")
+                        trend_points += 1
+                    elif d_edge < -0.015:
+                        deltas.append("Margin approximation improved")
+                        trend_points -= 1
+
+                if prev_slough is not None:
+                    d_slough = slough_val - prev_slough
+                    if d_slough > 0.05:
+                        deltas.append("Exudate chromophore ratio increased")
+                        trend_points += 1
+                    elif d_slough < -0.05:
+                        deltas.append("Exudate chromophore ratio decreased")
+                        trend_points -= 1
+
+                if trend_points > 0:
+                    overall_trend = "worsening"
+                elif trend_points < 0:
+                    overall_trend = "improving"
+                else:
+                    overall_trend = "stable"
+
+                summary_str = f"Compared with {prev_date_str}: {'; '.join(deltas)}."
+                comparison_obs = {
+                    'has_previous': True,
+                    'previous_date': prev_date_str,
+                    'overall_trend': overall_trend,
+                    'comparison_summary': summary_str,
+                    'deltas': deltas
+                }
+
+        # Assemble full structured AI observations
+        ai_observations = {
+            'ai_status': 'completed',
+            'image_quality': image_quality,
+            'redness': redness_obs,
+            'swelling': swelling_obs,
+            'wound_edges': edge_obs,
+            'discharge': discharge_obs,
+            'comparison_with_previous': comparison_obs,
+            'clinical_summary': assessment_reason,
+            'disclaimer': (
+                "PostCare AI Decision Support: Observations are derived by computer vision algorithms to assist clinical review. "
+                "These findings do not constitute a standalone medical diagnosis. Attending physician verification is required."
+            )
+        }
+
         clinical_messages = {
             'good': "Screening output: Good class — Attending clinician review still required. Automated screening does not replace medical evaluation.",
             'moderate': "Model output: Moderate class — Clinician review required within 48 hours for erythema/exudate monitoring.",
@@ -263,6 +524,7 @@ def assess_wound_image(image_path_or_file: Any, remarks: str = "") -> Dict[str, 
             'raw_probabilities': raw_probs,
             'uncertainty_reason': uncertainty_reason,
             'assessment_reason': assessment_reason,
+            'ai_observations': ai_observations,
             'message': msg,
         }
 
@@ -273,6 +535,11 @@ def assess_wound_image(image_path_or_file: Any, remarks: str = "") -> Dict[str, 
             'assessment_result': 'failed',
             'confidence': None,
             'raw_probabilities': None,
+            'ai_observations': {
+                'status': 'failed',
+                'message': f"Inference engine failure: {str(exc)}",
+            },
             'message': f"Inference engine failure: {str(exc)}",
         }
+
 

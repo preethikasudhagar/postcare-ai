@@ -31,7 +31,12 @@ local_settings.py
 
 # ML models & datasets
 *.joblib
-ml/dataset/
+!ml/wound_model.joblib
+!ml/model.joblib
+ml/dataset/images/
+ml/dataset/surgwound/images/
+!ml/dataset/surgwound/dataset_manifest.csv
+!ml/dataset/surgwound/features_cache.npz
 backend/ml_models/
 
 

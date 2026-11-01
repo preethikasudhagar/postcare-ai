@@ -28,11 +28,66 @@ class RecoveryCheckInSerializer(serializers.ModelSerializer):
 class WoundAssessmentSerializer(serializers.ModelSerializer):
     uploaded_by_name = serializers.CharField(source='uploaded_by.get_full_name', read_only=True, default='')
     patient_name = serializers.CharField(source='patient.user.get_full_name', read_only=True, default='')
+    patient_uhid = serializers.CharField(source='patient.patient_id', read_only=True, default='')
+    reviewed_by_name = serializers.CharField(source='reviewed_by.user.get_full_name', read_only=True, default='')
+    ai_analysis_status = serializers.SerializerMethodField()
+    latest_vitals = serializers.SerializerMethodField()
+    previous_images = serializers.SerializerMethodField()
     
     class Meta:
         model = WoundAssessment
         fields = '__all__'
-        read_only_fields = ['patient', 'upload_date', 'uploaded_by', 'assessment_result', 'confidence', 'raw_probabilities', 'assessment_reason']
+        read_only_fields = [
+            'patient', 'upload_date', 'uploaded_by', 'surgery_details', 
+            'recovery_day', 'assessment_result', 'confidence', 
+            'raw_probabilities', 'assessment_reason', 'ai_observations',
+            'generated_recommendations', 'is_urgent', 'urgent_reasons',
+            'doctor_review', 'doctor_review_status', 'reviewed_by', 'reviewed_at'
+        ]
+
+    def get_ai_analysis_status(self, obj):
+        if obj.ai_observations and isinstance(obj.ai_observations, dict):
+            return obj.ai_observations.get('ai_status', 'completed')
+        if obj.assessment_result:
+            return 'completed'
+        return 'processing'
+
+    def get_latest_vitals(self, obj):
+        checkin = obj.patient.recovery_checkins.order_by('-date', '-submitted_at').first()
+        if not checkin:
+            return None
+        return {
+            'date': str(checkin.date),
+            'pain_level': checkin.pain_level,
+            'temperature': round(checkin.temperature, 1) if checkin.temperature else None,
+            'wound_condition': checkin.wound_condition,
+            'symptoms': checkin.symptoms or [],
+            'medication_adherence': checkin.medication_adherence,
+            'recovery_score': checkin.recovery_score,
+        }
+
+    def get_previous_images(self, obj):
+        request = self.context.get('request')
+        prior = WoundAssessment.objects.filter(
+            patient=obj.patient,
+            upload_date__lt=obj.upload_date
+        ).order_by('-upload_date')[:4]
+        
+        results = []
+        for p in prior:
+            img_url = p.image.url if p.image else None
+            if request and img_url and not img_url.startswith(('http://', 'https://')):
+                img_url = request.build_absolute_uri(img_url)
+            results.append({
+                'id': p.id,
+                'upload_date': p.upload_date,
+                'image': img_url,
+                'assessment_result': p.assessment_result,
+                'doctor_review': p.doctor_review,
+                'doctor_review_status': p.doctor_review_status,
+                'recovery_day': p.recovery_day,
+            })
+        return results
 
     def validate_image(self, value):
         import os
@@ -46,3 +101,4 @@ class WoundAssessmentSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('File size cannot exceed 5MB.')
         
         return value
+

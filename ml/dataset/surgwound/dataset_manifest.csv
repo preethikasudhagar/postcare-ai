@@ -1,0 +1,687 @@
+image_name,split,urgency_level,clinical_label,infection_risk,healing_status,image_saved,image_width,image_height
+1.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1080
+1005.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,648,861
+112.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+12.jpg,val,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,480
+140.jpg,val,Emergency Care (Red): Seek immediate medical attention,poor,High,Not Healed,True,640,480
+149.jpg,val,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,432,576
+157.jpg,val,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,460,676
+163.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+183.jpg,val,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,620
+190.jpg,val,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,612,762
+20.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+206.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+207.jpg,val,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Healed,True,640,766
+216.jpg,val,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+284.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+287.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+302.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,840
+314.jpg,val,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1422
+320.jpg,val,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,420
+342.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,640
+378.jpg,val,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,480
+379.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+387.jpg,val,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,945
+402.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1440
+404.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,459,1920
+422.jpg,val,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,288
+425.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+430.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,591,1329
+446.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+47.jpg,val,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,576
+480.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+50.jpg,val,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,455
+503.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,198
+516.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+517.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1412
+532.jpg,val,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,453
+550.jpg,val,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+568.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1283
+597.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,925
+627.jpg,val,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,853
+64.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,445
+653.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,414
+666.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,855
+671.jpg,val,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,423
+698.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1137
+70.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+715.jpg,val,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1441,1920
+725.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+731.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,512
+736.jpg,val,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,855
+750.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+753.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+755.jpg,val,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,653
+761.jpg,val,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+797.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+798.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+804.jpg,val,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,543
+810.jpg,val,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+82.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+837.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+84.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1167
+890.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1080
+94.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1385
+945.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,1728,1296
+95.jpg,val,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,640,853
+971.jpg,val,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,2048,1152
+976.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1080
+979.jpg,val,Home Care (Green): Manage with routine care,good,Low,Healed,True,1152,2048
+988.jpg,val,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,960,960
+424.jpg,test,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,640,647
+679.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+663.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+714.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1143
+880.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1440,1439
+457.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,640
+194.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1422
+501.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+93.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+110.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,400
+470.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+41.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,244
+807.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+3.jpg,test,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,1080,1080
+385.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,360
+267.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1138
+590.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,373
+125.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+46.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+237.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+899.jpg,test,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,480,480
+709.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+193.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,707
+984.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1080
+311.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,662
+44.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+111.jpg,test,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,High,Not Healed,True,640,853
+478.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+459.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,220
+626.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+25.jpg,test,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,854
+253.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,339
+146.jpg,test,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,520
+139.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,563,1000
+79.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1440
+521.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,640
+419.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+842.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,1919,1080
+787.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1044
+578.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,822,1698
+937.jpg,test,Emergency Care (Red): Seek immediate medical attention,poor,High,Not Healed,True,1080,1080
+700.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,480
+143.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,732,976
+944.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1080
+66.jpg,test,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,640
+68.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+299.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+63.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+87.jpg,test,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,1080,1440
+334.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,592,1280
+124.jpg,test,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,853
+411.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,639
+705.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,573
+13.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1439
+178.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,526
+477.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+214.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,201
+22.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,1440,1080
+811.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,684
+788.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1387
+659.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+602.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,640
+974.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1080
+100.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+436.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+315.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+392.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,854
+495.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+686.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,642
+30.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+257.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+104.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1409
+544.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1137
+75.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+67.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+268.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1138
+985.jpg,test,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,1080,1080
+134.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+592.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1138
+777.jpg,test,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,640,914
+180.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,764
+15.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1440
+884.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,1440,1440
+983.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,862,2030
+612.jpg,test,Emergency Care (Red): Seek immediate medical attention,poor,High,Not Healed,True,640,480
+786.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+465.jpg,test,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,853
+657.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+942.jpg,test,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,1080,1080
+99.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+928.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1080,1080
+973.jpg,test,Emergency Care (Red): Seek immediate medical attention,poor,High,Not Healed,True,1080,1080
+533.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+511.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+718.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+209.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+291.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+282.jpg,test,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,622
+90.jpg,test,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,640,853
+276.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1421
+471.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,592,1280
+119.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,480,640
+520.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,480
+588.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,360
+933.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1054,1318
+582.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+560.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+734.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+625.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+717.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,672
+442.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+675.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,640
+943.jpg,test,Emergency Care (Red): Seek immediate medical attention,poor,High,Not Healed,True,1440,1440
+77.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,644,600
+265.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,421
+396.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+155.jpg,test,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,640,1138
+805.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+240.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+405.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,685
+575.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,940
+377.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+31.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+451.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,854
+372.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,727
+576.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+634.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,1440,1080
+623.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+674.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+476.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+553.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,365
+806.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+481.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,480
+767.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,480
+445.jpg,test,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1387
+907.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,768,768
+382.jpg,test,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+606.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1385
+76.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,469
+403.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+286.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+678.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1138
+561.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,480
+792.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1440,1920
+930.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1335,1080
+799.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+32.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,640
+548.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Healed,True,640,853
+308.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Healed,True,618,464
+497.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+200.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,264
+839.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,360
+217.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+303.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+542.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+779.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1387
+121.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,480
+279.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,427
+58.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+538.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+202.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,480
+361.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1388
+241.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,855
+401.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+400.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+466.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,853
+841.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+221.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+223.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,492
+920.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,1080,1080
+345.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,810
+18.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+305.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,640,853
+109.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+498.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,296
+744.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1395
+62.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+197.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,853
+313.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+669.jpg,train,Emergency Care (Red): Seek immediate medical attention,poor,High,Not Healed,True,640,853
+990.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1080,1080
+749.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1382
+428.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+624.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,480
+687.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+963.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1080
+637.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,853
+677.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1002
+74.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1689,841
+752.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+660.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+352.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,640,853
+591.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,853
+843.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,640,360
+151.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+98.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,931
+525.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+152.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,715
+72.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1920
+290.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+853.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,360
+580.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,632
+820.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+609.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,1217
+161.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,854
+444.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+17.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+600.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,482
+309.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,480
+579.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1138
+165.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+968.jpg,train,Emergency Care (Red): Seek immediate medical attention,poor,High,Not Healed,True,1080,1080
+641.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+785.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1438
+69.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1385
+607.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+158.jpg,train,Emergency Care (Red): Seek immediate medical attention,poor,High,Not Healed,True,460,676
+473.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+86.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1080,1440
+868.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,1080,1080
+129.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+475.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+269.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+170.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+778.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,535
+167.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+878.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1440,1439
+259.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,479
+453.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1387
+45.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,412
+829.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,747
+366.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+566.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+737.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,630
+1007.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1060,857
+145.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,640
+999.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,2048,1152
+642.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,877
+208.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,636
+8.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+1008.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,644,841
+233.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+398.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,374
+735.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+817.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,930
+336.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,472,629
+611.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,363
+827.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,563
+652.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,484
+56.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+317.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+294.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1109
+896.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,1080,1350
+238.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+534.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+264.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,749
+987.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,696,1640
+776.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+814.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+154.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+423.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1138
+195.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+904.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1440,1196
+828.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+455.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,688
+80.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+918.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,High,Not Healed,True,1080,1080
+879.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1440,1440
+108.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+91.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+898.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,720,720
+275.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,410
+489.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+978.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,High,Not Healed,True,1080,1080
+169.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+10.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1439
+59.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+292.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,480
+643.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,339
+1009.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1139,854
+950.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,1152,2048
+120.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+175.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,759
+29.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1440,1080
+316.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1920,1837
+889.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,1080,1080
+862.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,612,612
+682.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,481
+92.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1387
+318.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+456.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1138
+670.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+646.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,640,709
+911.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1080,1080
+147.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+226.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1388
+529.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+680.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+502.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+848.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+618.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,640,295
+995.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,1291,1940
+713.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,726
+571.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+176.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+78.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+617.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,592
+295.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1678,1670
+850.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+630.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,640,853
+559.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+998.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1080,1080
+359.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+509.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,1385
+288.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+838.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+812.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,122
+247.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,360
+989.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1080,1080
+704.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+48.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,225
+416.jpg,train,Emergency Care (Red): Seek immediate medical attention,poor,High,Not Healed,True,640,1416
+14.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+199.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,480
+126.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+936.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,960,960
+469.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1139
+519.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+887.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1350
+720.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+739.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,450,800
+926.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1080
+892.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1080,809
+640.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,360
+347.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1138
+610.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,640
+159.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,640,853
+57.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,256
+323.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+510.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+410.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,642
+902.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,480,480
+846.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+584.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+773.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,480
+622.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1138
+460.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,896
+357.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+160.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,622,682
+184.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+639.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1186
+389.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+689.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,712
+5.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+211.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+796.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1421
+85.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1440
+360.jpg,train,Emergency Care (Red): Seek immediate medical attention,poor,High,Not Healed,True,640,853
+556.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,853
+955.jpg,train,Emergency Care (Red): Seek immediate medical attention,poor,High,Not Healed,True,1080,1080
+325.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Healed,True,640,299
+186.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+278.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+931.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,1080,1080
+794.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,564
+650.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+574.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+863.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,612,612
+399.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+913.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1080,1122
+658.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,853
+940.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1241
+131.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+959.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1440,1440
+258.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,611
+784.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1440,1920
+122.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,739
+531.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+266.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,272,560
+595.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,521
+1000.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1024,678
+605.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+802.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+554.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+24.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+172.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1094
+374.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+191.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+434.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+711.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+895.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,640
+1001.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1200,675
+654.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,480
+921.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1350
+227.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,797
+488.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+536.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+171.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,640,853
+164.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,480
+210.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,763
+274.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+953.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,1080,1080
+929.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1080,1080
+43.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,509
+356.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+867.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,1080,1350
+55.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,605
+462.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1590
+144.jpg,train,Emergency Care (Red): Seek immediate medical attention,poor,High,Not Healed,True,640,761
+958.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1080,1080
+60.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,611
+962.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,1080,1080
+966.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1080,1080
+685.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,854
+11.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,854
+888.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1350
+730.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,640
+492.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+38.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,543
+849.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,525
+598.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,640
+504.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+215.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,854
+587.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1385
+102.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,600,833
+547.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+138.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,680
+858.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+919.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1080,1080
+969.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,1080,1080
+774.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+922.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1080,1080
+648.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1387
+764.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,901
+136.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,810
+116.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,854
+192.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,481
+581.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,551
+429.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+310.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,622
+260.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,390,520
+296.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+900.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1064,1064
+407.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,615
+540.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+656.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,High,Not Healed,True,640,530
+482.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+551.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,238
+137.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+106.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,713
+825.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+692.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+629.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1422
+338.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+130.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1037
+36.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+608.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+874.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,360
+123.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,660
+506.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+628.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+277.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+993.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1080
+322.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,636
+793.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+35.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,640
+6.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,640,480
+485.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+758.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1920,1440
+733.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+255.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,592
+448.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+631.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,660
+97.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+688.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1137
+128.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,360
+53.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+293.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,891
+852.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+433.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+569.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,627
+703.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,308
+1002.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1000,750
+487.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+594.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1137
+541.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+150.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,480
+763.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+230.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+245.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+166.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+133.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+684.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,279,493
+250.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,439
+563.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,110
+808.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+355.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+681.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,395
+967.jpg,train,Emergency Care (Red): Seek immediate medical attention,poor,High,Not Healed,True,1080,1080
+924.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1440,1440
+427.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1559
+406.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,1422
+770.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+515.jpg,train,Emergency Care (Red): Seek immediate medical attention,poor,High,Not Healed,True,640,853
+740.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,853
+464.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,480
+783.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+668.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+795.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1547,1920
+882.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1440,1440
+89.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1440
+285.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+339.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1080,1440
+103.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1440
+280.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+512.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+615.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,768
+467.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+845.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+19.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+88.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,1080,1440
+565.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+881.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1440,1440
+813.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1492,1120
+337.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,853
+132.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,359
+271.jpg,train,Emergency Care (Red): Seek immediate medical attention,poor,High,Not Healed,True,640,853
+872.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,809
+916.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1080,720
+707.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+449.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1138
+961.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,1281,1900
+970.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1080
+897.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,1080,1080
+83.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+694.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+331.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,480
+927.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1350
+555.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+468.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+996.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,1152,2048
+365.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1920
+939.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,1080,1080
+891.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,1953,965
+33.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1280,959
+61.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,640
+118.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1920,1440
+101.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1440,1080
+420.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,347
+39.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+187.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,563,1000
+0.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,1080,1080
+370.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,485
+964.jpg,train,Emergency Care (Red): Seek immediate medical attention,poor,High,Not Healed,True,1080,1080
+49.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+857.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1080
+26.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,854
+21.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+463.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+415.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+408.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,360
+42.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+702.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+513.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,452
+117.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+527.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,543
+696.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+153.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,480
+585.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+312.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,482,259
+16.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1440,1080
+71.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,713,1052
+743.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+665.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,862
+394.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1384
+51.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,508
+723.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+174.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,480
+34.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,480
+156.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+876.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1440,1440
+667.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+141.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,1138
+546.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1440
+493.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+803.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+52.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,758
+956.jpg,train,Emergency Care (Red): Seek immediate medical attention,poor,High,Not Healed,True,1080,1080
+938.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1440,1440
+789.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1920,1439
+906.jpg,train,Home Care (Green): Manage with routine care,good,Medium,Not Healed,True,1080,1080
+472.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+712.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,533
+386.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,853
+994.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1080,1080
+593.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,854
+760.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,679
+762.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,480
+135.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1440,1920
+941.jpg,train,Home Care (Green): Manage with routine care,good,High,Not Healed,True,1728,1296
+835.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1080
+363.jpg,train,Emergency Care (Red): Seek immediate medical attention,poor,High,Not Healed,True,640,640
+375.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+526.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,561
+661.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,640,853
+105.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+412.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,1422
+37.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1440
+583.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+946.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,1080,1080
+840.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+893.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,1080,1080
+771.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
+107.jpg,train,Home Care (Green): Manage with routine care,good,Low,Healed,True,640,853
+2.jpg,train,Clinic Visit (Yellow): Requires professional evaluation within 48 hours,moderate,Medium,Not Healed,True,1080,1080
+443.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,480
+479.jpg,train,Home Care (Green): Manage with routine care,good,Low,Not Healed,True,640,853
