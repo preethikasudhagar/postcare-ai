@@ -20,6 +20,8 @@ class PatientListView(generics.ListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
         if user.role == 'doctor' and hasattr(user, 'doctor_profile'):
+            if user.doctor_profile.approval_status != 'approved':
+                return Patient.objects.none()
             return Patient.objects.filter(primary_doctor=user.doctor_profile)
         elif user.role == 'nurse' and hasattr(user, 'nurse_profile'):
             return Patient.objects.filter(assigned_nurses=user.nurse_profile)

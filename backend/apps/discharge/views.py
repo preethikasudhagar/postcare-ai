@@ -26,10 +26,10 @@ class DischargePlanListCreateView(generics.ListCreateAPIView):
         if user.is_staff or user.is_superuser or user.role == 'admin':
             return qs
 
-        # 2. Doctor: View plans for assigned patients or authored by this doctor
+        # 2. Doctor: View plans for assigned patients or authored by this doctor (only if approved)
         if user.role == 'doctor':
             doctor_profile = getattr(user, 'doctor_profile', None)
-            if not doctor_profile:
+            if not doctor_profile or doctor_profile.approval_status != 'approved':
                 return DischargePlan.objects.none()
             return qs.filter(
                 models.Q(doctor=doctor_profile) |
