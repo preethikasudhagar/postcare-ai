@@ -150,7 +150,8 @@ SIMPLE_JWT = {
 # In development, CORS_ALLOW_ALL_ORIGINS=True is safe because DEBUG=True.
 _cors_origins_env = os.getenv('CORS_ALLOWED_ORIGINS', '')
 if _cors_origins_env:
-    CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors_origins_env.split(',') if o.strip()]
+    # Strip any trailing slashes to prevent corsheaders.E014 validation errors
+    CORS_ALLOWED_ORIGINS = [o.strip().rstrip('/') for o in _cors_origins_env.split(',') if o.strip()]
     CORS_ALLOW_ALL_ORIGINS = False
 else:
     CORS_ALLOW_ALL_ORIGINS = DEBUG          # True only in local dev
@@ -182,7 +183,8 @@ CORS_ALLOW_HEADERS = [
 # Trust the Vercel frontend and the Render backend itself for CSRF.
 _csrf_env = os.getenv('CSRF_TRUSTED_ORIGINS', '')
 if _csrf_env:
-    CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_env.split(',') if o.strip()]
+    # Strip any trailing slashes to prevent CSRF scheme/path format errors
+    CSRF_TRUSTED_ORIGINS = [o.strip().rstrip('/') for o in _csrf_env.split(',') if o.strip()]
 else:
     CSRF_TRUSTED_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://postcare-ai.vercel.app']
 
