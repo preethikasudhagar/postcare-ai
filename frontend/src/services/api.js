@@ -2,11 +2,11 @@ import axios from 'axios'
 
 // ─── API Base URL ─────────────────────────────────────────────────────────────
 // In development: Vite proxy forwards `/api` → `http://127.0.0.1:8000/api`
-// In production (Vercel): VITE_API_BASE_URL is the full Render backend URL
-//   e.g.  https://postcare-ai-backend.onrender.com
-// The env var must NOT have a trailing slash.
-const BASE_URL = import.meta.env.VITE_API_BASE_URL
-  ? `${import.meta.env.VITE_API_BASE_URL}/api`
+// In production (Vercel): VITE_API_BASE_URL is the Render backend URL.
+// Normalize raw URL: strips trailing slashes and avoids duplicate '/api'
+const rawBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').trim().replace(/\/+$/, '')
+const BASE_URL = rawBaseUrl
+  ? (rawBaseUrl.endsWith('/api') ? rawBaseUrl : `${rawBaseUrl}/api`)
   : '/api'
 
 // ─── Public endpoints that must NEVER receive an Authorization header ─────────
